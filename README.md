@@ -11,9 +11,9 @@
 </p>
 
 <p align="center">
-  <a href="docs/DEVELOPER_GUIDE.md">Developer Guide</a> &nbsp;|&nbsp;
-  <a href="docs/API_REFERENCE.md">API Reference</a> &nbsp;|&nbsp;
-  <a href="docs/SECURITY_ARCHITECTURE.md">Security Architecture</a> &nbsp;|&nbsp;
+  <a href="docs/Operation%20Documents/DEVELOPER_GUIDE.md">Developer Guide</a> &nbsp;|&nbsp;
+  <a href="docs/System%20Documents/API_REFERENCE.md">API Reference</a> &nbsp;|&nbsp;
+  <a href="docs/System%20Documents/SECURITY_ARCHITECTURE.md">Security Architecture</a> &nbsp;|&nbsp;
   <a href="docs/FAQ.md">FAQ</a> &nbsp;|&nbsp;
   <a href="AMBASSADORS.md">Ambassador Program</a>
 </p>
@@ -262,7 +262,7 @@ No OpenAI. No Google. No API calls to third-party inference services. The data p
 
 ```bash
 # Clone
-git clone https://github.com/quietfire/telsonbase.git
+git clone https://github.com/QuietFireAI/TelsonBase.git
 cd telsonbase
 
 # Configure
@@ -294,7 +294,7 @@ docker compose exec mcp_server python -m pytest tests/ -v --tb=short
 
 ## Proof Sheets
 
-The `proof_sheets/` directory contains 39 evidence sheets. Each one documents an exact claim, provides source code files, test files, and a verification command. No marketing. Just traceable evidence.
+The `proof_sheets/` directory contains 42 evidence sheets. Each one documents an exact claim, provides source code files, test files, and a verification command. No marketing. Just traceable evidence.
 
 Browse the full index: [`proof_sheets/INDEX.md`](proof_sheets/INDEX.md)
 
