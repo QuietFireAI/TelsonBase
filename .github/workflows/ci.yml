@@ -123,6 +123,15 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Create dummy secrets for compose config validation
+        run: |
+          mkdir -p secrets
+          for f in telsonbase_mcp_api_key telsonbase_jwt_secret \
+                   telsonbase_encryption_key telsonbase_encryption_salt \
+                   telsonbase_grafana_password; do
+            echo "ci_dummy_not_real_do_not_use" > "secrets/$f"
+          done
+
       - name: Validate docker-compose configuration
         run: docker compose config --quiet
 
