@@ -1,0 +1,135 @@
+# TelsonBase/monitoring/prometheus/alerts.yml
+# REM: =======================================================================================
+# REM: PROMETHEUS ALERTING RULES FOR TELSONBASE
+# REM: =======================================================================================
+# REM: Architect: ::Quietfire AI Project::
+# REM: Date: February 23, 2026
+# REM:
+# REM: Mission Statement: These alert rules provide early warning for operational issues.
+# REM: They are evaluated by Prometheus at the global evaluation_interval (15s) and
+# REM: fire when conditions persist beyond the specified `for` duration.
+# REM:
+# REM: Severity Levels:
+# REM:   - critical: Immediate action required. Service degradation or security incident.
+# REM:   - warning:  Investigation needed. Conditions may escalate if not addressed.
+# REM:   - info:     Notable event. No immediate action but worth tracking.
+# REM: =======================================================================================
+
+groups:
+  # REM: -------------------------------------------------------------------------
+  # REM: GROUP 1: Request & Availability Alerts
+  # REM: -------------------------------------------------------------------------
+  - name: telsonbase_request_alerts
+    rules:
+      # REM: Warning — error rate exceeds 5% for 5 minutes
+      - alert: HighErrorRate
+        expr: >
+          100 * (
+            sum(rate(telsonbase_http_requests_total{status_code=~"4..|5.."}[5m]))
+            /
+            clamp_min(sum(rate(telsonbase_http_requests_total[5m])), 0.001)
+          ) > 5
+        for: 5m
+        labels:
+          severity: warning
+          team: platform
+        annotations:
+          summary: "HTTP error rate above 5%"
+          description: >
+            The HTTP error rate has been {{ printf "%.1f" $value }}% for the last 5 minutes.
+            This exceeds the 5% warning threshold. Investigate error logs for root cause.
+          runbook_url: "https://telsonbase.local/runbooks/high-error-rate"
+
+      # REM: Critical — error rate exceeds 10% for 2 minutes
+      - alert: HighErrorRate
+        expr: >
+          100 * (
+            sum(rate(telsonbase_http_requests_total{status_code=~"4..|5.."}[5m]))
+            /
+            clamp_min(sum(rate(telsonbase_http_requests_total[5m])), 0.001)
+          ) > 10
+        for: 2m
+        labels:
+          severity: critical
+          team: platform
+        annotations:
+          summary: "HTTP error rate above 10% — CRITICAL"
+          description: >
+            The HTTP error rate has been {{ printf "%.1f" $value }}% for the last 2 minutes.
+            This exceeds the 10% critical threshold. Immediate investigation required.
+          runbook_url: "https://telsonbase.local/runbooks/high-error-rate"
+
+      # REM: High latency — P95 response time exceeds 2 seconds
+      - alert: HighLatency
+        expr: >
+          histogram_quantile(0.95,
+            sum(rate(telsonbase_http_request_duration_seconds_bucket[5m])) by (le)
+          ) > 2
+        for: 5m
+        labels:
+          severity: warning
+          team: platform
+        annotations:
+          summary: "P95 response time exceeds 2 seconds"
+          description: >
+            The 95th percentile response time is {{ printf "%.2f" $value }}s,
+            exceeding the 2s threshold for 5 minutes. Check for slow queries,
+            resource exhaustion, or upstream dependency issues.
+          runbook_url: "https://telsonbase.local/runbooks/high-latency"
+
+  # REM: -------------------------------------------------------------------------
+  # REM: GROUP 2: Security Alerts
+  # REM: -------------------------------------------------------------------------
+  - name: telsonbase_security_alerts
+    rules:
+      # REM: Auth failure spike — more than 20 failures in 5 minutes
+      - alert: AuthFailureSpike
+        expr: >
+          sum(increase(telsonbase_auth_total{result="failure"}[5m])) > 20
+        for: 0m
+        labels:
+          severity: critical
+          team: security
+        annotations:
+          summary: "Authentication failure spike detected"
+          description: >
+            {{ printf "%.0f" $value }} authentication failures in the last 5 minutes.
+            This may indicate a brute-force attack or misconfigured client.
+            Review auth logs and consider temporary IP blocking.
+          runbook_url: "https://telsonbase.local/runbooks/auth-failure-spike"
+
+      # REM: Audit chain integrity — fires if verification metric reports failure
+      - alert: AuditChainBroken
+        expr: >
+          telsonbase_audit_chain_valid == 0
+        for: 1m
+        labels:
+          severity: critical
+          team: security
+        annotations:
+          summary: "Audit chain integrity verification FAILED"
+          description: >
+            The audit chain integrity check reports invalid state.
+            This could indicate tampering with the audit log. Immediately
+            investigate the audit_chain table and recent write operations.
+          runbook_url: "https://telsonbase.local/runbooks/audit-chain-broken"
+
+  # REM: -------------------------------------------------------------------------
+  # REM: GROUP 3: Infrastructure Alerts
+  # REM: -------------------------------------------------------------------------
+  - name: telsonbase_infrastructure_alerts
+    rules:
+      # REM: Any scrape target unreachable for 2 minutes
+      - alert: ServiceDown
+        expr: up == 0
+        for: 2m
+        labels:
+          severity: critical
+          team: platform
+        annotations:
+          summary: "Service {{ $labels.job }} is DOWN"
+          description: >
+            Prometheus has been unable to scrape {{ $labels.job }}
+            ({{ $labels.instance }}) for 2 minutes. The service may have
+            crashed or become unreachable. Check container status and logs.
+          runbook_url: "https://telsonbase.local/runbooks/service-down"

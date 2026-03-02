@@ -1,0 +1,26 @@
+# TelsonBase/monitoring/grafana/provisioning/dashboards/dashboards.yml
+# REM: =======================================================================================
+# REM: GRAFANA DASHBOARD PROVISIONING CONFIGURATION
+# REM: =======================================================================================
+# REM: Architect: ::Quietfire AI Project::
+# REM: Date: February 23, 2026
+# REM:
+# REM: Mission Statement: Auto-provision dashboards from the mounted directory on startup.
+# REM: Any .json files placed in /var/lib/grafana/dashboards/ will be loaded automatically.
+# REM: This eliminates manual dashboard import and ensures consistent state across deploys.
+# REM: =======================================================================================
+
+apiVersion: 1
+
+providers:
+  - name: 'TelsonBase'
+    orgId: 1
+    folder: 'TelsonBase'
+    type: file
+    disableDeletion: false
+    editable: true
+    updateIntervalSeconds: 30
+    allowUiUpdates: true
+    options:
+      path: /var/lib/grafana/dashboards
+      foldersFromFilesStructure: false

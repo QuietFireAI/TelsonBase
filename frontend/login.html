@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TelsonBase — Sign In</title>
+  <link href="https://api.fontshare.com/v2/css?f[]=satoshi@700,500,400&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #0d0d1e;
+      --primary: #6366f1;
+      --primary-lt: #818cf8;
+      --accent: #a78bfa;
+      --text: #e2e8f0;
+      --text-muted: #94a3b8;
+      --success: #10b981;
+      --danger: #ef4444;
+      --font: 'Satoshi', 'Inter', system-ui, sans-serif;
+    }
+    html, body {
+      height: 100%; background: var(--bg); color: var(--text);
+      font-family: var(--font); font-size: 15px;
+    }
+    body {
+      display: flex; align-items: center; justify-content: center; min-height: 100vh;
+      background:
+        radial-gradient(ellipse at 25% 25%, rgba(99,102,241,0.16) 0%, transparent 55%),
+        radial-gradient(ellipse at 75% 75%, rgba(167,139,250,0.10) 0%, transparent 55%),
+        var(--bg);
+    }
+    .card {
+      width: 420px; padding: 48px 40px; border-radius: 20px;
+      background: rgba(255,255,255,0.055); backdrop-filter: blur(20px);
+      border: 1px solid rgba(255,255,255,0.09);
+      box-shadow: 0 32px 80px rgba(0,0,0,0.5);
+    }
+    .logo {
+      display: flex; align-items: center; gap: 12px; margin-bottom: 36px;
+    }
+    .logo-mark {
+      width: 40px; height: 40px;
+    }
+    .logo-text {
+      font-size: 22px; font-weight: 700;
+      background: linear-gradient(135deg, #818cf8, #a78bfa);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    }
+    h1 { font-size: 26px; font-weight: 700; margin-bottom: 6px; }
+    .subtitle { color: var(--text-muted); font-size: 14px; margin-bottom: 28px; }
+    .form-group { margin-bottom: 18px; }
+    .form-group label {
+      display: block; font-size: 12px; font-weight: 600;
+      color: var(--text-muted); margin-bottom: 6px;
+      text-transform: uppercase; letter-spacing: 0.05em;
+    }
+    .form-group input {
+      width: 100%; padding: 11px 14px; border-radius: 8px;
+      background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.11);
+      color: var(--text); font-family: var(--font); font-size: 15px;
+      outline: none; transition: border-color 0.2s;
+    }
+    .form-group input:focus { border-color: var(--primary-lt); background: rgba(255,255,255,0.09); }
+    .totp { text-align: center; font-size: 30px; font-weight: 700; letter-spacing: 14px; }
+    .btn {
+      width: 100%; padding: 13px; border-radius: 8px; border: none;
+      font-family: var(--font); font-size: 15px; font-weight: 600;
+      cursor: pointer; transition: opacity 0.2s, transform 0.1s; margin-top: 8px;
+    }
+    .btn:active:not(:disabled) { transform: scale(0.98); }
+    .btn:disabled { opacity: 0.45; cursor: not-allowed; }
+    .btn-primary {
+      background: linear-gradient(135deg, var(--primary), var(--accent)); color: #fff;
+    }
+    .btn-primary:hover:not(:disabled) { opacity: 0.88; }
+    .btn-ghost {
+      background: rgba(255,255,255,0.06); color: var(--text-muted);
+      border: 1px solid rgba(255,255,255,0.1); margin-top: 10px;
+    }
+    .btn-ghost:hover { border-color: rgba(255,255,255,0.22); color: var(--text); }
+    .alert {
+      padding: 11px 14px; border-radius: 8px; font-size: 13px;
+      margin-bottom: 18px; display: none; line-height: 1.5;
+    }
+    .alert.show { display: block; }
+    .alert.error   { background: rgba(239,68,68,0.12);  border: 1px solid rgba(239,68,68,0.28);  color: #fca5a5; }
+    .alert.success { background: rgba(16,185,129,0.12); border: 1px solid rgba(16,185,129,0.28); color: #6ee7b7; }
+    .link-row { text-align: center; margin-top: 22px; font-size: 13px; color: var(--text-muted); }
+    .link-row a { color: var(--primary-lt); text-decoration: none; cursor: pointer; }
+    .link-row a:hover { text-decoration: underline; }
+    .hint { font-size: 13px; color: var(--text-muted); text-align: center; margin-bottom: 22px; line-height: 1.6; }
+    .view { display: none; }
+    .view.active { display: block; }
+    .version-chip {
+      position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
+      font-size: 11px; color: var(--text-muted); opacity: 0.5;
+      font-family: monospace;
+    }
+  </style>
+</head>
+<body>
+
+<div class="card">
+  <div class="logo">
+    <svg class="logo-mark" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <polygon points="20,2 38,11 38,29 20,38 2,29 2,11" fill="url(#g1)" opacity="0.92"/>
+      <defs>
+        <linearGradient id="g1" x1="0" y1="0" x2="40" y2="40" gradientUnits="userSpaceOnUse">
+          <stop offset="0%" stop-color="#6366f1"/>
+          <stop offset="100%" stop-color="#a78bfa"/>
+        </linearGradient>
+      </defs>
+      <text x="20" y="26" text-anchor="middle" font-family="system-ui,sans-serif"
+            font-weight="700" font-size="14" fill="#fff">TB</text>
+    </svg>
+    <span class="logo-text">TelsonBase</span>
+  </div>
+
+  <!-- ── Login view ───────────────────────────────────────────────── -->
+  <div id="view-login" class="view active">
+    <h1>Sign in</h1>
+    <p class="subtitle">Zero-Trust Agent Platform by <a href="https://quietfireai.com" target="_blank" rel="noopener" style="color:inherit;text-decoration:none;">Quietfire AI</a></p>
+    <div class="alert error" id="login-err"></div>
+    <div class="form-group">
+      <label>Username</label>
+      <input id="l-user" type="text" autocomplete="username" placeholder="your-username" />
+    </div>
+    <div class="form-group">
+      <label>Password</label>
+      <input id="l-pass" type="password" autocomplete="current-password" placeholder="••••••••••••" />
+    </div>
+    <button class="btn btn-primary" id="login-btn" onclick="doLogin()">Sign in</button>
+    <div class="link-row">No account? <a onclick="show('register')">Register</a></div>
+  </div>
+
+  <!-- ── MFA view ─────────────────────────────────────────────────── -->
+  <div id="view-mfa" class="view">
+    <h1>Verify identity</h1>
+    <p class="hint">Enter the 6-digit code from your authenticator app.<br/>The code auto-submits when complete.</p>
+    <div class="alert error" id="mfa-err"></div>
+    <div class="form-group">
+      <label>Authenticator Code</label>
+      <input id="mfa-code" type="text" class="totp"
+             maxlength="6" inputmode="numeric" autocomplete="one-time-code"
+             placeholder="000000" />
+    </div>
+    <button class="btn btn-primary" id="mfa-btn" onclick="doMFA()">Verify</button>
+    <button class="btn btn-ghost" onclick="show('login')">← Back to sign in</button>
+  </div>
+
+  <!-- ── Register view ────────────────────────────────────────────── -->
+  <div id="view-register" class="view">
+    <h1>Create account</h1>
+    <p class="subtitle">First registered user becomes super_admin.</p>
+    <div class="alert error"   id="reg-err"></div>
+    <div class="alert success" id="reg-ok"></div>
+    <div class="form-group">
+      <label>Username</label>
+      <input id="r-user" type="text" placeholder="your-username" />
+    </div>
+    <div class="form-group">
+      <label>Email</label>
+      <input id="r-email" type="email" placeholder="you@firm.com" />
+    </div>
+    <div class="form-group">
+      <label>Password <span style="font-weight:400;text-transform:none;letter-spacing:0">(12+ chars, mixed)</span></label>
+      <input id="r-pass" type="password" placeholder="••••••••••••" />
+    </div>
+    <button class="btn btn-primary" id="reg-btn" onclick="doRegister()">Create account</button>
+    <button class="btn btn-ghost" onclick="show('login')">← Sign in instead</button>
+  </div>
+</div>
+
+<div class="version-chip">TelsonBase · <a href="https://quietfireai.com" target="_blank" rel="noopener" style="color:inherit;text-decoration:none;">Quietfire AI</a></div>
+
+<script>
+// ── State ──────────────────────────────────────────────────────────────
+let preMfaToken = null;
+
+// ── Helpers ────────────────────────────────────────────────────────────
+function show(view) {
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  document.getElementById(`view-${view}`).classList.add('active');
+  // Focus first input in view
+  setTimeout(() => {
+    const inp = document.querySelector(`#view-${view} input`);
+    if (inp) inp.focus();
+  }, 60);
+}
+
+function err(id, msg)  { const e = document.getElementById(id); e.textContent = msg; e.className = 'alert error show'; }
+function ok(id, msg)   { const e = document.getElementById(id); e.textContent = msg; e.className = 'alert success show'; }
+function clearAlert(id){ document.getElementById(id).classList.remove('show'); }
+
+function setBusy(btnId, text, busy) {
+  const b = document.getElementById(btnId);
+  b.disabled = busy;
+  b.textContent = text;
+}
+
+async function post(path, body) {
+  const r = await fetch(path, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body),
+  });
+  const text = await r.text();
+  let data;
+  try { data = JSON.parse(text); } catch { data = { detail: text }; }
+  return { ok: r.ok, status: r.status, data };
+}
+
+// ── Login ──────────────────────────────────────────────────────────────
+async function doLogin() {
+  const username = document.getElementById('l-user').value.trim();
+  const password = document.getElementById('l-pass').value;
+  if (!username || !password) { err('login-err', 'Username and password are required'); return; }
+
+  clearAlert('login-err');
+  setBusy('login-btn', 'Signing in…', true);
+
+  const r = await post('/v1/auth/login', { username, password });
+  setBusy('login-btn', 'Sign in', false);
+
+  if (!r.ok) {
+    const msg = r.data?.detail?.error || r.data?.detail || 'Login failed';
+    err('login-err', msg); return;
+  }
+
+  if (r.data.mfa_required) {
+    preMfaToken = r.data.pre_mfa_token;
+    show('mfa');
+    return;
+  }
+
+  // No MFA — direct token
+  const token = r.data.access_token || r.data.session?.token;
+  if (token) { finishLogin(token); }
+  else { err('login-err', 'Unexpected response from server'); }
+}
+
+// ── MFA ────────────────────────────────────────────────────────────────
+async function doMFA() {
+  const code = document.getElementById('mfa-code').value.replace(/\D/g, '');
+  if (code.length !== 6) { err('mfa-err', 'Enter the 6-digit code'); return; }
+
+  clearAlert('mfa-err');
+  setBusy('mfa-btn', 'Verifying…', true);
+
+  const r = await post('/v1/auth/login/mfa', { pre_mfa_token: preMfaToken, totp_code: code });
+  setBusy('mfa-btn', 'Verify', false);
+  document.getElementById('mfa-code').value = '';
+
+  if (!r.ok) {
+    const msg = r.data?.detail?.error || r.data?.detail || 'MFA verification failed';
+    err('mfa-err', msg); return;
+  }
+
+  const token = r.data.access_token || r.data.session?.token;
+  if (token) { finishLogin(token); }
+  else { err('mfa-err', 'Unexpected MFA response from server'); }
+}
+
+// ── Register ───────────────────────────────────────────────────────────
+async function doRegister() {
+  const username = document.getElementById('r-user').value.trim();
+  const email    = document.getElementById('r-email').value.trim();
+  const password = document.getElementById('r-pass').value;
+
+  if (!username || !email || !password) { err('reg-err', 'All fields are required'); return; }
+
+  clearAlert('reg-err'); clearAlert('reg-ok');
+  setBusy('reg-btn', 'Creating…', true);
+
+  const r = await post('/v1/auth/register', { username, email, password });
+  setBusy('reg-btn', 'Create account', false);
+
+  if (!r.ok) {
+    const msg = r.data?.detail?.error || r.data?.detail || 'Registration failed';
+    err('reg-err', msg); return;
+  }
+
+  ok('reg-ok', 'Account created! Redirecting to sign in…');
+  setTimeout(() => show('login'), 1600);
+}
+
+// ── Finish ─────────────────────────────────────────────────────────────
+function finishLogin(token) {
+  localStorage.setItem('telsonbase_jwt_token', token);
+  // Store the current origin as the API URL so the dashboard knows where to connect
+  localStorage.setItem('telsonbase_api_url', window.location.origin);
+  window.location.href = '/dashboard';
+}
+
+// ── Keyboard ───────────────────────────────────────────────────────────
+document.addEventListener('keydown', e => {
+  if (e.key !== 'Enter') return;
+  const active = document.querySelector('.view.active')?.id;
+  if (active === 'view-login')    doLogin();
+  else if (active === 'view-mfa') doMFA();
+  else if (active === 'view-register') doRegister();
+});
+
+// Auto-submit MFA on 6 digits
+document.addEventListener('input', e => {
+  if (e.target.id !== 'mfa-code') return;
+  const clean = e.target.value.replace(/\D/g, '');
+  e.target.value = clean;
+  if (clean.length === 6) doMFA();
+});
+
+// ── Boot ───────────────────────────────────────────────────────────────
+// If already authenticated, skip to dashboard
+(function boot() {
+  const jwt = localStorage.getItem('telsonbase_jwt_token');
+  const key = localStorage.getItem('telsonbase_api_key');
+  if (jwt || key) window.location.href = '/dashboard';
+})();
+</script>
+</body>
+</html>

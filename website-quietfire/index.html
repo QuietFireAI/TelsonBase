@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Quietfire AI — AI research and development. Home of TelsonBase and QMS.">
+  <meta name="theme-color" content="#f7f8fa">
+  <title>Quietfire AI — Research &amp; Development</title>
+  <link rel="preconnect" href="https://api.fontshare.com">
+  <link href="https://api.fontshare.com/v2/css?f[]=satoshi@400,500,600,700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --warm-charcoal: #2c2c2c;
+      --slate: #4a4a4a;
+      --muted: #7a7a7a;
+      --ember: #d4622b;
+      --ember-soft: #e8854f;
+      --ember-glow: rgba(212, 98, 43, 0.12);
+      --sand: #f5f0eb;
+      --warm-white: #faf9f7;
+      --white: #ffffff;
+      --border: rgba(0, 0, 0, 0.06);
+      --radius: 12px;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Satoshi', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      color: var(--warm-charcoal);
+      background: var(--warm-white);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ---- Layout ---- */
+    .container {
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+
+    /* ---- Nav ---- */
+    .nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 100;
+      padding: 20px 0;
+      background: rgba(250, 249, 247, 0.85);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      transition: padding 0.3s ease;
+    }
+
+    .nav-inner {
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 0 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .nav-brand {
+      font-size: 1.15rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      color: var(--warm-charcoal);
+    }
+
+    .nav-brand span {
+      color: var(--ember);
+    }
+
+    .nav-email {
+      font-size: 0.85rem;
+      color: var(--muted);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+
+    .nav-email:hover { color: var(--ember); }
+
+    /* ---- Hero ---- */
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 120px 24px 80px;
+    }
+
+    .hero-content { max-width: 600px; }
+
+    .hero-label {
+      display: inline-block;
+      font-size: 0.8rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--ember);
+      background: var(--ember-glow);
+      padding: 6px 16px;
+      border-radius: 20px;
+      margin-bottom: 32px;
+    }
+
+    .hero-title {
+      font-size: clamp(2rem, 5vw, 3rem);
+      font-weight: 800;
+      line-height: 1.15;
+      letter-spacing: -0.03em;
+      color: var(--warm-charcoal);
+      margin-bottom: 20px;
+    }
+
+    .hero-subtitle {
+      font-size: 1.1rem;
+      color: var(--slate);
+      line-height: 1.7;
+      margin-bottom: 48px;
+    }
+
+    /* ---- Divider ---- */
+    .divider {
+      width: 40px;
+      height: 2px;
+      background: var(--ember);
+      margin: 0 auto 48px;
+      border-radius: 1px;
+    }
+
+    /* ---- Products ---- */
+    .products {
+      padding: 0 24px 80px;
+    }
+
+    .products-inner {
+      max-width: 720px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+    }
+
+    .product-card {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 32px;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    .product-card:hover {
+      border-color: rgba(212, 98, 43, 0.2);
+      box-shadow: 0 4px 24px rgba(0, 0, 0, 0.04);
+    }
+
+    .product-name {
+      font-size: 1.15rem;
+      font-weight: 700;
+      margin-bottom: 8px;
+      letter-spacing: -0.01em;
+    }
+
+    .product-name a {
+      color: var(--warm-charcoal);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+
+    .product-name a:hover { color: var(--ember); }
+
+    .product-type {
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--ember);
+      margin-bottom: 12px;
+    }
+
+    .product-desc {
+      font-size: 0.92rem;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    .product-link {
+      display: inline-block;
+      margin-top: 16px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--ember);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+
+    .product-link:hover { color: var(--ember-soft); }
+
+    .product-link::after { content: ' \2192'; }
+
+    /* ---- Contact ---- */
+    .contact {
+      padding: 60px 24px;
+      text-align: center;
+      background: var(--sand);
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .contact-label {
+      font-size: 0.8rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--muted);
+      margin-bottom: 16px;
+    }
+
+    .contact-email {
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: var(--warm-charcoal);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+
+    .contact-email:hover { color: var(--ember); }
+
+    /* ---- Footer ---- */
+    .footer {
+      padding: 40px 24px;
+      text-align: center;
+    }
+
+    .footer-line {
+      font-size: 0.85rem;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+
+    .footer-built {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--slate);
+      letter-spacing: 0.02em;
+    }
+
+    .footer-copy {
+      font-size: 0.78rem;
+      color: var(--muted);
+      margin-top: 20px;
+    }
+
+    /* ---- Responsive ---- */
+    @media (max-width: 600px) {
+      .products-inner {
+        grid-template-columns: 1fr;
+      }
+
+      .hero { padding: 100px 20px 60px; }
+      .hero-title { font-size: 1.8rem; }
+      .hero-subtitle { font-size: 1rem; }
+    }
+
+    /* ---- Subtle entrance ---- */
+    @media (prefers-reduced-motion: no-preference) {
+      .hero-content {
+        animation: fadeUp 0.8s ease both;
+      }
+
+      .product-card:nth-child(1) { animation: fadeUp 0.6s 0.3s ease both; }
+      .product-card:nth-child(2) { animation: fadeUp 0.6s 0.45s ease both; }
+
+      @keyframes fadeUp {
+        from {
+          opacity: 0;
+          transform: translateY(16px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <nav class="nav">
+    <div class="nav-inner">
+      <div class="nav-brand">Quietfire<span>AI</span></div>
+      <a href="mailto:support@quietfireai.com" class="nav-email">support@quietfireai.com</a>
+    </div>
+  </nav>
+
+  <section class="hero">
+    <div class="hero-content">
+      <span class="hero-label">AI Research &amp; Development</span>
+      <h1 class="hero-title">Building secure AI infrastructure for regulated industries.</h1>
+      <p class="hero-subtitle">Quietfire AI develops self-hosted platforms that keep sensitive data where it belongs — on your hardware, under your control, behind your firewall.</p>
+      <div class="divider"></div>
+    </div>
+  </section>
+
+  <section class="products">
+    <div class="products-inner">
+
+      <div class="product-card">
+        <div class="product-type">Security Platform</div>
+        <h2 class="product-name"><a href="https://telsonbase.com">TelsonBase</a></h2>
+        <p class="product-desc">Zero-trust AI agent security for law firms, brokerages, and healthcare organizations. 618 passing tests. 51 SOC 2 controls. Zero third-party data dependencies.</p>
+        <a href="https://telsonbase.com" class="product-link">telsonbase.com</a>
+      </div>
+
+      <div class="product-card">
+        <div class="product-type">Communication Protocol</div>
+        <h2 class="product-name">QMS</h2>
+        <p class="product-desc">Qualified Message Standard — a novel communication protocol for AI agent provenance, cryptographic message signing, and verifiable chain-of-custody across autonomous systems.</p>
+        <span class="product-link" style="cursor: default; opacity: 0.5;">Coming soon</span>
+      </div>
+
+    </div>
+  </section>
+
+  <section class="contact">
+    <p class="contact-label">Get in touch</p>
+    <a href="mailto:support@quietfireai.com" class="contact-email">support@quietfireai.com</a>
+  </section>
+
+  <footer class="footer">
+    <p class="footer-copy">&copy; 2026 Quietfire AI. All rights reserved.</p>
+  </footer>
+
+</body>
+</html>

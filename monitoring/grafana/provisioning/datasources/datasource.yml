@@ -1,0 +1,25 @@
+# TelsonBase/monitoring/grafana/provisioning/datasources/datasource.yml
+# REM: =======================================================================================
+# REM: GRAFANA DATASOURCE PROVISIONING CONFIGURATION
+# REM: =======================================================================================
+# REM: Architect: ::Quietfire AI Project::
+# REM: Date: February 23, 2026
+# REM:
+# REM: Mission Statement: Auto-provision Prometheus as Grafana's default data source.
+# REM: This eliminates manual setup — Grafana connects to Prometheus on first boot.
+# REM: The URL uses the Docker service name (prometheus) for internal DNS resolution.
+# REM: =======================================================================================
+
+apiVersion: 1
+
+datasources:
+  - name: Prometheus
+    type: prometheus
+    uid: PBFA97CFB590B2093
+    access: proxy
+    url: http://prometheus:9090
+    isDefault: true
+    editable: true
+    jsonData:
+      timeInterval: '15s'
+      httpMethod: POST

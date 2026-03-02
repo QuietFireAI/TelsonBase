@@ -1,0 +1,132 @@
+# TelsonBase/monitoring/prometheus.yml
+# REM: =======================================================================================
+# REM: PROMETHEUS SCRAPING CONFIGURATION FOR TELSONBASE
+# REM: =======================================================================================
+# REM: Architect: ::Quietfire AI Project::
+# REM: Date: February 23, 2026
+# REM:
+# REM: Mission Statement: This configuration tells Prometheus WHAT to scrape, HOW OFTEN,
+# REM: and WHERE to find it. Every metric collected here feeds the Grafana dashboards
+# REM: that give you real-time visibility into your sovereign AI platform.
+# REM:
+# REM: Scrape targets are organized by security zone, matching the Docker network
+# REM: segmentation in docker-compose.yml.
+# REM: =======================================================================================
+
+global:
+  scrape_interval: 15s      # REM: How often to scrape targets (default)
+  evaluation_interval: 15s  # REM: How often to evaluate alerting rules
+  scrape_timeout: 10s       # REM: Timeout for each scrape attempt
+
+  # REM: Labels attached to all metrics and alerts
+  external_labels:
+    platform: 'telsonbase'
+    environment: 'production'
+    instance_owner: 'quietfire'
+
+# REM: =======================================================================================
+# REM: ALERTING RULES - Loaded from mounted volume
+# REM: =======================================================================================
+rule_files:
+  - /etc/prometheus/alerts.yml
+
+# REM: =======================================================================================
+# REM: SCRAPE CONFIGURATION - Organized by Security Zone
+# REM: =======================================================================================
+
+scrape_configs:
+
+  # REM: -------------------------------------------------------------------------
+  # REM: BACKEND ZONE - TelsonBase Core Application
+  # REM: -------------------------------------------------------------------------
+  # REM: This is the most critical target. The /metrics endpoint exposes:
+  # REM:   - HTTP request counts, latencies, error rates
+  # REM:   - QMS message counts by status
+  # REM:   - Agent action counts by agent and action type
+  # REM:   - Anomaly detection counts
+  # REM:   - Active approvals pending
+  # REM:   - Authentication success/failure rates
+  # REM:   - Sovereign Score components
+  
+  - job_name: 'telsonbase-api'
+    scrape_interval: 10s  # REM: Scrape the core app more frequently
+    metrics_path: '/metrics'
+    static_configs:
+      - targets: ['mcp_server:8000']
+        labels:
+          zone: 'backend'
+          service: 'mcp_server'
+
+  # REM: -------------------------------------------------------------------------
+  # REM: DATA ZONE - Redis Metrics
+  # REM: -------------------------------------------------------------------------
+  # REM: Redis is the nervous system. If it's unhealthy, everything degrades.
+  # REM: Metrics include: memory usage, connected clients, commands/sec,
+  # REM: key counts, persistence status.
+  
+  - job_name: 'redis'
+    scrape_interval: 15s
+    static_configs:
+      - targets: ['redis-exporter:9121']
+        labels:
+          zone: 'data'
+          service: 'redis'
+
+  # REM: -------------------------------------------------------------------------
+  # REM: MONITORING ZONE - Self-Monitoring
+  # REM: -------------------------------------------------------------------------
+  # REM: Prometheus scrapes itself for meta-monitoring: scrape duration,
+  # REM: samples ingested, storage size, etc.
+
+  - job_name: 'prometheus'
+    scrape_interval: 30s  # REM: Self-monitoring can be less frequent
+    static_configs:
+      - targets: ['localhost:9090']
+        labels:
+          zone: 'monitoring'
+          service: 'prometheus'
+
+  # REM: -------------------------------------------------------------------------
+  # REM: HOST METRICS - Node Exporter
+  # REM: -------------------------------------------------------------------------
+  # REM: Physical host metrics: CPU, memory, disk, network.
+  # REM: Critical for capacity planning and detecting hardware issues
+  # REM: before they become service outages.
+
+  - job_name: 'node-exporter'
+    scrape_interval: 15s
+    static_configs:
+      - targets: ['node-exporter:9100']
+        labels:
+          zone: 'monitoring'
+          service: 'node-exporter'
+
+  # REM: -------------------------------------------------------------------------
+  # REM: CONTAINER METRICS - cAdvisor
+  # REM: -------------------------------------------------------------------------
+  # REM: Per-container resource usage: CPU, memory, network I/O, disk I/O.
+  # REM: Essential for identifying which service is consuming resources
+  # REM: and tuning the resource limits in docker-compose.yml.
+
+  - job_name: 'cadvisor'
+    scrape_interval: 15s
+    static_configs:
+      - targets: ['cadvisor:8080']
+        labels:
+          zone: 'monitoring'
+          service: 'cadvisor'
+
+  # REM: -------------------------------------------------------------------------
+  # REM: EGRESS GATEWAY - External Communication Monitoring
+  # REM: -------------------------------------------------------------------------
+  # REM: Tracks outbound API calls: allowed vs blocked, latency by domain,
+  # REM: request volume. This is your sovereignty firewall visibility.
+  # REM: NOTE: Requires metrics endpoint added to egress_proxy.py
+
+  # - job_name: 'egress-gateway'
+  #   scrape_interval: 15s
+  #   static_configs:
+  #     - targets: ['egress-gateway:8080']
+  #       labels:
+  #         zone: 'external'
+  #         service: 'egress-gateway'

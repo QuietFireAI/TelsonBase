@@ -1,0 +1,625 @@
+# TelsonBase/docker-compose.yml
+# REM: =======================================================================================
+# REM: MASTER ORCHESTRATION BLUEPRINT FOR THE TelsonBase
+# REM: =======================================================================================
+# REM: Architect: ::Quietfire AI Project::
+# REM: Date: June 21, 2025 | Updated: February 23, 2026
+# REM:
+# REM: Mission Statement: This file is the master plan for the entire TelsonBase. It acts
+# REM: as the city planner, defining every building (service), the roads between them
+# REM: (networks), the power grid (dependencies), and the public utilities.
+# REM:
+# REM: FIXED v5.1.0CC:
+# REM:   - Added 5 isolated networks (frontend, backend, data, ai, monitoring)
+# REM:   - Removed deprecated version: '3.8' key
+# REM:   - Consistent DNS configuration (all services use Docker internal DNS)
+# REM:   - Services only join networks they actually need
+# REM: =======================================================================================
+
+services:
+  # REM: -----------------------------------------------------------------------------------
+  # REM: SERVICE 1: TRAEFIK - The Secure Gateway and City Entrance
+  # REM: -----------------------------------------------------------------------------------
+  traefik:
+    image: "traefik:v2.10"
+    command:
+      # --- Core (all environments) ---
+      - "--api.insecure=false"
+      - "--api.dashboard=false"
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--entrypoints.web.address=:80"
+      - "--entrypoints.websecure.address=:443"
+      # --- Local dev: HTTP only, no TLS/ACME ---
+      # --- For production: override with docker-compose.prod.yml ---
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+      - letsencrypt_data:/letsencrypt
+    networks:
+      - frontend
+      - backend
+    restart: always
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  # REM: -----------------------------------------------------------------------------------
+  # REM: SERVICE 2: REDIS - The Central Nervous System & Short-Term Memory
+  # REM: -----------------------------------------------------------------------------------
+  redis:
+    image: "redis:7-alpine"
+    command: >
+      redis-server
+      --requirepass ${REDIS_PASSWORD:-telsonbase_redis_dev}
+      --appendonly yes
+      --appendfsync everysec
+    volumes:
+      - redis_data:/data
+    networks:
+      - data
+    restart: always
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 128M
+        reservations:
+          cpus: '0.2'
+          memory: 64M
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  # REM: -----------------------------------------------------------------------------------
+  # REM: SERVICE 2B: POSTGRES - The Durable Structured Storage
+  # REM: -----------------------------------------------------------------------------------
+  postgres:
+    image: "postgres:16-alpine"
+    environment:
+      POSTGRES_USER: telsonbase
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-telsonbase_dev}
+      POSTGRES_DB: telsonbase
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - data
+    restart: always
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 256M
+        reservations:
+          cpus: '0.2'
+          memory: 128M
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U telsonbase"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  # REM: -----------------------------------------------------------------------------------
+  # REM: SERVICE 3: N8N - DISABLED — replaced by native Goose/MCP integration
+  # REM: -----------------------------------------------------------------------------------
+  # REM: n8n (visual workflow builder) has been retired in favour of TelsonBase's own MCP
+  # REM: gateway at /mcp. Any MCP-compatible agent (Goose, Claude Desktop, etc.) can now
+  # REM: connect directly and drive all TelsonBase workflows without n8n as middleware.
+  # REM: The n8n_data volume is kept so that workflows can be recovered if ever needed.
+  # REM: To re-enable: uncomment the block below and add the n8n depends_on back to mcp_server.
+  #
+  # n8n:
+  #   image: n8nio/n8n
+  #   ports:
+  #     - "127.0.0.1:5678:5678"
+  #   volumes:
+  #     - n8n_data:/home/node/.n8n
+  #   environment:
+  #     - N8N_HOST=0.0.0.0
+  #   networks:
+  #     - frontend
+  #     - backend
+  #   restart: always
+  #   deploy:
+  #     resources:
+  #       limits:
+  #         cpus: '1.0'
+  #         memory: 512M
+  #       reservations:
+  #         cpus: '0.5'
+  #         memory: 256M
+  #   healthcheck:
+  #     test: ["CMD-SHELL", "wget --no-verbose --tries=1 --spider http://localhost:5678/health || exit 1"]
+  #     interval: 10s
+  #     timeout: 5s
+  #     retries: 3
+  #     start_period: 45s
+  #   logging:
+  #     driver: "json-file"
+  #     options:
+  #       max-size: "10m"
+  #       max-file: "3"
+
+  # REM: -----------------------------------------------------------------------------------
+  # REM: SERVICE 3b: MAILHOG - Local SMTP Catcher (dev/test email delivery)
+  # REM: -----------------------------------------------------------------------------------
+  # REM: MailHog catches all outbound email from TelsonBase without sending real mail.
+  # REM: View caught emails in the web UI at http://localhost:8025
+  # REM: SMTP endpoint for the app: mailhog:1025 (no credentials needed)
+  # REM:
+  # REM: PROFILE: This service only starts with the "dev" profile:
+  # REM:   docker compose --profile dev up -d
+  # REM:
+  # REM: For production: use real SMTP vars in .env and do NOT pass --profile dev:
+  # REM:   SMTP_HOST=smtp.yourdomain.com  SMTP_PORT=587
+  # REM:   SMTP_USER=noreply@yourdomain.com  SMTP_PASSWORD=...
+  # REM: -----------------------------------------------------------------------------------
+  mailhog:
+    image: mailhog/mailhog:latest
+    profiles: ["dev"]
+    ports:
+      - "127.0.0.1:1025:1025"   # SMTP — only reachable from the host
+      - "127.0.0.1:8025:8025"   # Web UI — http://localhost:8025
+    networks:
+      - backend
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: '0.1'
+          memory: 64M
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "5m"
+        max-file: "2"
+
+  # REM: -----------------------------------------------------------------------------------
+  # REM: SERVICE 4: OPEN-WEBUI - The Human-AI Interface
+  # REM: -----------------------------------------------------------------------------------
+  open-webui:
+    image: ghcr.io/open-webui/open-webui:main
+    # REM: Use image default entrypoint (bash start.sh) — python -m open_webui removed in newer versions
+    ports:
+      - "127.0.0.1:3000:8080"
+    volumes:
+      - open_webui_data:/app/backend/data
+    environment:
+      - 'OLLAMA_BASE_URL=http://ollama:11434'
+      - WEBUI_SECRET_KEY=${WEBUI_SECRET_KEY:-CHANGE_ME_IN_PRODUCTION}
+    depends_on:
+      - ollama
+    networks:
+      - frontend
+      - ai
+    restart: always
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 1G
+        reservations:
+          cpus: '0.3'
+          memory: 256M
+    healthcheck:
+      test: ["CMD", "curl", "-sf", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  # REM: -----------------------------------------------------------------------------------
+  # REM: SERVICE 5: MOSQUITTO - The Real-Time Event Bus
+  # REM: -----------------------------------------------------------------------------------
+  mosquitto:
+    image: eclipse-mosquitto:2
+    # REM: Port removed from external binding — MQTT accessible only via internal data network
+    volumes:
+      - ./monitoring/mosquitto/mosquitto.conf:/mosquitto/config/mosquitto.conf:ro
+      - ./monitoring/mosquitto/password_file:/mosquitto/config/password_file:ro
+      - mosquitto_data:/mosquitto/data
+      - mosquitto_log:/mosquitto/log
+    environment:
+      - MOSQUITTO_PASSWORD=${MOSQUITTO_PASSWORD}
+    networks:
+      - data
+    restart: always
+    deploy:
+      resources:
+        limits:
+          cpus: '0.2'
+          memory: 128M
+        reservations:
+          cpus: '0.1'
+          memory: 64M
+    healthcheck:
+      test: ["CMD", "sh", "-c", "mosquitto_sub -u telsonbase -P ${MOSQUITTO_PASSWORD:-telsonbase_mqtt_dev} -t '$$SYS/broker/uptime' -C 1 -W 3 -i health_check_client || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 15s
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  # REM: -----------------------------------------------------------------------------------
+  # REM: SERVICE 6: OLLAMA - The Sovereign AI Core
+  # REM: -----------------------------------------------------------------------------------
+  ollama:
+    image: "ollama/ollama"
+    volumes:
+      - ollama_data:/root/.ollama
+    environment:
+      # REM: Flash attention reduces memory footprint for inference
+      - OLLAMA_FLASH_ATTENTION=1
+      # REM: Single parallel request to minimize memory usage
+      - OLLAMA_NUM_PARALLEL=1
+      # REM: Keep only 1 model loaded at a time
+      - OLLAMA_MAX_LOADED_MODELS=1
+    networks:
+      - ai
+    restart: always
+    deploy:
+      resources:
+        limits:
+          cpus: '2.0'
+          memory: 10G
+        reservations:
+          cpus: '1.0'
+          memory: 6G
+    healthcheck:
+      # REM: Use ollama CLI for healthcheck — neither curl nor wget in image
+      test: ["CMD", "ollama", "list"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 60s
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  # REM: -----------------------------------------------------------------------------------
+  # REM: SERVICE 7: MCP_SERVER - The Central Command & Custom API
+  # REM: -----------------------------------------------------------------------------------
+  mcp_server:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    env_file: .env
+    environment:
+      # REM: WEB_CONCURRENCY sets the number of Gunicorn workers.
+      # REM: Audit chain uses Redis WATCH/MULTI/EXEC — safe for multiple workers.
+      # REM: Beta: 1 worker avoids RBAC._users in-memory gap (users dict not Redis-persisted).
+      # REM: Post-beta: increase to 2+ after RBACManager Redis persistence is implemented.
+      WEB_CONCURRENCY: "1"
+    secrets:
+      - telsonbase_mcp_api_key
+      - telsonbase_jwt_secret
+      - telsonbase_encryption_key
+      - telsonbase_encryption_salt
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.services.mcp_server.loadbalancer.server.port=8000"
+      # REM: TLS + HSTS labels are in docker-compose.prod.yml (production overlay)
+    volumes:
+      - ./backups:/app/backups
+      - ./frontend:/app/frontend:ro
+    depends_on:
+      redis:
+        condition: service_healthy
+      postgres:
+        condition: service_healthy
+      mosquitto:
+        condition: service_healthy
+      ollama:
+        condition: service_started  # REM: service_started — API connects to Ollama lazily; healthy wait blocks restart
+      # REM: n8n intentionally removed from depends_on — automation tool, not a startup dependency.
+    networks:
+      - frontend
+      - backend
+      - data
+      - ai
+    restart: always
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 768M   # REM: Increased from 512M to accommodate 2 Gunicorn workers (~200MB each)
+        reservations:
+          cpus: '0.5'
+          memory: 384M
+    healthcheck:
+      # REM: curl is intentionally excluded from the image (eliminates libcurl4/openldap CVEs).
+      # REM: Use Python stdlib (urllib.request) — same pattern as the Dockerfile HEALTHCHECK.
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health', timeout=4)"]
+      interval: 15s
+      timeout: 8s
+      retries: 3
+      start_period: 60s  # REM: 2 gunicorn workers + uvicorn startup + DB/Redis init
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  # REM: -----------------------------------------------------------------------------------
+  # REM: SERVICE 8: WORKER - The Background Workforce
+  # REM: -----------------------------------------------------------------------------------
+  worker:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: celery -A celery_app.worker worker --loglevel=info
+    env_file: .env
+    volumes:
+      - n8n_data:/data/n8n_data:ro
+      - ollama_data:/data/ollama_data:ro
+      - mosquitto_data:/data/mosquitto_data:ro
+      - letsencrypt_data:/data/letsencrypt_data:ro
+      - redis_data:/data/redis_data:ro
+      - open_webui_data:/data/open_webui_data:ro
+      - ./monitoring/mosquitto:/data/mosquitto_config:ro
+      - mosquitto_log:/data/mosquitto_log:ro
+      - ./backups:/app/backups
+    depends_on:
+      redis:
+        condition: service_healthy
+      postgres:
+        condition: service_healthy
+      mosquitto:
+        condition: service_healthy
+      ollama:
+        condition: service_healthy
+    networks:
+      - backend
+      - data
+      - ai
+    restart: always
+    deploy:
+      resources:
+        limits:
+          cpus: '1.5'
+          memory: 1G
+        reservations:
+          cpus: '0.7'
+          memory: 512M
+    healthcheck:
+      test: ["CMD-SHELL", "celery -A celery_app.worker inspect ping -d celery@$(hostname) || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  # REM: -----------------------------------------------------------------------------------
+  # REM: SERVICE 9: BEAT - The System's Heartbeat & Scheduler
+  # REM: -----------------------------------------------------------------------------------
+  beat:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    # REM: --pidfile= (empty) disables the pidfile entirely — eliminates the stale-PID crash loop.
+    # REM: Root cause: Docker restart reuses the container writable layer, so /tmp/celerybeat.pid
+    # REM: survives a restart. Celery finds pid=1 in the file, pid 1 is always running in a
+    # REM: container (bash), so it thinks another beat is running and errors out. Removing
+    # REM: the pidfile mechanism cuts the loop permanently. The schedule file is still cleaned
+    # REM: on each start so beat doesn't re-fire stale tasks from the previous run.
+    command: bash -c "rm -f /tmp/celerybeat-schedule && celery -A celery_app.worker beat --loglevel=info --pidfile= --schedule=/tmp/celerybeat-schedule"
+    env_file: .env
+    depends_on:
+      redis:
+        condition: service_healthy
+      postgres:
+        condition: service_healthy
+      mosquitto:
+        condition: service_healthy
+    networks:
+      - backend
+      - data
+    restart: always
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 512M
+        reservations:
+          cpus: '0.1'
+          memory: 128M
+    healthcheck:
+      # REM: pgrep not in slim image; pidfile removed. Use /proc inspection via Python stdlib.
+      # REM: Scans /proc for any process whose cmdline contains both 'celery' and 'beat'.
+      test: ["CMD", "python", "-c", "import os,sys; lines=[open(f'/proc/{p}/cmdline','rb').read() for p in os.listdir('/proc') if p.isdigit() and os.path.isfile(f'/proc/{p}/cmdline')]; sys.exit(0 if any(b'celery' in l and b'beat' in l for l in lines) else 1)"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  # REM: -----------------------------------------------------------------------------------
+  # REM: SERVICE 10: NLWEB - NLWeb Service (DISABLED — build context not yet included)
+  # REM: -----------------------------------------------------------------------------------
+  # REM: Uncomment when ./resources/NLWeb/Dockerfile is available:
+  # nlweb_service:
+  #   build:
+  #     context: ./resources/NLWeb
+  #     dockerfile: Dockerfile
+  #   ports:
+  #     - "8006:8000"
+  #   depends_on:
+  #     - ollama
+  #   networks:
+  #     - ai
+  #   restart: always
+
+  # REM: -----------------------------------------------------------------------------------
+  # REM: SERVICE 11: PROMETHEUS - Metrics Collection
+  # REM: -----------------------------------------------------------------------------------
+  prometheus:
+    image: prom/prometheus:v2.49.1
+    ports:
+      - "127.0.0.1:9090:9090"
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - ./monitoring/prometheus/alerts.yml:/etc/prometheus/alerts.yml:ro
+    networks:
+      - monitoring
+      - backend
+    restart: always
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 256M
+        reservations:
+          cpus: '0.2'
+          memory: 128M
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:9090/-/healthy"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 15s
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  # REM: -----------------------------------------------------------------------------------
+  # REM: SERVICE 12: GRAFANA - Metrics Visualization
+  # REM: -----------------------------------------------------------------------------------
+  grafana:
+    image: grafana/grafana:10.3.1
+    ports:
+      - "127.0.0.1:3001:3000"
+    environment:
+      - GF_SECURITY_ADMIN_USER=${GRAFANA_ADMIN_USER:-admin}
+      - GF_SECURITY_ADMIN_PASSWORD__FILE=/run/secrets/telsonbase_grafana_password
+    secrets:
+      - telsonbase_grafana_password
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./monitoring/grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./monitoring/grafana/dashboards:/var/lib/grafana/dashboards:ro
+    depends_on:
+      - prometheus
+    networks:
+      - monitoring
+      - frontend
+    restart: always
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 256M
+        reservations:
+          cpus: '0.2'
+          memory: 128M
+    healthcheck:
+      test: ["CMD-SHELL", "wget --no-verbose --tries=1 --spider http://localhost:3000/api/health || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+# REM: =======================================================================================
+# REM: NETWORK DEFINITIONS - Segmented Security Zones
+# REM: =======================================================================================
+# REM: v5.1.0CC: Five isolated networks prevent lateral movement if any service is
+# REM: compromised. Each service joins ONLY the networks it needs.
+# REM:
+# REM: FRONTEND  - Public-facing (Traefik, n8n, Open-WebUI, MCP server)
+# REM: BACKEND   - Internal services (MCP server ↔ workers ↔ Traefik)
+# REM: DATA      - Database tier (Redis, Mosquitto) — internal only
+# REM: AI        - AI inference tier (Ollama) — internal only
+# REM: MONITORING - Prometheus/Grafana (future) — internal only
+# REM: =======================================================================================
+networks:
+  frontend:
+    driver: bridge
+  backend:
+    driver: bridge
+  data:
+    driver: bridge
+    internal: true  # REM: No external access to data tier
+  ai:
+    driver: bridge
+    internal: true  # REM: No external access to AI tier
+  monitoring:
+    driver: bridge
+    internal: true  # REM: No external access to monitoring
+
+# REM: =======================================================================================
+# REM: SECRETS DEFINITIONS - Cryptographic Keys & Credentials
+# REM: =======================================================================================
+# REM: Docker secrets are mounted as files at /run/secrets/<name> inside containers.
+# REM: This is more secure than environment variables (not visible in docker inspect).
+# REM: Generate these files with: scripts/generate_secrets.sh
+secrets:
+  telsonbase_mcp_api_key:
+    file: ./secrets/telsonbase_mcp_api_key
+  telsonbase_jwt_secret:
+    file: ./secrets/telsonbase_jwt_secret
+  telsonbase_encryption_key:
+    file: ./secrets/telsonbase_encryption_key
+  telsonbase_encryption_salt:
+    file: ./secrets/telsonbase_encryption_salt
+  telsonbase_grafana_password:
+    file: ./secrets/telsonbase_grafana_password
+
+# REM: =======================================================================================
+# REM: VOLUME DEFINITIONS - The Digital Bedrock & Long-Term Memory
+# REM: =======================================================================================
+volumes:
+  letsencrypt_data:
+  redis_data:
+  postgres_data:
+  n8n_data:
+  open_webui_data:
+  # REM: mosquitto_config removed — now bind-mounted from ./monitoring/mosquitto/
+  mosquitto_data:
+  mosquitto_log:
+  ollama_data:
+  grafana_data:

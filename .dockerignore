@@ -1,0 +1,58 @@
+# TelsonBase v7.4.0CC — .dockerignore
+# Keep Docker build context lean
+
+# Git
+.git
+.gitignore
+
+# Backups
+backups/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Python cache
+__pycache__/
+*.py[cod]
+*.egg-info/
+dist/
+build/
+.eggs/
+venv/
+.venv/
+
+# Test artifacts
+.pytest_cache/
+.coverage
+htmlcov/
+.hypothesis/
+token_response.json
+
+# Documentation (not needed in container)
+docs/
+proof_sheets/
+website/
+website-quietfire/
+*.md
+!requirements.txt
+
+# Logs
+*.log
+logs/
+
+# Node
+node_modules/
+
+# Secrets (never include in Docker image)
+secrets/
+
+# Local env files (secrets injected via Docker secrets)
+.env.local
+.env.production

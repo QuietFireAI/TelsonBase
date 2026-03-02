@@ -1,0 +1,114 @@
+# TelsonBase Proof Sheets
+
+**Every claim is backed by evidence.**
+
+Every claim made on [telsonbase.com](https://telsonbase.com) has a corresponding evidence sheet in this directory. Each sheet documents the exact claim, provides the source code files, test files, and verification commands that prove it. No marketing fluff — just traceable evidence.
+
+**Format:** Each sheet follows a standardized format inspired by Safety Data Sheets (SDS). Grab the sheet number, verify the claim, move on.
+
+**Last Verified:** March 1, 2026 | **Version:** 9.0.0B | **Tests Passing:** 720
+
+---
+
+## Sheet Index
+
+### Test Suite and Code Quality
+| Sheet | Claim | Status |
+|---|---|---|
+| [TB-PROOF-001](TB-PROOF-001_tests_passing.md) | 720 Tests Passing | VERIFIED |
+| [TB-PROOF-002](TB-PROOF-002_security_tests.md) | 96 Dedicated Security Tests | VERIFIED |
+| [TB-PROOF-003](TB-PROOF-003_production_hardening.md) | 22 Production Hardening Items Completed | VERIFIED |
+
+### Compliance and Controls
+| Sheet | Claim | Status |
+|---|---|---|
+| [TB-PROOF-004](TB-PROOF-004_soc2_controls.md) | 51 SOC 2 Controls Mapped to Source Code | VERIFIED |
+| [TB-PROOF-005](TB-PROOF-005_hipaa_security_rule.md) | HIPAA Security Rule Full Mapping | VERIFIED |
+| [TB-PROOF-006](TB-PROOF-006_hitrust_csf.md) | HITRUST CSF 12 Domains | VERIFIED |
+| [TB-PROOF-007](TB-PROOF-007_phi_deidentification.md) | PHI De-identification (18 Safe Harbor Identifiers) | VERIFIED |
+| [TB-PROOF-008](TB-PROOF-008_hitech_breach_notification.md) | HITECH Breach Notification (60-Day Tracking) | VERIFIED |
+
+### Cryptography and Encryption
+| Sheet | Claim | Status |
+|---|---|---|
+| [TB-PROOF-009](TB-PROOF-009_audit_chain_sha256.md) | SHA-256 Hash-Chained Audit Trail | VERIFIED |
+| [TB-PROOF-010](TB-PROOF-010_aes256_encryption.md) | AES-256-GCM Encryption at Rest | VERIFIED |
+| [TB-PROOF-011](TB-PROOF-011_pbkdf2_key_derivation.md) | PBKDF2 Key Derivation (100,000+ Iterations) | VERIFIED |
+| [TB-PROOF-012](TB-PROOF-012_tls_hsts.md) | TLS 1.2+ with HSTS Preload | VERIFIED |
+| [TB-PROOF-013](TB-PROOF-013_message_signing.md) | Cryptographic Message Signing Between Agents | VERIFIED |
+
+### Authentication and Access Control
+| Sheet | Claim | Status |
+|---|---|---|
+| [TB-PROOF-014](TB-PROOF-014_rbac_endpoints.md) | 140+ RBAC-Protected Endpoints | VERIFIED |
+| [TB-PROOF-015](TB-PROOF-015_totp_mfa.md) | RFC 6238 TOTP Multi-Factor Authentication | VERIFIED |
+| [TB-PROOF-016](TB-PROOF-016_session_management.md) | HIPAA-Compliant Session Management | VERIFIED |
+| [TB-PROOF-017](TB-PROOF-017_account_lockout.md) | Account Lockout After 5 Failed Attempts | VERIFIED |
+
+### Agent Governance
+| Sheet | Claim | Status |
+|---|---|---|
+| [TB-PROOF-018](TB-PROOF-018_anthropic_safety_framework.md) | Built on Anthropic's Agent Safety Framework (Manners) | VERIFIED |
+| [TB-PROOF-019](TB-PROOF-019_hitl_approval_gates.md) | Human-in-the-Loop Approval Gates | VERIFIED |
+| [TB-PROOF-020](TB-PROOF-020_anomaly_detection.md) | Behavioral Anomaly Detection | VERIFIED |
+| [TB-PROOF-021](TB-PROOF-021_multi_tenant_isolation.md) | Multi-Tenant Data Isolation | VERIFIED |
+| [TB-PROOF-042](TB-PROOF-042_tenant_access_control.md) | Tenant Access Control — allowed_actors Enforcement | VERIFIED |
+
+### Security Testing
+| Sheet | Claim | Status |
+|---|---|---|
+| [TB-PROOF-022](TB-PROOF-022_api_fuzz_testing.md) | 151 API Operations Fuzz-Tested | VERIFIED |
+| [TB-PROOF-023](TB-PROOF-023_generated_test_cases.md) | 107,811 Generated Test Cases | VERIFIED |
+| [TB-PROOF-024](TB-PROOF-024_zero_server_errors.md) | 0 Server Errors Under Fuzzing | VERIFIED |
+| [TB-PROOF-025](TB-PROOF-025_security_test_levels.md) | 5 Automated Security Test Levels | VERIFIED |
+| [TB-PROOF-026](TB-PROOF-026_concurrent_requests.md) | 50 Concurrent Requests Handled | VERIFIED |
+| [TB-PROOF-027](TB-PROOF-027_static_analysis.md) | 0 High-Severity Findings (Static Analysis) | VERIFIED |
+
+### Data Sovereignty
+| Sheet | Claim | Status |
+|---|---|---|
+| [TB-PROOF-028](TB-PROOF-028_zero_data_leaves.md) | Zero Data Leaves Your Network | VERIFIED |
+| [TB-PROOF-029](TB-PROOF-029_local_llm_ollama.md) | Local LLM Inference via Ollama | VERIFIED |
+| [TB-PROOF-030](TB-PROOF-030_no_third_party_deps.md) | No Third-Party Data Dependencies | VERIFIED |
+
+### Infrastructure
+| Sheet | Claim | Status |
+|---|---|---|
+| [TB-PROOF-031](TB-PROOF-031_non_root_container.md) | Non-Root Container Execution | VERIFIED |
+| [TB-PROOF-032](TB-PROOF-032_self_hosted_services.md) | 10 Self-Hosted Services | VERIFIED |
+| [TB-PROOF-033](TB-PROOF-033_disaster_recovery.md) | Disaster Recovery RPO=24hr RTO=15min | VERIFIED |
+| [TB-PROOF-034](TB-PROOF-034_documentation_suite.md) | Contract-Ready Documentation Suite | VERIFIED |
+
+### OpenClaw Governance ("Control Your Claw")
+| Sheet | Claim | Status |
+|---|---|---|
+| [TB-PROOF-035](TB-PROOF-035_openclaw_governance.md) | OpenClaw Governance Pipeline | VERIFIED |
+| [TB-PROOF-036](TB-PROOF-036_trust_level_matrix.md) | Trust Level Permission Matrix | VERIFIED |
+| [TB-PROOF-037](TB-PROOF-037_openclaw_kill_switch.md) | OpenClaw Kill Switch | VERIFIED |
+| [TB-PROOF-038](TB-PROOF-038_manners_auto_demotion.md) | Manners Auto-Demotion | VERIFIED |
+| [TB-PROOF-039](TB-PROOF-039_earned_trust_model.md) | Earned Trust Model | VERIFIED |
+
+### Integration Guides
+| Sheet | Claim | Status |
+|---|---|---|
+| [TB-PROOF-040](TB-PROOF-040_openclaw_integration_guide.md) | OpenClaw Integration: Start to Finish (under 45 min) | PENDING |
+| [TB-PROOF-041](TB-PROOF-041_agent_registration.md) | How to Add an Agent — Developer Deep Dive | VERIFIED |
+
+---
+
+## How to Use This Directory
+
+1. Someone questions a claim on the website? Find the sheet number above.
+2. Open the sheet. It contains the exact claim, the source files, the test files, and a verification command.
+3. Run the verification command. If it passes, the claim holds. If it fails, file a bug.
+
+## Verification
+
+Run all proof verification tests at once:
+```bash
+docker compose exec mcp_server python -m pytest tests/ -v --tb=short --ignore=tests/test_mqtt_stress.py
+```
+
+---
+
+*Generated February 23, 2026 | TelsonBase v9.0.0B | Updated March 1, 2026*

@@ -1,0 +1,49 @@
+# TelsonBase — Production Overlay
+# =============================================================================
+# Usage:
+#   docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d
+#
+# This overlay adds production-only configuration on top of the base file:
+#   - Traefik ACME (Let's Encrypt TLS) with a real domain + email
+#   - HTTP → HTTPS redirect
+#
+# Prerequisites:
+#   1. Set TRAEFIK_DOMAIN to your real domain in .env  (e.g. telsonbase.com)
+#   2. Set TRAEFIK_ACME_EMAIL to a real email in .env  (e.g. ops@telsonbase.com)
+#   3. Ensure port 80 and 443 are publicly reachable (ACME HTTP-01 challenge)
+# =============================================================================
+
+services:
+  traefik:
+    command:
+      # --- Core ---
+      - "--api.insecure=false"
+      - "--api.dashboard=false"
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--entrypoints.web.address=:80"
+      - "--entrypoints.websecure.address=:443"
+      # --- Production: HTTPS redirect ---
+      - "--entrypoints.web.http.redirections.entrypoint.to=websecure"
+      - "--entrypoints.web.http.redirections.entrypoint.scheme=https"
+      # --- Production: ACME / Let's Encrypt TLS ---
+      - "--certificatesresolvers.myresolver.acme.tlschallenge=true"
+      - "--certificatesresolvers.myresolver.acme.email=${TRAEFIK_ACME_EMAIL}"
+      - "--certificatesresolvers.myresolver.acme.storage=/letsencrypt/acme.json"
+
+  mcp_server:
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.mcp_server.rule=Host(`${TRAEFIK_DOMAIN}`)"
+      - "traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https"
+      - "traefik.http.routers.mcp_server.middlewares=redirect-to-https"
+      - "traefik.http.routers.mcp_server-secure.rule=Host(`${TRAEFIK_DOMAIN}`)"
+      - "traefik.http.routers.mcp_server-secure.entrypoints=websecure"
+      - "traefik.http.routers.mcp_server-secure.tls.certresolver=myresolver"
+      - "traefik.http.routers.mcp_server-secure.middlewares=security-headers"
+      - "traefik.http.middlewares.security-headers.headers.stsSeconds=31536000"
+      - "traefik.http.middlewares.security-headers.headers.stsIncludeSubdomains=true"
+      - "traefik.http.middlewares.security-headers.headers.stsPreload=true"
+      - "traefik.http.middlewares.security-headers.headers.contentTypeNosniff=true"
+      - "traefik.http.middlewares.security-headers.headers.frameDeny=true"
+      - "traefik.http.services.mcp_server.loadbalancer.server.port=8000"

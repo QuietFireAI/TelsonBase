@@ -1,0 +1,419 @@
+# =============================================================================
+# TelsonBase Agent HR Registry — Centralized Job Descriptions
+# =============================================================================
+# Version: 1.0.0 | Effective: February 13, 2026
+# Architect: Jeff Phillips — Quietfire AI
+#
+# Purpose: Single source of truth for all agent identities, capabilities,
+# expected behaviors, and Manners compliance mappings. Every agent deployed
+# on TelsonBase MUST have an entry here. Agents without entries are
+# automatically quarantined.
+#
+# Aligned with: MANNERS.md (Anthropic agent safety principles)
+# =============================================================================
+
+# =============================================================================
+# GROUND LEVEL — Core Platform Agents
+# =============================================================================
+
+backup_agent:
+  display_name: "Backup Agent"
+  floor: ground
+  role: "Automated backup and recovery operator"
+  description: >
+    Performs scheduled and on-demand backups of TelsonBase data volumes
+    including PostgreSQL, Redis, secrets, and configuration files.
+    Handles backup rotation, integrity verification, and disaster recovery.
+  actions:
+    - full_backup
+    - incremental_backup
+    - restore
+    - list_backups
+  requires_approval:
+    - restore
+  capabilities:
+    - "filesystem.write:/app/backups/*"
+    - "filesystem.read:/data/*"
+  trust_level: resident
+  rate_limit: 10/min
+  schedule: "daily at 02:00 UTC"
+  expected_responses:
+    full_backup: "Returns backup_id, size_bytes, duration_seconds, files_included"
+    restore: "Returns restore_id, status, files_restored, validation_result"
+  manners_compliance:
+    manners_1_human_control: "Restore requires approval; backups are non-destructive"
+    manners_2_transparency: "All backups logged to audit chain with checksums"
+    manners_3_value_alignment: "Only accesses backup and data paths"
+    manners_4_privacy: "Backups encrypted at rest; no cross-tenant data mixing"
+    manners_5_security: "Backup files checksummed with SHA-256"
+
+demo_agent:
+  display_name: "Demo Agent"
+  floor: ground
+  role: "Testing and demonstration agent"
+  description: >
+    Demonstration agent for testing TelsonBase security features including
+    capability enforcement, approval gates, anomaly detection, and QMS
+    message signing. Not intended for production use.
+  actions:
+    - echo
+    - compute
+    - external_call
+    - sensitive_action
+  requires_approval:
+    - sensitive_action
+  capabilities:
+    - "external.https://api.example.com/*"
+  trust_level: probation
+  rate_limit: 30/min
+  expected_responses:
+    echo: "Returns the input message with QMS envelope"
+    compute: "Returns calculation result with execution time"
+    sensitive_action: "Returns confirmation after approval gate"
+  manners_compliance:
+    manners_1_human_control: "sensitive_action gated; external_call monitored"
+    manners_2_transparency: "All actions logged; designed for audit demonstration"
+    manners_3_value_alignment: "Limited to demo-scoped resources"
+    manners_4_privacy: "No access to production data"
+    manners_5_security: "Standard message signing; rate limited"
+
+document_agent:
+  display_name: "Document Agent"
+  floor: ground
+  role: "Document processing and analysis operator"
+  description: >
+    Processes documents for text extraction, summarization, search, and
+    redaction. Handles multiple formats. All redaction operations require
+    human approval to prevent accidental data loss.
+  actions:
+    - extract_text
+    - summarize
+    - search
+    - redact
+    - get_metadata
+    - list_documents
+  requires_approval:
+    - redact
+    - delete
+  capabilities:
+    - "filesystem.read:/data/documents/*"
+    - "filesystem.write:/data/documents/processed/*"
+  trust_level: resident
+  rate_limit: 60/min
+  expected_responses:
+    extract_text: "Returns extracted_text, page_count, confidence_score"
+    summarize: "Returns summary, key_points[], word_count"
+    search: "Returns matches[] with line_number, context, relevance_score"
+    redact: "Returns redacted_document_path, redactions_applied, original_hash"
+  manners_compliance:
+    manners_1_human_control: "Redaction and deletion gated; read operations autonomous"
+    manners_2_transparency: "Document hashes logged; redaction details audited"
+    manners_3_value_alignment: "Confined to document processing role"
+    manners_4_privacy: "Processed files stay in designated paths; no external transmission"
+    manners_5_security: "Input sanitized; output paths validated"
+
+ollama_agent:
+  display_name: "Sovereign AI Engine"
+  floor: ground
+  role: "Local LLM inference and model management operator"
+  description: >
+    All LLM interactions flow through this agent — generate, chat, model
+    management. Ensures all AI inference stays on-premises. Monitors model
+    health, manages pull/delete operations, and provides inference auditing.
+  actions:
+    - generate
+    - chat
+    - list_models
+    - model_info
+    - pull_model
+    - delete_model
+    - health_check
+    - recommended
+    - set_default
+  requires_approval:
+    - pull_model
+    - delete_model
+  capabilities:
+    - "ollama.execute:*"
+    - "ollama.manage:*"
+  trust_level: citizen
+  rate_limit: 120/min
+  expected_responses:
+    generate: "Returns generated_text, model, tokens_used, duration_ms"
+    chat: "Returns response_message, model, context_length, tokens_used"
+    pull_model: "Returns model_name, size_bytes, pull_status, duration_seconds"
+    health_check: "Returns ollama_status, models_loaded, memory_usage"
+  manners_compliance:
+    manners_1_human_control: "Model install/delete gated; inference autonomous"
+    manners_2_transparency: "All prompts and responses audited; token usage tracked"
+    manners_3_value_alignment: "Confined to Ollama service; no external LLM calls"
+    manners_4_privacy: "All inference local; no data leaves the deployment"
+    manners_5_security: "Input length limits; model integrity verified on pull"
+
+foreman_agent:
+  display_name: "Toolroom Foreman"
+  floor: mezzanine
+  role: "Supervisor-level tool inventory and access control manager"
+  description: >
+    Controls the Toolroom — manages tool inventory, checkout/return,
+    updates from approved sources, and HITL gates for API access.
+    Supervisor-level agent with elevated permissions.
+  actions:
+    - daily_update_check
+    - checkout_tool
+    - return_tool
+    - register_uploaded_tool
+    - request_new_tool
+    - toolroom_status
+  requires_approval:
+    - install_tool_from_github
+    - update_tool_from_github
+    - enable_api_access_for_tool
+    - quarantine_tool
+    - delete_tool
+  capabilities:
+    - "filesystem.read:/app/toolroom/*"
+    - "filesystem.write:/app/toolroom/tools/*"
+    - "external.read:github.com"
+    - "external.read:api.github.com"
+    - "agent.execute:*"
+    - "redis.read:toolroom:*"
+    - "redis.write:toolroom:*"
+  trust_level: citizen
+  rate_limit: 60/min
+  level: supervisor
+  expected_responses:
+    daily_update_check: "Returns tools_checked, updates_available[], last_check_time"
+    checkout_tool: "Returns tool_name, checkout_id, expires_at"
+    toolroom_status: "Returns tool_count, checked_out[], pending_updates[]"
+  manners_compliance:
+    manners_1_human_control: "All install/delete/quarantine operations gated"
+    manners_2_transparency: "Tool checkout/return fully audited; update checks logged"
+    manners_3_value_alignment: "Confined to toolroom management; cannot modify agents"
+    manners_4_privacy: "Tool access scoped; no cross-tenant tool sharing"
+    manners_5_security: "GitHub sources validated against approved list; integrity checks"
+
+# =============================================================================
+# THIRD FLOOR — Real Estate Agents
+# =============================================================================
+
+transaction_agent:
+  display_name: "Transaction Coordinator"
+  floor: third
+  vertical: real_estate
+  role: "Real estate transaction lifecycle manager"
+  description: >
+    Manages the full closing lifecycle for real estate transactions —
+    purchase agreements, leases, party management, checklists, document
+    tracking, and deadline monitoring. Ohio-specific regulatory awareness.
+  actions:
+    - create_transaction
+    - get_transaction
+    - list_transactions
+    - update_transaction
+    - close_transaction
+    - cancel_transaction
+    - add_party
+    - remove_party
+    - list_parties
+    - update_checklist
+    - get_checklist
+    - check_deadlines
+    - update_document_status
+    - get_documents
+    - override_deadline
+    - transaction_summary
+  requires_approval:
+    - close_transaction
+    - cancel_transaction
+    - remove_party
+    - override_deadline
+  capabilities:
+    - "filesystem.read:/data/transactions/*"
+    - "filesystem.write:/data/transactions/*"
+    - "filesystem.read:/data/documents/*"
+  trust_level: resident
+  rate_limit: 60/min
+  schedule: "daily deadline check at 07:00 UTC"
+  expected_responses:
+    create_transaction: "Returns transaction_id, type, status=active, created_at"
+    get_transaction: "Returns full transaction object with parties, checklist, documents"
+    close_transaction: "Returns transaction_id, status=closed, closed_at, final_summary"
+    check_deadlines: "Returns upcoming_deadlines[], overdue_items[], days_remaining"
+    transaction_summary: "Returns summary with completion_percentage, open_items, parties"
+  manners_compliance:
+    manners_1_human_control: "Close/cancel/remove/override all require approval"
+    manners_2_transparency: "Full audit trail on every transaction state change"
+    manners_3_value_alignment: "Confined to transaction management; cannot modify compliance data"
+    manners_4_privacy: "Transaction data tenant-isolated; party PII protected"
+    manners_5_security: "Document hashes verified; deadline overrides audited"
+
+compliance_check_agent:
+  display_name: "Compliance Monitor"
+  floor: third
+  vertical: real_estate
+  role: "Real estate regulatory compliance monitor"
+  description: >
+    Monitors license status, fair housing compliance, disclosure requirements,
+    and continuing education tracking. Ohio-specific regulatory requirements
+    (ORC 5302.30, ORC 4735.56, 42 USC 4852d, ORC 4112.02). Runs daily
+    compliance sweeps and flags violations proactively.
+  actions:
+    - check_license
+    - list_licenses
+    - add_license
+    - update_license
+    - check_disclosures
+    - verify_fair_housing
+    - check_ce_status
+    - update_ce_credits
+    - compliance_report
+    - override_violation
+    - waive_disclosure
+    - check_all
+  requires_approval:
+    - override_violation
+    - waive_disclosure
+    - suspend_license
+  capabilities:
+    - "filesystem.read:/data/compliance/*"
+    - "filesystem.write:/data/compliance/*"
+  trust_level: resident
+  rate_limit: 60/min
+  schedule: "daily compliance sweep at 07:30 UTC"
+  expected_responses:
+    check_license: "Returns license_number, status, expiry_date, days_remaining, warnings[]"
+    verify_fair_housing: "Returns compliant (bool), red_flags[], protected_classes_mentioned[]"
+    check_ce_status: "Returns hours_completed, hours_required, core_hours, renewal_date"
+    compliance_report: "Returns overall_status, license_issues[], disclosure_gaps[], ce_warnings[]"
+  manners_compliance:
+    manners_1_human_control: "Override/waive/suspend require approval; checks are autonomous"
+    manners_2_transparency: "All compliance decisions audited with regulatory citations"
+    manners_3_value_alignment: "Confined to compliance monitoring; cannot modify transactions"
+    manners_4_privacy: "License data protected; PII minimized in reports"
+    manners_5_security: "Regulatory data integrity verified; violation records immutable"
+
+doc_prep_agent:
+  display_name: "Document Preparation"
+  floor: third
+  vertical: real_estate
+  role: "Real estate document generation and template manager"
+  description: >
+    Generates real estate documents from templates — purchase agreements,
+    seller disclosures, agency disclosures, closing checklists, listing
+    agreements, CMA reports, and lead paint disclosures. All documents
+    are SHA-256 hashed for integrity verification.
+  actions:
+    - list_templates
+    - get_template
+    - generate_document
+    - preview_document
+    - finalize_document
+    - list_generated
+    - get_document
+    - delete_document
+    - validate_fields
+  requires_approval:
+    - finalize_document
+    - delete_document
+  capabilities:
+    - "filesystem.read:/data/documents/*"
+    - "filesystem.write:/data/documents/generated/*"
+  trust_level: resident
+  rate_limit: 60/min
+  expected_responses:
+    list_templates: "Returns templates[] with id, name, required_fields, description"
+    generate_document: "Returns document_id, template_used, status=draft, sha256_hash"
+    finalize_document: "Returns document_id, status=finalized, finalized_at, sha256_hash"
+    validate_fields: "Returns valid (bool), missing_fields[], invalid_fields[]"
+  manners_compliance:
+    manners_1_human_control: "Finalize/delete gated; draft generation autonomous"
+    manners_2_transparency: "Document hashes in audit chain; template versions tracked"
+    manners_3_value_alignment: "Confined to document generation; uses approved templates only"
+    manners_4_privacy: "Generated documents tenant-isolated; PII fields marked"
+    manners_5_security: "SHA-256 integrity hashing; template injection prevention"
+
+# =============================================================================
+# N8N INTEGRATION AGENTS
+# =============================================================================
+
+n8n_developer_agent:
+  display_name: "n8n Developer Agent"
+  floor: mezzanine
+  role: "Workflow development assistant for n8n automation"
+  description: >
+    AI-powered workflow development agent that runs inside n8n. Uses local
+    Ollama (gemma2:9b) for all LLM inference — no cloud dependencies.
+    Helps users build n8n workflows by fetching TelsonBase API docs,
+    understanding the agent registry, and generating workflow JSON.
+    Rerouted from Nate Herk's cloud-dependent template to run entirely
+    on local TelsonBase services.
+  actions:
+    - chat
+    - fetch_api_docs
+    - fetch_agent_registry
+    - build_workflow
+    - list_workflows
+  requires_approval:
+    - build_workflow
+  capabilities:
+    - "ollama.execute:*"
+    - "external.read:localhost:5678"
+    - "internal.read:api_docs"
+  trust_level: resident
+  rate_limit: 30/min
+  integration: n8n
+  workflow_file: "scripts/n8n_workflow_developer_agent.json"
+  expected_responses:
+    chat: "Returns assistant_message, model_used, context_window_remaining"
+    fetch_api_docs: "Returns api_endpoints[], authentication_methods, examples[]"
+    build_workflow: "Returns workflow_id, workflow_url, nodes_created, connections[]"
+  manners_compliance:
+    manners_1_human_control: "Workflow creation gated; chat and docs autonomous"
+    manners_2_transparency: "All workflow builds logged; LLM interactions audited"
+    manners_3_value_alignment: "Confined to workflow development; no agent execution"
+    manners_4_privacy: "All LLM inference local via Ollama; no cloud data transmission"
+    manners_5_security: "n8n API access scoped; workflow JSON validated before creation"
+
+# =============================================================================
+# OPENCLAW GOVERNANCE — "CONTROL YOUR CLAW" (v7.4.0CC)
+# =============================================================================
+# OpenClaw instances register with TelsonBase and operate under the trust
+# level model. This is the template entry — each registered instance gets
+# its own runtime record in Redis/PostgreSQL.
+# =============================================================================
+
+openclaw_agent:
+  display_name: "OpenClaw Governed Agent"
+  floor: ground
+  role: "Autonomous agent governed by TelsonBase trust levels"
+  description: >
+    OpenClaw instance operating under TelsonBase governance. Every action
+    is evaluated against trust level, Manners compliance, anomaly detection,
+    and approval gates before execution. Trust must be earned — all instances
+    start at QUARANTINE with full HITL. The trust level model is the
+    "secret sauce": degraded permissions that earn their way up.
+  actions:
+    - tool_call
+    - external_request
+    - file_read
+    - file_write
+    - file_delete
+  requires_approval:
+    - external_request
+    - file_write
+    - file_delete
+  capabilities:
+    - "openclaw.tool_call"
+    - "openclaw.read"
+  trust_level: quarantine
+  rate_limit: 30/min
+  expected_responses:
+    tool_call: "Returns governance decision with allowed/blocked/gated status"
+    external_request: "Returns approval_id if gated, result if allowed"
+  manners_compliance:
+    manners_1_human_control: "All actions gated by trust level; QUARANTINE = full HITL"
+    manners_2_transparency: "Every action logged to cryptographic audit chain"
+    manners_3_value_alignment: "Manners compliance score evaluated on every action"
+    manners_4_privacy: "Egress control prevents unauthorized data exfiltration"
+    manners_5_security: "API keys never exposed; claw operates through governed proxy"

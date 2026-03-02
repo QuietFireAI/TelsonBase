@@ -1,0 +1,29 @@
+cff-version: 1.2.0
+message: "If you use TelsonBase in your research or work, please cite it using this metadata."
+title: "TelsonBase"
+version: 9.0.0B
+date-released: 2026-03-06
+license: Apache-2.0
+abstract: >
+  TelsonBase is a self-hosted zero-trust AI agent governance platform.
+  It provides earned trust tiers, a kill switch for instant agent suspension,
+  human-in-the-loop approval gates, behavioral scoring, tamper-evident audit
+  chain, and full MCP integration. Designed for production AI agent deployments
+  requiring auditability and human oversight.
+authors:
+  - name: "J. Phillips"
+    alias: "Jeff Phillips"
+    affiliation: "Quietfire AI"
+    orcid: "https://orcid.org/0009-0000-1375-1725"
+repository-code: "https://github.com/QuietFireAI/TelsonBase"
+url: "https://telsonbase.com"
+keywords:
+  - ai-governance
+  - ai-agents
+  - zero-trust
+  - self-hosted
+  - human-in-the-loop
+  - audit-trail
+  - kill-switch
+  - mcp
+  - eu-ai-act

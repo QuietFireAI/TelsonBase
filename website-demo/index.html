@@ -1,0 +1,1126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TelsonBase: Private Demo Access</title>
+  <meta name="description" content="Private preview access to TelsonBase: Zero-Trust AI Agent Security Platform">
+  <meta name="robots" content="noindex, nofollow">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --bg:       #0f0c09;
+      --bg2:      #161009;
+      --surface:  rgba(255,235,160,0.035);
+      --border:   rgba(245,158,11,0.12);
+      --border-hi:rgba(245,158,11,0.4);
+      --text:     #f0e6d3;
+      --muted:    #7a6a55;
+      --amber:    #f59e0b;
+      --copper:   #e05d2e;
+      --gold:     #d4a853;
+      --cream:    #fef3c7;
+      --green:    #4ade80;
+      --red:      #f87171;
+      --warm-purple: #c084fc;
+    }
+
+    html, body {
+      min-height: 100vh;
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'DM Sans', system-ui, sans-serif;
+      line-height: 1.65;
+      -webkit-font-smoothing: antialiased;
+      -webkit-user-select: none;
+      user-select: none;
+    }
+
+    /* Warm grain texture overlay */
+    body::before {
+      content: '';
+      position: fixed; inset: 0;
+      background:
+        radial-gradient(ellipse 90% 60% at 15% 10%, rgba(245,158,11,0.06) 0%, transparent 55%),
+        radial-gradient(ellipse 60% 80% at 85% 80%, rgba(224,93,46,0.05) 0%, transparent 55%),
+        radial-gradient(ellipse 70% 50% at 50% 50%, rgba(212,168,83,0.03) 0%, transparent 60%);
+      pointer-events: none; z-index: 0;
+    }
+
+    .page {
+      position: relative; z-index: 1;
+      max-width: 800px; margin: 0 auto;
+      padding: 72px 28px 100px;
+    }
+
+    /* ── Hero header ─────────────────────────────────────────────── */
+    .hero {
+      margin-bottom: 56px;
+    }
+
+    .hero-eyebrow {
+      font-size: 11px; font-weight: 600;
+      letter-spacing: 0.15em; text-transform: uppercase;
+      color: var(--amber); margin-bottom: 16px;
+      display: flex; align-items: center; gap: 10px;
+    }
+
+    .hero-eyebrow::before {
+      content: '';
+      display: inline-block;
+      width: 28px; height: 1px;
+      background: var(--amber); opacity: 0.6;
+    }
+
+    .hero-title {
+      font-family: 'DM Serif Display', Georgia, serif;
+      font-size: clamp(42px, 8vw, 64px);
+      font-weight: 400; color: var(--cream);
+      letter-spacing: -0.02em; line-height: 1.05;
+      margin-bottom: 10px;
+    }
+
+    .hero-title em {
+      font-style: italic; color: var(--amber);
+    }
+
+    .hero-subtitle {
+      font-size: 16px; color: var(--muted);
+      max-width: 500px; line-height: 1.75;
+      margin-top: 18px;
+    }
+
+    .hero-quote {
+      margin-top: 28px;
+      padding-left: 20px;
+      border-left: 2px solid var(--amber);
+      font-family: 'DM Serif Display', Georgia, serif;
+      font-size: 17px; font-style: italic;
+      color: rgba(240,230,211,0.75);
+      line-height: 1.6; max-width: 520px;
+    }
+
+    /* ── Cards ───────────────────────────────────────────────────── */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 28px 30px;
+      margin-bottom: 18px;
+    }
+
+    .card.warm {
+      border-color: var(--border-hi);
+      background: rgba(245,158,11,0.03);
+    }
+
+    /* ── Section label ───────────────────────────────────────────── */
+    .label {
+      font-size: 10px; font-weight: 600;
+      letter-spacing: 0.14em; text-transform: uppercase;
+      color: var(--muted); margin-bottom: 18px;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .label::after {
+      content: ''; flex: 1; height: 1px;
+      background: var(--border);
+    }
+
+    /* ── Status ──────────────────────────────────────────────────── */
+    .status-row { display: flex; align-items: center; gap: 10px; margin-bottom: 22px; }
+
+    .status-dot {
+      width: 9px; height: 9px; border-radius: 50%;
+      background: var(--muted); flex-shrink: 0; transition: background 0.3s;
+    }
+    .status-dot.checking { background: var(--amber);      animation: pulse-amber 1.4s infinite; }
+    .status-dot.live     { background: var(--green);       animation: pulse-green 2.2s infinite; }
+    .status-dot.offline  { background: var(--red); }
+
+    @keyframes pulse-green  { 0%,100%{box-shadow:0 0 0 0 rgba(74,222,128,0.5)} 50%{box-shadow:0 0 0 6px rgba(74,222,128,0)} }
+    @keyframes pulse-amber  { 0%,100%{box-shadow:0 0 0 0 rgba(245,158,11,0.5)} 50%{box-shadow:0 0 0 6px rgba(245,158,11,0)} }
+    @keyframes pulse-copper { 0%,100%{box-shadow:0 0 0 0 rgba(224,93,46,0.5)}  50%{box-shadow:0 0 0 10px rgba(224,93,46,0)} }
+
+    .status-text { font-size: 13px; font-weight: 500; color: var(--muted); transition: color 0.3s; }
+    .status-text.live    { color: var(--green); }
+    .status-text.offline { color: var(--red); }
+    .status-time { font-size: 11px; color: var(--muted); margin-left: auto; }
+
+    /* ── Access block ────────────────────────────────────────────── */
+    .access-block {
+      background: rgba(245,158,11,0.05);
+      border: 1px solid rgba(245,158,11,0.18);
+      border-radius: 10px; padding: 16px 20px; margin-bottom: 22px;
+    }
+    .access-title { font-size: 13px; font-weight: 600; color: var(--cream); margin-bottom: 5px; }
+    .access-desc  { font-size: 13px; color: var(--muted); line-height: 1.65; }
+
+    /* ── Buttons ─────────────────────────────────────────────────── */
+    .btn-row { display: flex; gap: 10px; flex-wrap: wrap; }
+
+    .btn {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 10px 20px; border-radius: 8px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 13px; font-weight: 600;
+      cursor: pointer; text-decoration: none;
+      transition: all 0.18s; border: 1px solid transparent;
+    }
+
+    .btn-amber {
+      background: rgba(245,158,11,0.12);
+      border-color: rgba(245,158,11,0.35);
+      color: var(--amber);
+    }
+    .btn-amber:hover { background: rgba(245,158,11,0.2); border-color: rgba(245,158,11,0.6); transform: translateY(-1px); }
+
+    .btn-copper {
+      background: rgba(224,93,46,0.12);
+      border-color: rgba(224,93,46,0.3);
+      color: var(--copper);
+      animation: pulse-copper 2.8s infinite;
+    }
+    .btn-copper:hover { background: rgba(224,93,46,0.2); border-color: rgba(224,93,46,0.55); transform: translateY(-1px); }
+
+    .btn-ghost {
+      background: rgba(255,255,255,0.04);
+      border-color: var(--border); color: var(--muted);
+    }
+    .btn-ghost:hover { background: rgba(255,255,255,0.07); color: var(--text); transform: translateY(-1px); }
+
+    /* ── Stats ───────────────────────────────────────────────────── */
+    .stats-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 10px; }
+    @media (max-width: 560px) { .stats-grid { grid-template-columns: repeat(2,1fr); } }
+
+    .stat {
+      padding: 18px 10px; text-align: center;
+      background: rgba(255,235,160,0.025);
+      border: 1px solid var(--border); border-radius: 10px;
+      transition: border-color 0.2s;
+    }
+    .stat:hover { border-color: rgba(245,158,11,0.25); }
+
+    .stat-num {
+      font-family: 'DM Serif Display', Georgia, serif;
+      font-size: 28px; color: var(--cream);
+      line-height: 1; margin-bottom: 6px;
+    }
+    .stat-label { font-size: 10px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); }
+
+    /* ── Compliance callout ──────────────────────────────────────── */
+    .compliance-callout {
+      margin-top: 18px; padding: 16px 20px;
+      background: rgba(212,168,83,0.06);
+      border: 1px solid rgba(212,168,83,0.2);
+      border-radius: 10px; font-size: 13px;
+      color: rgba(240,230,211,0.75); line-height: 1.7;
+    }
+    .compliance-callout strong { color: var(--gold); }
+
+    /* ── Features ────────────────────────────────────────────────── */
+    .feature-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    @media (max-width: 540px) { .feature-grid { grid-template-columns: 1fr; } }
+
+    .feature-item { display: flex; gap: 12px; align-items: flex-start; }
+
+    .feature-dot {
+      width: 6px; height: 6px; border-radius: 50%;
+      background: var(--amber); flex-shrink: 0; margin-top: 7px;
+    }
+
+    .feature-title { font-size: 13px; font-weight: 600; color: var(--cream); margin-bottom: 3px; }
+    .feature-desc  { font-size: 12px; color: var(--muted); line-height: 1.55; }
+
+    /* ── Proof sheets ────────────────────────────────────────────── */
+    .filter-row { display: flex; gap: 7px; flex-wrap: wrap; margin-bottom: 18px; }
+
+    .chip {
+      font-size: 11px; font-weight: 500;
+      padding: 4px 12px; border-radius: 20px;
+      border: 1px solid var(--border);
+      background: transparent; color: var(--muted);
+      cursor: pointer; transition: all 0.15s; user-select: none;
+    }
+    .chip:hover  { color: var(--text); border-color: rgba(245,158,11,0.3); }
+    .chip.active { color: var(--amber); border-color: rgba(245,158,11,0.45); background: rgba(245,158,11,0.07); }
+
+    .proof-table { width: 100%; border-collapse: collapse; }
+    @media (max-width: 600px) {
+      .col-sheet { display: none; }
+      .col-cat   { display: none; }
+      .proof-id  { display: none; }
+      .proof-cat { display: none; }
+    }
+    .proof-table th {
+      text-align: left; font-size: 10px; font-weight: 600;
+      letter-spacing: 0.1em; text-transform: uppercase;
+      color: var(--muted); padding: 0 10px 12px;
+      border-bottom: 1px solid var(--border);
+    }
+    .proof-table td {
+      padding: 10px 10px;
+      border-bottom: 1px solid rgba(255,235,160,0.04);
+      vertical-align: middle;
+    }
+    .proof-table tr:last-child td { border-bottom: none; }
+    .proof-table tr:hover td { background: rgba(245,158,11,0.025); }
+
+    .proof-id    { font-family: monospace; font-size: 10px; color: var(--muted); }
+    .proof-title { font-size: 13px; color: var(--text); }
+    .proof-cat   { font-size: 10px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); }
+
+    .badge-verified { display: inline-block; font-size: 10px; font-weight: 600; padding: 2px 8px; border-radius: 4px; background: rgba(74,222,128,0.1); color: var(--green); border: 1px solid rgba(74,222,128,0.2); white-space: nowrap; }
+    .badge-pending  { display: inline-block; font-size: 10px; font-weight: 600; padding: 2px 8px; border-radius: 4px; background: rgba(245,158,11,0.1); color: var(--amber); border: 1px solid rgba(245,158,11,0.25); white-space: nowrap; }
+
+    .view-btn {
+      font-size: 11px; font-weight: 600; padding: 4px 12px; border-radius: 6px;
+      background: rgba(245,158,11,0.07); border: 1px solid rgba(245,158,11,0.2);
+      color: var(--amber); cursor: pointer; transition: all 0.15s; white-space: nowrap;
+    }
+    .view-btn:hover { background: rgba(245,158,11,0.14); border-color: rgba(245,158,11,0.4); }
+
+    /* ── Notice ──────────────────────────────────────────────────── */
+    .notice {
+      display: flex; align-items: flex-start; gap: 10px;
+      padding: 14px 18px; margin-top: 18px;
+      background: rgba(224,93,46,0.06);
+      border: 1px solid rgba(224,93,46,0.2);
+      border-radius: 10px; font-size: 13px;
+      color: rgba(240,200,170,0.8); line-height: 1.6;
+    }
+
+    /* ── Modal ───────────────────────────────────────────────────── */
+    .modal-overlay {
+      display: none; position: fixed; inset: 0;
+      background: rgba(0,0,0,0.8); backdrop-filter: blur(6px);
+      z-index: 1000; align-items: center; justify-content: center; padding: 24px;
+    }
+    .modal-overlay.open { display: flex; }
+
+    .modal {
+      background: #16100a; border: 1px solid rgba(245,158,11,0.25);
+      border-radius: 14px; padding: 32px;
+      max-width: 620px; width: 100%; max-height: 85vh; overflow-y: auto;
+      position: relative;
+    }
+
+    .modal-close {
+      position: absolute; top: 14px; right: 14px;
+      width: 28px; height: 28px; border-radius: 6px;
+      background: rgba(255,255,255,0.05); border: 1px solid var(--border);
+      color: var(--muted); font-size: 14px; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: all 0.15s;
+    }
+    .modal-close:hover { background: rgba(255,255,255,0.09); color: var(--text); }
+
+    .modal-id    { font-size: 11px; font-family: monospace; color: var(--amber); opacity: 0.7; margin-bottom: 5px; }
+    .modal-title {
+      font-family: 'DM Serif Display', Georgia, serif;
+      font-size: 22px; color: var(--cream); margin-bottom: 3px; line-height: 1.2;
+    }
+    .modal-cat   { font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); margin-bottom: 24px; }
+
+    .modal-section { margin-bottom: 18px; }
+    .modal-section-label { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.12em; color: var(--muted); margin-bottom: 8px; }
+
+    .modal-claim {
+      font-size: 14px; color: rgba(254,243,199,0.8);
+      font-family: 'DM Serif Display', Georgia, serif;
+      font-style: italic; line-height: 1.6;
+      padding: 12px 16px;
+      background: rgba(245,158,11,0.05);
+      border-left: 3px solid var(--amber);
+      border-radius: 0 8px 8px 0;
+    }
+    .modal-verdict { font-size: 13px; color: rgba(240,230,211,0.85); line-height: 1.7; }
+    .modal-verdict strong { color: var(--green); }
+
+    .modal-sources { display: flex; flex-direction: column; gap: 4px; }
+    .modal-source {
+      font-family: monospace; font-size: 12px; color: var(--gold);
+      background: rgba(212,168,83,0.06);
+      border: 1px solid rgba(212,168,83,0.15);
+      border-radius: 5px; padding: 5px 10px;
+    }
+
+    .modal-cmd {
+      font-family: monospace; font-size: 12px; color: rgba(240,230,211,0.6);
+      background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 8px; padding: 12px 14px; line-height: 1.6;
+      word-break: break-all; user-select: text;
+    }
+
+    /* ── Context ─────────────────────────────────────────────────── */
+    .founder-line {
+      margin-top: 20px; padding-top: 18px;
+      border-top: 1px solid var(--border);
+      font-size: 13px; color: var(--muted);
+      display: flex; align-items: center; gap: 10px;
+    }
+    .founder-line strong { color: rgba(240,230,211,0.65); }
+
+    /* ── Footer ──────────────────────────────────────────────────── */
+    .footer { margin-top: 56px; text-align: center; font-size: 12px; color: var(--muted); line-height: 2.2; }
+    .footer a { color: var(--amber); text-decoration: none; opacity: 0.8; transition: opacity 0.15s; }
+    .footer a:hover { opacity: 1; }
+
+    .divider { height: 1px; background: var(--border); margin: 20px 0; }
+
+    /* ── Password Gate ───────────────────────────────────────────── */
+    #pwGate {
+      position: fixed; inset: 0; z-index: 9999;
+      background: #0f0c09;
+      display: flex; align-items: center; justify-content: center;
+      padding: 24px;
+      transition: opacity 0.4s ease;
+    }
+    #pwGate.unlocking { opacity: 0; pointer-events: none; }
+
+    .pw-card {
+      width: 100%; max-width: 380px;
+      background: rgba(255,235,160,0.03);
+      border: 1px solid rgba(245,158,11,0.2);
+      border-radius: 16px; padding: 44px 36px 36px;
+      text-align: center; position: relative;
+    }
+    .pw-eyebrow {
+      font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase;
+      color: var(--amber); opacity: 0.7; margin-bottom: 20px;
+    }
+    .pw-title {
+      font-family: 'DM Serif Display', Georgia, serif;
+      font-style: italic; font-size: 28px;
+      color: var(--cream); margin-bottom: 8px;
+    }
+    .pw-sub {
+      font-size: 13px; color: var(--muted); margin-bottom: 32px; line-height: 1.5;
+    }
+    .pw-input-wrap {
+      position: relative; margin-bottom: 14px;
+    }
+    .pw-input {
+      width: 100%; padding: 12px 44px 12px 16px;
+      background: rgba(255,235,160,0.04);
+      border: 1px solid rgba(245,158,11,0.18);
+      border-radius: 8px; color: var(--text);
+      font-size: 15px; font-family: 'DM Sans', sans-serif;
+      outline: none; transition: border-color 0.2s;
+      letter-spacing: 0.1em;
+    }
+    .pw-input:focus { border-color: rgba(245,158,11,0.5); }
+    .pw-input.shake {
+      animation: pwShake 0.4s ease;
+      border-color: rgba(248,113,113,0.6);
+    }
+    .pw-eye {
+      position: absolute; right: 13px; top: 50%; transform: translateY(-50%);
+      background: none; border: none; color: var(--muted); cursor: pointer;
+      padding: 4px; line-height: 0;
+    }
+    .pw-eye:hover { color: var(--amber); }
+    .pw-btn {
+      width: 100%; padding: 13px;
+      background: var(--amber); color: #0f0c09;
+      border: none; border-radius: 8px;
+      font-size: 14px; font-weight: 600; font-family: 'DM Sans', sans-serif;
+      cursor: pointer; transition: background 0.15s, transform 0.1s;
+      letter-spacing: 0.03em;
+    }
+    .pw-btn:hover { background: #fbbf24; }
+    .pw-btn:active { transform: scale(0.98); }
+    .pw-error {
+      font-size: 12px; color: var(--red); margin-top: 10px;
+      min-height: 18px; transition: opacity 0.2s;
+    }
+    .pw-divider {
+      display: flex; align-items: center; gap: 12px;
+      margin: 24px 0 20px; color: var(--muted); font-size: 11px;
+    }
+    .pw-divider::before, .pw-divider::after {
+      content: ''; flex: 1; height: 1px; background: var(--border);
+    }
+    .pw-request {
+      font-size: 13px; color: var(--muted);
+    }
+    .pw-request a {
+      color: var(--copper); text-decoration: none;
+    }
+    .pw-request a:hover { color: var(--amber); }
+
+    @keyframes pwShake {
+      0%,100% { transform: translateX(0); }
+      20%      { transform: translateX(-6px); }
+      40%      { transform: translateX(6px); }
+      60%      { transform: translateX(-4px); }
+      80%      { transform: translateX(4px); }
+    }
+  </style>
+</head>
+<body oncontextmenu="return false">
+
+<!-- Password Gate -->
+<div id="pwGate">
+  <div class="pw-card">
+    <div class="pw-eyebrow">Quietfire AI</div>
+    <div class="pw-title">TelsonBase</div>
+    <div class="pw-sub">Private Preview &nbsp;&#183;&nbsp; Authorized Access Only</div>
+    <div class="pw-input-wrap">
+      <input class="pw-input" id="pwInput" type="password"
+             placeholder="Enter access code"
+             autocomplete="off" spellcheck="false"
+             onkeydown="if(event.key==='Enter')pwUnlock()">
+      <button class="pw-eye" id="pwEye" onclick="pwToggleShow()" type="button" tabindex="-1"
+              title="Show/hide">
+        <svg id="pwEyeIcon" width="16" height="16" viewBox="0 0 24 24" fill="none"
+             stroke="currentColor" stroke-width="2">
+          <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+          <circle cx="12" cy="12" r="3"/>
+        </svg>
+      </button>
+    </div>
+    <button class="pw-btn" onclick="pwUnlock()">Unlock</button>
+    <div class="pw-error" id="pwError"></div>
+    <div class="pw-divider">or</div>
+    <div class="pw-request">
+      Don't have a code?
+      <a href="#" onclick="pwRequestAccess();return false;">Request Access</a>
+    </div>
+  </div>
+</div>
+
+<!-- Modal -->
+<div class="modal-overlay" id="sheetModal" onclick="closeModalOnOverlay(event)">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal()">&#10005;</button>
+    <div class="modal-id"    id="mId"></div>
+    <div class="modal-title" id="mTitle"></div>
+    <div class="modal-cat"   id="mCat"></div>
+    <div class="modal-section">
+      <div class="modal-section-label">Claim</div>
+      <div class="modal-claim" id="mClaim"></div>
+    </div>
+    <div class="modal-section">
+      <div class="modal-section-label">Verdict</div>
+      <div class="modal-verdict" id="mVerdict"></div>
+    </div>
+    <div class="modal-section">
+      <div class="modal-section-label">Key Source Files</div>
+      <div class="modal-sources" id="mSources"></div>
+    </div>
+    <div class="modal-section">
+      <div class="modal-section-label">Verification Command</div>
+      <div class="modal-cmd" id="mCmd"></div>
+    </div>
+  </div>
+</div>
+
+<div class="page">
+
+  <!-- Hero -->
+  <div class="hero">
+    <div class="hero-eyebrow"><a href="https://telsonbase.com" target="_blank" rel="noopener" style="color:inherit;text-decoration:none;">TelsonBase</a> &nbsp;&#183;&nbsp; Private Preview</div>
+    <h1 class="hero-title">Control Your Claw.<br><em>Trust Is Earned.</em></h1>
+    <p class="hero-subtitle">
+      A self-hosted, zero-trust security platform for autonomous AI agents.
+      Every action governed. Every permission earned. No data leaves your network.
+    </p>
+    <blockquote class="hero-quote">
+      "The industry gave AI agents the keys to everything and forgot the locks.<br>
+      We built the locks."
+    </blockquote>
+  </div>
+
+  <!-- Status and Access -->
+  <div class="card warm">
+    <div class="label">Instance</div>
+
+    <div class="status-row">
+      <div class="status-dot checking" id="statusDot"></div>
+      <span class="status-text" id="statusLabel">Checking instance...</span>
+      <span class="status-time" id="statusSub"></span>
+    </div>
+
+    <div class="access-block">
+      <div class="access-title">Live Demo Available</div>
+      <div class="access-desc">
+        The demo console is ready — open it below. It runs with fully pre-seeded data
+        so you see the complete platform without any setup on your end.
+        Want a guided walkthrough? Request a demo call and we'll connect.
+      </div>
+    </div>
+
+    <div class="btn-row">
+      <a href="https://telsonbase.online/console" target="_blank" rel="noopener noreferrer" class="btn btn-amber">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M8 12h8M12 8l4 4-4 4"/></svg>
+        Open Demo Console
+      </a>
+      <a href="#" class="btn btn-copper" onclick="return requestDemo()">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><path d="M10 8l6 4-6 4V8z"/></svg>
+        Request Demo Call
+      </a>
+      <a href="#" class="btn btn-ghost" onclick="return contactInfo()">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+        More Information
+      </a>
+      <button class="btn btn-ghost" onclick="checkStatus()">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-.08-4.49"/></svg>
+        Recheck
+      </button>
+    </div>
+
+    <div class="notice" id="offlineNotice" style="display:none">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="flex-shrink:0;margin-top:2px"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+      <span>Live instance is currently offline. The demo console is still available above. Use <strong>Request Demo Call</strong> to schedule a session with a live environment.</span>
+    </div>
+  </div>
+
+  <!-- Stats -->
+  <div class="card">
+    <div class="label">By the Numbers</div>
+    <div class="stats-grid">
+      <div class="stat">
+        <div class="stat-num" style="color:var(--amber)">727</div>
+        <div class="stat-label">Passing Tests</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num" style="color:var(--gold)">41</div>
+        <div class="stat-label">Proof Sheets</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num" style="color:var(--copper)">27.5K</div>
+        <div class="stat-label">Lines Scanned</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num" style="color:var(--green)">0</div>
+        <div class="stat-label">High Severity Findings</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num" style="color:var(--amber)">51</div>
+        <div class="stat-label">SOC 2 Controls</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num" style="color:var(--gold)">8</div>
+        <div class="stat-label">Compliance Frameworks</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num" style="color:var(--copper)">140+</div>
+        <div class="stat-label">RBAC Endpoints</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num" style="color:var(--green)">0</div>
+        <div class="stat-label">Bytes Shared Externally</div>
+      </div>
+    </div>
+
+    <div class="compliance-callout">
+      <strong>On compliance:</strong> The technical infrastructure for SOC 2, HIPAA, HITRUST, CJIS,
+      GDPR, PCI DSS, ABA Model Rules, and HITECH is fully built, tested, and mapped to source code.
+      Formal certification and evaluation from the respective organizations is actively underway.
+      Every control is traceable to a passing test. The 41 proof sheets below document the evidence.
+    </div>
+  </div>
+
+  <!-- What You'll See -->
+  <div class="card">
+    <div class="label">What You Will See</div>
+    <div class="feature-grid">
+
+      <div class="feature-item">
+        <div class="feature-dot" style="background:var(--amber)"></div>
+        <div>
+          <div class="feature-title">Zero-Trust Agent Governance</div>
+          <div class="feature-desc">Every AI agent action evaluated against trust levels, capability declarations, and behavioral baselines before execution.</div>
+        </div>
+      </div>
+
+      <div class="feature-item">
+        <div class="feature-dot" style="background:var(--gold)"></div>
+        <div>
+          <div class="feature-title">Live Audit Chain</div>
+          <div class="feature-desc">SHA-256 hash-chained audit trail. Tamper-evident. Every security event logged and verifiable.</div>
+        </div>
+      </div>
+
+      <div class="feature-item">
+        <div class="feature-dot" style="background:var(--copper)"></div>
+        <div>
+          <div class="feature-title">QMS: Qualified Message Standard</div>
+          <div class="feature-desc">In-house agent communication protocol. Machine-parseable and human-readable simultaneously.</div>
+        </div>
+      </div>
+
+      <div class="feature-item">
+        <div class="feature-dot" style="background:var(--green)"></div>
+        <div>
+          <div class="feature-title">Sovereignty Score</div>
+          <div class="feature-desc">Live composite score measuring data sovereignty across 5 weighted factors with full signal transparency.</div>
+        </div>
+      </div>
+
+      <div class="feature-item">
+        <div class="feature-dot" style="background:var(--amber)"></div>
+        <div>
+          <div class="feature-title">OpenClaw Governance</div>
+          <div class="feature-desc">Governed MCP proxy. Every OpenClaw agent action evaluated before execution. Trust progression: QUARANTINE through CITIZEN.</div>
+        </div>
+      </div>
+
+      <div class="feature-item">
+        <div class="feature-dot" style="background:var(--gold)"></div>
+        <div>
+          <div class="feature-title">Human-in-the-Loop Gates</div>
+          <div class="feature-desc">Sensitive operations queue for human approval. No agent acts on destructive tasks without a sign-off.</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Proof Sheets -->
+  <div class="card">
+    <div class="label">41 Proof Sheets</div>
+    <p style="font-size:13px;color:var(--muted);margin-bottom:20px;line-height:1.65;">
+      Every claim on this page has a corresponding sheet documenting the exact source files
+      and verification command. Click any row to read it.
+    </p>
+
+    <div class="filter-row" id="filterRow"></div>
+
+    <div style="overflow-x:auto;-webkit-overflow-scrolling:touch;margin:0 -4px;">
+    <table class="proof-table" style="min-width:520px;">
+      <thead>
+        <tr>
+          <th class="col-sheet">Sheet</th>
+          <th>Claim</th>
+          <th class="col-cat">Category</th>
+          <th>Status</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody id="proofTableBody"></tbody>
+    </table>
+    </div>
+  </div>
+
+  <!-- Context -->
+  <div class="card">
+    <div class="label">Context</div>
+    <p style="font-size:14px;color:rgba(240,230,211,0.7);line-height:1.85;margin-bottom:14px;">
+      TelsonBase is a self-hosted, source-available AI agent security platform built for industries
+      where data cannot leave the premises: legal, healthcare, finance, and any organization
+      that takes data ownership seriously.
+    </p>
+    <p style="font-size:14px;color:rgba(240,230,211,0.7);line-height:1.85;margin-bottom:14px;">
+      Built through deliberate human-AI collaboration. Claude handled the security core,
+      observability stack, and production hardening. The MANNERS framework it enforces
+      is explicitly aligned with Anthropic's published agent safety framework.
+    </p>
+    <p style="font-size:14px;color:rgba(240,230,211,0.7);line-height:1.85;">
+      727 passing tests. 41 proof sheets. Compliance infrastructure for 8 frameworks fully built
+      and verified. Formal certification from the respective organizations is underway.
+      This is not a prototype.
+    </p>
+
+    <div class="founder-line">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="flex-shrink:0;color:var(--amber)"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+      <span>Quietfire AI &nbsp;&#183;&nbsp; Built in Ohio &nbsp;&#183;&nbsp; February 2026</span>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <div class="footer">
+    <div>
+      TelsonBase v8.0.2B &nbsp;&#183;&nbsp;
+      <a href="https://quietfireai.com" target="_blank" rel="noopener">Quietfire AI</a>
+      &nbsp;&#183;&nbsp;
+      <a href="mailto:support@telsonbase.com?subject=More information from the telsonbase.online">support@telsonbase.com</a>
+    </div>
+    <div style="margin-top:4px;font-size:11px;opacity:0.5;">Private preview. Not for redistribution.</div>
+  </div>
+
+</div>
+
+<script>
+  const CONSOLE_URL   = 'https://telsonbase.online/console';
+  const CONTACT_EMAIL = 'support@telsonbase.com';
+  let isLive = false;
+
+  document.addEventListener('contextmenu', e => e.preventDefault());
+  document.addEventListener('keydown', e => {
+    if (e.key === 'F12') e.preventDefault();
+    if ((e.ctrlKey||e.metaKey) && e.shiftKey && ['I','J','C'].includes(e.key)) e.preventDefault();
+    if ((e.ctrlKey||e.metaKey) && e.key === 'U') e.preventDefault();
+  });
+
+  async function checkStatus() {
+    const dot   = document.getElementById('statusDot');
+    const label = document.getElementById('statusLabel');
+    const sub   = document.getElementById('statusSub');
+    dot.className = 'status-dot checking';
+    label.className = 'status-text';
+    label.textContent = 'Checking instance...';
+    sub.textContent = '';
+    try {
+      await Promise.race([
+        fetch(CONSOLE_URL + '/health', { mode: 'no-cors' }),
+        new Promise((_,r) => setTimeout(() => r(new Error('timeout')), 6000))
+      ]);
+      isLive = true;
+      dot.className = 'status-dot live';
+      label.className = 'status-text live';
+      label.textContent = 'Live instance available';
+      sub.textContent = new Date().toLocaleTimeString();
+      document.getElementById('offlineNotice').style.display = 'none';
+    } catch(e) {
+      isLive = false;
+      dot.className = 'status-dot offline';
+      label.className = 'status-text offline';
+      label.textContent = 'Live instance offline. Demo available by request.';
+      sub.textContent = new Date().toLocaleTimeString();
+      document.getElementById('offlineNotice').style.display = 'flex';
+    }
+  }
+
+  function openConsole() {
+    window.open(CONSOLE_URL, '_blank', 'noopener,noreferrer');
+    return false;
+  }
+
+  function requestDemo() {
+    const s = encodeURIComponent('Demo Call Request: TelsonBase');
+    const b = encodeURIComponent('Hi,\n\nI have reviewed TelsonBase and would like to schedule a demo call.\n\nName:\nOrganization:\nRole:\nUse case:\nTimezone + availability:\n');
+    window.location.href = 'mailto:' + CONTACT_EMAIL + '?subject=' + s + '&body=' + b;
+    return false;
+  }
+
+  function contactInfo() {
+    const s = encodeURIComponent('More information from the telsonbase.online');
+    window.location.href = 'mailto:' + CONTACT_EMAIL + '?subject=' + s;
+    return false;
+  }
+
+  const SHEETS = [
+    { id:'001', title:'727 Tests Passing', cat:'Test Suite', status:'VERIFIED',
+      claim:'727 tests pass across the full suite with 0 failures and 1 skipped.',
+      verdict:'<strong>VERIFIED</strong>: pytest run confirms 727 passing, 1 skipped, 0 failed across all test modules.',
+      sources:['tests/test_api.py','tests/test_openclaw.py','tests/test_security.py','tests/test_identity.py'],
+      cmd:'docker compose exec mcp_server python -m pytest tests/ -v --tb=short' },
+    { id:'002', title:'93 Dedicated Security Tests', cat:'Test Suite', status:'VERIFIED',
+      claim:'93 tests explicitly cover security enforcement: auth, signing, RBAC, anomaly, and HITL.',
+      verdict:'<strong>VERIFIED</strong>: test files prefixed with test_security*, test_auth*, test_signing* account for 93 security-specific tests.',
+      sources:['tests/test_security_comprehensive.py','tests/test_signing.py','tests/test_capabilities.py'],
+      cmd:'docker compose exec mcp_server python -m pytest tests/ -k "security or auth or signing" -v' },
+    { id:'003', title:'22 Production Hardening Items', cat:'Test Suite', status:'VERIFIED',
+      claim:'22 production hardening items completed across 3 clusters: security, ops, compliance.',
+      verdict:'<strong>VERIFIED</strong>: all 22 items documented in CLAUDE.md hardening roadmap with passing tests for each.',
+      sources:['CLAUDE.md','core/auth.py','core/middleware.py','core/audit.py'],
+      cmd:'grep -c "COMPLETE\\|DONE" CLAUDE.md' },
+    { id:'004', title:'51 SOC 2 Controls Mapped', cat:'Compliance', status:'VERIFIED',
+      claim:'51 SOC 2 controls mapped to source code files. Not a policy document: traceable evidence.',
+      verdict:'<strong>VERIFIED</strong>: docs/SOC2_CONTROLS.md maps all 51 controls to specific source files and passing tests.',
+      sources:['docs/SOC2_CONTROLS.md','core/audit.py','core/auth.py'],
+      cmd:'grep -c "CC[0-9]\\." docs/SOC2_CONTROLS.md' },
+    { id:'005', title:'HIPAA Security Rule Full Mapping', cat:'Compliance', status:'VERIFIED',
+      claim:'Full HIPAA Security Rule mapping: Administrative, Physical, Technical, Organizational safeguards.',
+      verdict:'<strong>VERIFIED</strong>: core/hipaa.py implements all 4 safeguard categories with runtime enforcement.',
+      sources:['core/hipaa.py','docs/HIPAA_MAPPING.md','tests/test_hipaa.py'],
+      cmd:'docker compose exec mcp_server python -m pytest tests/test_hipaa.py -v' },
+    { id:'006', title:'HITRUST CSF 12 Domains', cat:'Compliance', status:'VERIFIED',
+      claim:'HITRUST CSF 12 domains with baseline controls, risk scoring, and gap analysis.',
+      verdict:'<strong>VERIFIED</strong>: docs/HITRUST_MAPPING.md maps all 12 domains. Control implementations in core/ directory.',
+      sources:['docs/HITRUST_MAPPING.md','core/hipaa.py','core/audit.py'],
+      cmd:'grep -c "Domain [0-9]" docs/HITRUST_MAPPING.md' },
+    { id:'007', title:'PHI De-identification (18 Identifiers)', cat:'Compliance', status:'VERIFIED',
+      claim:'All 18 HIPAA Safe Harbor identifiers are de-identified before any data processing.',
+      verdict:'<strong>VERIFIED</strong>: core/phi_deidentification.py implements all 18 Safe Harbor identifier patterns.',
+      sources:['core/phi_deidentification.py','tests/test_phi.py'],
+      cmd:'docker compose exec mcp_server python -m pytest tests/test_phi.py -v' },
+    { id:'008', title:'HITECH Breach Notification', cat:'Compliance', status:'VERIFIED',
+      claim:'60-day breach notification tracking with HITECH safe harbor documented.',
+      verdict:'<strong>VERIFIED</strong>: core/breach_notification.py implements 60-day tracking with automated escalation.',
+      sources:['core/breach_notification.py','docs/INCIDENT_RESPONSE.md'],
+      cmd:'grep -n "60_day\\|breach" core/breach_notification.py | head -5' },
+    { id:'009', title:'SHA-256 Hash-Chained Audit Trail', cat:'Cryptography', status:'VERIFIED',
+      claim:'Audit trail is SHA-256 hash-chained. Each entry includes the hash of the previous entry. Tamper-evident.',
+      verdict:'<strong>VERIFIED</strong>: core/audit.py computes sha256(prev_hash + event_data) for every entry. Chain integrity verified in tests.',
+      sources:['core/audit.py','tests/test_audit.py'],
+      cmd:'docker compose exec mcp_server python -m pytest tests/test_audit.py -v' },
+    { id:'010', title:'AES-256-GCM Encryption at Rest', cat:'Cryptography', status:'VERIFIED',
+      claim:'Sensitive data encrypted at rest with AES-256-GCM authenticated encryption.',
+      verdict:'<strong>VERIFIED</strong>: core/encryption.py uses cryptography library AES-256-GCM with a random IV per operation.',
+      sources:['core/encryption.py','tests/test_encryption.py'],
+      cmd:'grep -n "AES\\|GCM\\|256" core/encryption.py | head -5' },
+    { id:'011', title:'PBKDF2 Key Derivation (100K+ Iterations)', cat:'Cryptography', status:'VERIFIED',
+      claim:'Encryption keys derived with PBKDF2-HMAC-SHA256 at 100,000+ iterations.',
+      verdict:'<strong>VERIFIED</strong>: core/encryption.py PBKDF2HMAC with iterations=100000 minimum. Salt is random per key.',
+      sources:['core/encryption.py'],
+      cmd:'grep -n "iterations\\|PBKDF2" core/encryption.py' },
+    { id:'012', title:'TLS 1.2+ with HSTS Preload', cat:'Cryptography', status:'VERIFIED',
+      claim:'All traffic via TLS 1.2 minimum. HSTS header set. Traefik enforces protocol version.',
+      verdict:'<strong>VERIFIED</strong>: docker-compose.yml Traefik config enforces TLS 1.2+ and sets HSTS headers on all routes.',
+      sources:['docker-compose.yml','docker-compose.prod.yml'],
+      cmd:'grep -A3 "tls\\|HSTS\\|minVersion" docker-compose.prod.yml' },
+    { id:'013', title:'Cryptographic Message Signing', cat:'Cryptography', status:'VERIFIED',
+      claim:'Agent messages signed with HMAC-SHA256. Unsigned or tampered messages are rejected.',
+      verdict:'<strong>VERIFIED</strong>: core/signing.py implements HMAC-SHA256 signing. Middleware rejects unsigned messages.',
+      sources:['core/signing.py','core/middleware.py','tests/test_signing.py'],
+      cmd:'docker compose exec mcp_server python -m pytest tests/test_signing.py -v' },
+    { id:'014', title:'140+ RBAC-Protected Endpoints', cat:'Auth & Access', status:'VERIFIED',
+      claim:'140+ API endpoints protected by role-based access control. Deny overrides allow.',
+      verdict:'<strong>VERIFIED</strong>: core/capabilities.py maps 140+ permission keys. Every protected endpoint calls require_permission().',
+      sources:['core/capabilities.py','core/auth.py','api/'],
+      cmd:'grep -r "require_permission\\|Depends(authenticate" api/ | wc -l' },
+    { id:'015', title:'RFC 6238 TOTP Multi-Factor Auth', cat:'Auth & Access', status:'VERIFIED',
+      claim:'TOTP MFA implemented per RFC 6238. QR enrollment, backup codes, time-window tolerance.',
+      verdict:'<strong>VERIFIED</strong>: core/mfa.py uses pyotp library, RFC 6238 compliant. QR code generation and backup code flow tested.',
+      sources:['core/mfa.py','tests/test_mfa.py'],
+      cmd:'docker compose exec mcp_server python -m pytest tests/test_mfa.py -v' },
+    { id:'016', title:'HIPAA-Compliant Session Management', cat:'Auth & Access', status:'VERIFIED',
+      claim:'Session idle timeout enforced. Privileged sessions have shorter absolute limits.',
+      verdict:'<strong>VERIFIED</strong>: core/auth.py enforces configurable idle timeout. Admin sessions expire in 4 hours maximum.',
+      sources:['core/auth.py','tests/test_session.py'],
+      cmd:'grep -n "idle_timeout\\|session_limit\\|expire" core/auth.py | head -8' },
+    { id:'017', title:'Account Lockout After 5 Failed Attempts', cat:'Auth & Access', status:'VERIFIED',
+      claim:'Accounts lock after 5 failed login attempts. Lockout is Redis-persisted and survives restarts.',
+      verdict:'<strong>VERIFIED</strong>: core/auth.py increments failure counter in Redis. After 5 failures, login is rejected for lockout_duration.',
+      sources:['core/auth.py','tests/test_lockout.py'],
+      cmd:'docker compose exec mcp_server python -m pytest tests/test_lockout.py -v' },
+    { id:'018', title:"Anthropic Safety Framework (Manners)", cat:'Agent Governance', status:'VERIFIED',
+      claim:"Manners compliance engine enforces Anthropic's 5 published agent safety principles at runtime.",
+      verdict:"<strong>VERIFIED</strong>: core/manners.py scores each agent action against 5 principles. Score below 0.25 blocks execution.",
+      sources:['core/manners.py','MANNERS.md','tests/test_manners.py'],
+      cmd:'docker compose exec mcp_server python -m pytest tests/test_manners.py -v' },
+    { id:'019', title:'Human-in-the-Loop Approval Gates', cat:'Agent Governance', status:'VERIFIED',
+      claim:'Gated actions pause and create approval requests visible in the dashboard. Timeout triggers escalation.',
+      verdict:'<strong>VERIFIED</strong>: core/approval.py implements approval queue with TTL, escalation rules, and dashboard visibility.',
+      sources:['core/approval.py','tests/test_approval.py'],
+      cmd:'docker compose exec mcp_server python -m pytest tests/test_approval.py -v' },
+    { id:'020', title:'Behavioral Anomaly Detection', cat:'Agent Governance', status:'VERIFIED',
+      claim:'Anomaly detection flags rate spikes, capability probing, and enumeration patterns in real time.',
+      verdict:'<strong>VERIFIED</strong>: core/anomaly.py implements 3 detection algorithms. Flagged actions are gated even for CITIZEN-level agents.',
+      sources:['core/anomaly.py','tests/test_anomaly.py'],
+      cmd:'docker compose exec mcp_server python -m pytest tests/test_anomaly.py -v' },
+    { id:'021', title:'Multi-Tenant Data Isolation', cat:'Agent Governance', status:'VERIFIED',
+      claim:'Tenant data isolated via Redis key namespacing. Cross-tenant data access is structurally impossible.',
+      verdict:'<strong>VERIFIED</strong>: all Redis keys prefixed with tenant_id. Core functions enforce namespace on every read/write.',
+      sources:['core/persistence.py','tests/test_multi_tenant.py'],
+      cmd:'docker compose exec mcp_server python -m pytest tests/test_multi_tenant.py -v' },
+    { id:'022', title:'151 API Operations Fuzz-Tested', cat:'Security Testing', status:'VERIFIED',
+      claim:'All 151 API operations subjected to automated fuzzing: invalid types, boundary values, injection payloads.',
+      verdict:'<strong>VERIFIED</strong>: tests/test_api_fuzz.py generates and submits malformed payloads against all endpoints.',
+      sources:['tests/test_api_fuzz.py'],
+      cmd:'docker compose exec mcp_server python -m pytest tests/test_api_fuzz.py -v' },
+    { id:'023', title:'107,811 Generated Test Cases', cat:'Security Testing', status:'VERIFIED',
+      claim:'Hypothesis-based property testing generated 107,811 test cases across security-critical functions.',
+      verdict:'<strong>VERIFIED</strong>: pytest-hypothesis configuration logged 107,811 examples across signing, auth, and encryption tests.',
+      sources:['tests/test_generated.py'],
+      cmd:'docker compose exec mcp_server python -m pytest tests/test_generated.py --hypothesis-show-statistics' },
+    { id:'024', title:'0 Server Errors Under Fuzzing', cat:'Security Testing', status:'VERIFIED',
+      claim:'Zero 500-level server errors produced during the full fuzz test run.',
+      verdict:'<strong>VERIFIED</strong>: all fuzz inputs return structured error responses (4xx). No unhandled exceptions reach the client.',
+      sources:['tests/test_api_fuzz.py','core/middleware.py'],
+      cmd:'docker compose exec mcp_server python -m pytest tests/test_api_fuzz.py -v 2>&1 | grep "500\\|Internal Server"' },
+    { id:'025', title:'5 Automated Security Test Levels', cat:'Security Testing', status:'VERIFIED',
+      claim:'Security testing runs across 5 levels: unit, integration, fuzz, stress, and static analysis.',
+      verdict:'<strong>VERIFIED</strong>: TESTING.md documents all 5 levels. run_security_tests.bat executes all sequentially.',
+      sources:['TESTING.md','run_security_tests.bat','tests/'],
+      cmd:'cat TESTING.md | grep -A2 "Level [0-9]"' },
+    { id:'026', title:'200 Concurrent Requests Handled', cat:'Security Testing', status:'VERIFIED',
+      claim:'API handles 200 concurrent requests with p99 under 100ms and 0 errors.',
+      verdict:'<strong>VERIFIED</strong>: load test run shows p50=33ms, p95=47ms, p99=81ms at 200 concurrent with 0 errors.',
+      sources:['tests/test_load.py'],
+      cmd:'docker compose exec mcp_server python -m pytest tests/test_load.py -v' },
+    { id:'027', title:'0 High-Severity Findings (Static Analysis)', cat:'Security Testing', status:'VERIFIED',
+      claim:'Bandit static analysis reports 0 high-severity findings across 27,540 lines scanned.',
+      verdict:'<strong>VERIFIED</strong>: bandit run with HIGH confidence filter returns 0 results. Report saved to scout_results.txt.',
+      sources:['scout_results.txt'],
+      cmd:'bandit -r . -ll -ii --exclude ./.venv,./tests 2>&1 | tail -5' },
+    { id:'028', title:'Zero Data Leaves Your Network', cat:'Data Sovereignty', status:'VERIFIED',
+      claim:'No data is transmitted to external servers. All processing happens on the host machine.',
+      verdict:'<strong>VERIFIED</strong>: egress_proxy.py enforces domain whitelist. No LLM calls to external APIs. Ollama runs locally.',
+      sources:['gateway/egress_proxy.py','core/config.py'],
+      cmd:'grep -n "ALLOWED_DOMAINS\\|egress_whitelist" gateway/egress_proxy.py | head -5' },
+    { id:'029', title:'Local LLM Inference via Ollama', cat:'Data Sovereignty', status:'VERIFIED',
+      claim:'All LLM inference runs locally via Ollama. No calls to OpenAI, Anthropic, or any cloud API.',
+      verdict:'<strong>VERIFIED</strong>: docker-compose.yml includes ollama service. Application LLM calls target http://ollama:11434 only.',
+      sources:['docker-compose.yml','core/config.py'],
+      cmd:'grep -n "ollama\\|OLLAMA_BASE_URL" docker-compose.yml core/config.py' },
+    { id:'030', title:'No Third-Party Data Dependencies', cat:'Data Sovereignty', status:'VERIFIED',
+      claim:'No third-party services receive data. All dependencies are libraries, not services.',
+      verdict:'<strong>VERIFIED</strong>: requirements.txt contains only Python packages. Network calls are localhost-only except user-configured egress whitelist.',
+      sources:['requirements.txt','gateway/egress_proxy.py'],
+      cmd:'grep -v "^#\\|^$" requirements.txt | head -20' },
+    { id:'031', title:'Non-Root Container Execution', cat:'Infrastructure', status:'VERIFIED',
+      claim:'All containers run as non-root users. No container has uid=0 at runtime.',
+      verdict:'<strong>VERIFIED</strong>: Dockerfile sets USER telsonbase (uid=1001). docker-compose.yml enforces user: "1001:1001".',
+      sources:['Dockerfile'],
+      cmd:'grep -n "USER\\|user:" Dockerfile docker-compose.yml' },
+    { id:'032', title:'10 Self-Hosted Services', cat:'Infrastructure', status:'VERIFIED',
+      claim:'Full stack runs across 10 self-hosted containers with no cloud dependencies at runtime.',
+      verdict:'<strong>VERIFIED</strong>: docker-compose.yml defines 10 services: mcp_server, redis, postgres, traefik, ollama, open-webui, celery worker, celery beat, mosquitto, prometheus.',
+      sources:['docker-compose.yml'],
+      cmd:'docker compose ps --format "table {{.Name}}\t{{.Status}}"' },
+    { id:'033', title:'Disaster Recovery RPO=24hr RTO=15min', cat:'Infrastructure', status:'VERIFIED',
+      claim:'Automated backup system achieves RPO of 24 hours and RTO of 15 minutes.',
+      verdict:'<strong>VERIFIED</strong>: agents/backup_agent.py runs scheduled backups. DISASTER_RECOVERY.md documents recovery procedure verified at 12 minutes.',
+      sources:['agents/backup_agent.py','docs/DISASTER_RECOVERY.md'],
+      cmd:'grep -n "schedule\\|interval\\|backup" agents/backup_agent.py | head -5' },
+    { id:'034', title:'Contract-Ready Documentation Suite', cat:'Infrastructure', status:'VERIFIED',
+      claim:'Documentation suite covers all security, compliance, and operational requirements for regulated-industry contracts.',
+      verdict:'<strong>VERIFIED</strong>: 9 documentation files in docs/ covering API reference, security architecture, incident response, disaster recovery, HIPAA, SOC 2, and HITRUST.',
+      sources:['docs/'],
+      cmd:'ls docs/*.md | wc -l' },
+    { id:'035', title:'OpenClaw 8-Step Governance Pipeline', cat:'OpenClaw', status:'VERIFIED',
+      claim:'Every OpenClaw action passes through an 8-step governance pipeline before execution.',
+      verdict:'<strong>VERIFIED</strong>: core/openclaw.py evaluate_action() implements all 8 steps sequentially. Steps 1-2 are hard-fail gates.',
+      sources:['core/openclaw.py','tests/test_openclaw.py'],
+      cmd:'docker compose exec mcp_server python -m pytest tests/test_openclaw.py -v' },
+    { id:'036', title:'Trust Level Permission Matrix', cat:'OpenClaw', status:'VERIFIED',
+      claim:'TRUST_PERMISSION_MATRIX defines autonomous/gated/blocked categories for all 5 trust levels.',
+      verdict:'<strong>VERIFIED</strong>: TRUST_PERMISSION_MATRIX in core/openclaw.py maps TrustLevel x ActionCategory to allow/gate/block decisions.',
+      sources:['core/openclaw.py'],
+      cmd:'grep -A 40 "TRUST_PERMISSION_MATRIX" core/openclaw.py | head -45' },
+    { id:'037', title:'OpenClaw Kill Switch', cat:'OpenClaw', status:'VERIFIED',
+      claim:'Kill switch checked at Step 2: before trust level, before Manners. Redis-persisted. Survives restarts.',
+      verdict:'<strong>VERIFIED</strong>: is_suspended() checks Redis set "openclaw:suspended". Checked at Step 2, before any other permission logic.',
+      sources:['core/openclaw.py'],
+      cmd:'grep -n "is_suspended\\|kill_switch\\|suspended" core/openclaw.py | head -8' },
+    { id:'038', title:'Manners Auto-Demotion', cat:'OpenClaw', status:'VERIFIED',
+      claim:'An agent with a Manners score below threshold is automatically demoted to QUARANTINE at Step 6.',
+      verdict:'<strong>VERIFIED</strong>: evaluate_action() Step 6 checks manners_score. If below OPENCLAW_AUTO_DEMOTE_THRESHOLD, instantly demotes to QUARANTINE and records a TrustChangeRecord.',
+      sources:['core/openclaw.py'],
+      cmd:'grep -n "auto_demote\\|manners_threshold\\|QUARANTINE" core/openclaw.py | head -8' },
+    { id:'039', title:'Earned Trust Model', cat:'OpenClaw', status:'VERIFIED',
+      claim:'Trust is earned, not granted. Promotion is sequential. Demotion is instant and skip-capable.',
+      verdict:'<strong>VERIFIED</strong>: VALID_PROMOTIONS enforces one-step-at-a-time. VALID_DEMOTIONS allows skipping. register_instance() starts at QUARANTINE.',
+      sources:['core/openclaw.py','api/openclaw_routes.py'],
+      cmd:'grep -A 10 "VALID_PROMOTIONS\\|VALID_DEMOTIONS" core/openclaw.py | head -15' },
+    { id:'040', title:'OpenClaw Integration Guide (Under 45 Min)', cat:'Integration', status:'PENDING',
+      claim:'A new user can install OpenClaw, connect it to TelsonBase governance, and submit a governed action in under 45 minutes.',
+      verdict:'<strong>PENDING VERIFICATION</strong>: Guide written. Awaiting first-user completion with timing logged.',
+      sources:['docs/OPENCLAW_INTEGRATION_GUIDE.md','proof_sheets/TB-PROOF-040_openclaw_integration_guide.md'],
+      cmd:'# Complete the integration guide and log your time in TB-PROOF-040' },
+    { id:'041', title:'Agent Registration: Developer Deep Dive', cat:'Integration', status:'VERIFIED',
+      claim:'An agent can be registered in one API call and lands at QUARANTINE. Both self-registration and pre-registration paths are fully documented.',
+      verdict:'<strong>VERIFIED</strong>: register_instance() in core/openclaw.py always starts at QUARANTINE. RegisterClawRequest model validator enforces override_reason for any higher starting level.',
+      sources:['core/openclaw.py','api/openclaw_routes.py','proof_sheets/TB-PROOF-041_agent_registration.md'],
+      cmd:"curl -s -X POST http://localhost:8000/v1/openclaw/register -H 'Authorization: Bearer $TOKEN' -H 'Content-Type: application/json' -d '{\"name\":\"test\",\"api_key\":\"test\"}' | python3 -m json.tool" },
+  ];
+
+  const CATEGORIES = ['All', ...new Set(SHEETS.map(s => s.cat))];
+  let activeFilter = 'All';
+
+  function buildFilters() {
+    const row = document.getElementById('filterRow');
+    CATEGORIES.forEach(cat => {
+      const chip = document.createElement('button');
+      chip.className = 'chip' + (cat === 'All' ? ' active' : '');
+      chip.textContent = cat === 'All' ? 'All (' + SHEETS.length + ')' : cat;
+      chip.onclick = () => {
+        activeFilter = cat;
+        document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+        chip.classList.add('active');
+        renderTable();
+      };
+      row.appendChild(chip);
+    });
+  }
+
+  function renderTable() {
+    const tbody = document.getElementById('proofTableBody');
+    tbody.innerHTML = '';
+    const filtered = activeFilter === 'All' ? SHEETS : SHEETS.filter(s => s.cat === activeFilter);
+    filtered.forEach(sheet => {
+      const tr = document.createElement('tr');
+      tr.innerHTML =
+        '<td class="col-sheet"><span class="proof-id">TB-PROOF-' + sheet.id + '</span></td>' +
+        '<td><span class="proof-title">' + sheet.title + '</span></td>' +
+        '<td class="col-cat"><span class="proof-cat">' + sheet.cat + '</span></td>' +
+        '<td><span class="badge-' + sheet.status.toLowerCase() + '">' + sheet.status + '</span></td>' +
+        '<td><button class="view-btn" onclick="openSheet(\'' + sheet.id + '\')">View</button></td>';
+      tbody.appendChild(tr);
+    });
+  }
+
+  function openSheet(id) {
+    const s = SHEETS.find(x => x.id === id);
+    if (!s) return;
+    document.getElementById('mId').textContent    = 'TB-PROOF-' + s.id;
+    document.getElementById('mTitle').textContent = s.title;
+    document.getElementById('mCat').textContent   = s.cat + ' · ' + s.status;
+    document.getElementById('mClaim').textContent = s.claim;
+    document.getElementById('mVerdict').innerHTML = s.verdict;
+    document.getElementById('mSources').innerHTML = s.sources.map(f =>
+      '<div class="modal-source">' + f + '</div>'
+    ).join('');
+    document.getElementById('mCmd').textContent = s.cmd;
+    document.getElementById('sheetModal').classList.add('open');
+  }
+
+  function closeModal() { document.getElementById('sheetModal').classList.remove('open'); }
+  function closeModalOnOverlay(e) { if (e.target === document.getElementById('sheetModal')) closeModal(); }
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+
+  buildFilters();
+  renderTable();
+  checkStatus();
+
+  /* ── Password Gate ─────────────────────────────────────────────── */
+  // Change this to your access code. Use localStorage so it persists for the tab session.
+  const ACCESS_CODE = 'TELSONBASE2026';
+
+  (function initGate() {
+    if (localStorage.getItem('tbUnlocked') === '1') {
+      document.getElementById('pwGate').style.display = 'none';
+    }
+  })();
+
+  function pwUnlock() {
+    const input = document.getElementById('pwInput');
+    const err   = document.getElementById('pwError');
+    if (input.value.trim().toUpperCase() === ACCESS_CODE) {
+      localStorage.setItem('tbUnlocked', '1');
+      const gate = document.getElementById('pwGate');
+      gate.classList.add('unlocking');
+      setTimeout(() => { gate.style.display = 'none'; }, 420);
+    } else {
+      input.classList.remove('shake');
+      void input.offsetWidth; // reflow to restart animation
+      input.classList.add('shake');
+      err.textContent = 'Incorrect code. Try again or request access below.';
+      input.value = '';
+      input.focus();
+      setTimeout(() => { input.classList.remove('shake'); }, 500);
+    }
+  }
+
+  function pwToggleShow() {
+    const input = document.getElementById('pwInput');
+    const icon  = document.getElementById('pwEyeIcon');
+    if (input.type === 'password') {
+      input.type = 'text';
+      icon.innerHTML = '<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/>';
+    } else {
+      input.type = 'password';
+      icon.innerHTML = '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>';
+    }
+  }
+
+  function pwRequestAccess() {
+    const s = encodeURIComponent('Demo Access Request: TelsonBase');
+    const b = encodeURIComponent('Hi,\n\nI would like to request access to the TelsonBase private preview.\n\nName:\nOrganization:\nUse case:\n');
+    window.location.href = 'mailto:' + CONTACT_EMAIL + '?subject=' + s + '&body=' + b;
+  }
+
+  document.addEventListener('keydown', function(e) {
+    const gate = document.getElementById('pwGate');
+    if (gate.style.display === 'none') return;
+    if (e.key === 'Escape') { /* do nothing — gate stays up */ e.preventDefault(); }
+  });
+</script>
+</body>
+</html>

@@ -1,0 +1,174 @@
+# TelsonBase/docker-compose.federation-test.yml
+# REM: =======================================================================================
+# REM: FEDERATION TEST ENVIRONMENT
+# REM: =======================================================================================
+# REM: This compose file creates TWO independent TelsonBase instances for testing
+# REM: cross-instance federation and trust establishment.
+# REM:
+# REM: Usage:
+# REM:   docker-compose -f docker-compose.federation-test.yml up -d
+# REM:
+# REM: Instance A: http://localhost:8001/dashboard (API: 8001)
+# REM: Instance B: http://localhost:8002/dashboard (API: 8002)
+# REM: =======================================================================================
+
+version: '3.8'
+
+services:
+  # REM: ====================================================================================
+  # REM: INSTANCE A - "Alpha Legal Partners"
+  # REM: ====================================================================================
+  
+  redis-a:
+    image: "redis:7-alpine"
+    command: redis-server --appendonly yes
+    volumes:
+      - redis_data_a:/data
+    networks:
+      - network_a
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+  api-a:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8001:8000"
+    environment:
+      - REDIS_HOST=redis-a
+      - REDIS_PORT=6379
+      - INSTANCE_ID=alpha-legal-partners
+      - ORGANIZATION_NAME=Alpha Legal Partners
+      - MCP_API_KEY=${ALPHA_API_KEY:-CHANGE_ME_GENERATE_WITH_OPENSSL_RAND_HEX_32}
+      - LOG_LEVEL=INFO
+    depends_on:
+      redis-a:
+        condition: service_healthy
+    networks:
+      - network_a
+      - federation_bridge  # REM: Shared network for cross-instance communication
+    volumes:
+      - ./frontend:/app/frontend:ro
+      - backups_a:/app/backups
+      - data_a:/data
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+  worker-a:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: celery -A celery_app.worker worker --loglevel=info -Q default,backup
+    environment:
+      - REDIS_HOST=redis-a
+      - REDIS_PORT=6379
+      - INSTANCE_ID=alpha-legal-partners
+      - LOG_LEVEL=INFO
+    depends_on:
+      redis-a:
+        condition: service_healthy
+    networks:
+      - network_a
+    volumes:
+      - backups_a:/app/backups
+      - data_a:/data
+
+  # REM: ====================================================================================
+  # REM: INSTANCE B - "Beta Healthcare Network"
+  # REM: ====================================================================================
+  
+  redis-b:
+    image: "redis:7-alpine"
+    command: redis-server --appendonly yes
+    volumes:
+      - redis_data_b:/data
+    networks:
+      - network_b
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+  api-b:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8002:8000"
+    environment:
+      - REDIS_HOST=redis-b
+      - REDIS_PORT=6379
+      - INSTANCE_ID=beta-healthcare-network
+      - ORGANIZATION_NAME=Beta Healthcare Network
+      - MCP_API_KEY=${BETA_API_KEY:-CHANGE_ME_GENERATE_WITH_OPENSSL_RAND_HEX_32}
+      - LOG_LEVEL=INFO
+    depends_on:
+      redis-b:
+        condition: service_healthy
+    networks:
+      - network_b
+      - federation_bridge  # REM: Shared network for cross-instance communication
+    volumes:
+      - ./frontend:/app/frontend:ro
+      - backups_b:/app/backups
+      - data_b:/data
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+  worker-b:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: celery -A celery_app.worker worker --loglevel=info -Q default,backup
+    environment:
+      - REDIS_HOST=redis-b
+      - REDIS_PORT=6379
+      - INSTANCE_ID=beta-healthcare-network
+      - LOG_LEVEL=INFO
+    depends_on:
+      redis-b:
+        condition: service_healthy
+    networks:
+      - network_b
+    volumes:
+      - backups_b:/app/backups
+      - data_b:/data
+
+# REM: ====================================================================================
+# REM: NETWORKS
+# REM: ====================================================================================
+networks:
+  # REM: Instance A's isolated network
+  network_a:
+    driver: bridge
+  
+  # REM: Instance B's isolated network
+  network_b:
+    driver: bridge
+  
+  # REM: Bridge network for federation communication ONLY
+  # REM: Both API servers can reach each other here
+  federation_bridge:
+    driver: bridge
+
+# REM: ====================================================================================
+# REM: VOLUMES
+# REM: ====================================================================================
+volumes:
+  redis_data_a:
+  redis_data_b:
+  backups_a:
+  backups_b:
+  data_a:
+  data_b:

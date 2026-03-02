@@ -1,0 +1,92 @@
+============================================================================
+MIT License
+============================================================================
+
+TelsonBase dependencies covered by this license:
+
+  Python Packages:
+    - FastAPI 0.125.0          (Web framework)
+    - Gunicorn 25.0.3          (Production WSGI server)
+    - Pydantic 2.6.1           (Data validation)
+    - redis-py 5.0.1           (Redis client)
+    - python-jose 3.5.0        (JWT authentication)
+    - pyotp 2.9.0+             (TOTP multi-factor auth)
+    - SQLAlchemy 2.0+          (ORM / database toolkit)
+    - Alembic 1.13+            (Database migrations)
+
+  Docker Images / Services:
+    - Ollama                   (Local LLM inference engine)
+    - Traefik                  (Reverse proxy / edge router)
+    - Open WebUI               (LLM chat interface)
+
+============================================================================
+
+The MIT License
+
+Copyright (c) <year> <copyright holders>
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+============================================================================
+Individual Copyright Notices
+============================================================================
+
+FastAPI:
+  Copyright (c) 2018-present Sebastian Ramirez and contributors
+  https://github.com/tiangolo/fastapi
+
+Gunicorn:
+  Copyright (c) 2009-present Benoit Chesneau and contributors
+  https://github.com/benoitc/gunicorn
+
+Pydantic:
+  Copyright (c) 2017-present Samuel Colvin and contributors
+  https://github.com/pydantic/pydantic
+
+redis-py:
+  Copyright (c) 2012-present Redis Inc. and contributors
+  https://github.com/redis/redis-py
+
+python-jose:
+  Copyright (c) 2015-present Michael Davis
+  https://github.com/mpdavis/python-jose
+
+pyotp:
+  Copyright (c) 2011-present Mark Percival and contributors
+  https://github.com/pyauth/pyotp
+
+SQLAlchemy:
+  Copyright (c) 2005-present Michael Bayer and contributors
+  https://github.com/sqlalchemy/sqlalchemy
+
+Alembic:
+  Copyright (c) 2009-present Michael Bayer and contributors
+  https://github.com/sqlalchemy/alembic
+
+Ollama:
+  Copyright (c) Ollama
+  https://github.com/ollama/ollama
+
+Traefik:
+  Copyright (c) 2016-present Traefik Labs
+  https://github.com/traefik/traefik
+
+Open WebUI:
+  Copyright (c) 2023-present Timothy Jaeryang Baek and contributors
+  https://github.com/open-webui/open-webui

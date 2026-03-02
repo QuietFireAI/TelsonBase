@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Ask a Question
+    url: https://github.com/quietfire/telsonbase/discussions/categories/q-a
+    about: Use GitHub Discussions for questions, setup help, and general conversation.
+  - name: Security Vulnerability
+    url: https://github.com/quietfire/telsonbase/blob/main/SECURITY.md
+    about: DO NOT open a public issue for security vulnerabilities. See SECURITY.md for responsible disclosure.

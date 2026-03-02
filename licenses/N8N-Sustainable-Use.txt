@@ -1,0 +1,49 @@
+============================================================================
+n8n Sustainable Use License
+============================================================================
+
+TelsonBase dependencies covered by this license:
+
+  Docker Images:
+    - n8n (n8nio/n8n)              (Workflow automation engine)
+
+  IMPORTANT RESTRICTIONS:
+    The n8n Sustainable Use License is NOT an open-source license.
+    It permits free use for internal business operations but restricts:
+
+    1. COMPETING: You may NOT use n8n to build a product or service
+       that competes with n8n's own workflow automation offerings.
+
+    2. RESELLING: You may NOT resell n8n as a standalone service.
+
+    3. EMBEDDING: You may NOT embed n8n into a product that you sell
+       where n8n is a primary feature of that product.
+
+  TELSONBASE USAGE:
+    TelsonBase uses n8n as an internal workflow automation engine for
+    agent orchestration and approval webhook callbacks. n8n is run as
+    a separate Docker container, bound to localhost only (127.0.0.1:5678).
+    This constitutes permitted internal use.
+
+  IF OPEN-SOURCING TELSONBASE:
+    - n8n is an OPTIONAL component (TelsonBase functions without it)
+    - Document n8n's license restrictions in your deployment guide
+    - Users must independently agree to n8n's license terms
+    - Consider offering an alternative workflow engine option
+
+============================================================================
+
+Full license text available at:
+https://github.com/n8n-io/n8n/blob/master/LICENSE.md
+
+The Sustainable Use License grants you the right to use, modify, and
+redistribute n8n under the following conditions:
+
+- You may use n8n for your own internal business purposes
+- You may modify n8n for your own internal business purposes
+- You may NOT use n8n to create a competing product
+- You may NOT offer n8n as a managed service to third parties
+
+For commercial licensing inquiries: https://n8n.io/pricing
+
+n8n source code: https://github.com/n8n-io/n8n

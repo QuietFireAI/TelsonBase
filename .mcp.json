@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "telsonbase": {
+      "type": "http",
+      "url": "http://localhost:8000/mcp",
+      "headers": {
+        "Authorization": "Bearer 09403244e50c4a15bbd23f422bd8257d39eed167d96a4553a4ab0461f8b0ebb5"
+      }
+    }
+  }
+}

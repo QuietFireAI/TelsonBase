@@ -1,0 +1,201 @@
+{
+  "_comment": "QMS v2.2.0 Message Schema Registry — defines valid message structures",
+  "_spec": "Each message type maps to: required blocks, optional blocks, valid statuses",
+  "_version": "2.2.0",
+
+  "message_types": {
+
+    "Tool_Checkout": {
+      "description": "Agent requests to borrow a tool from the toolroom",
+      "required_blocks": [
+        {"position": 1, "type": "ORIGIN", "description": "Requesting agent"},
+        {"position": 2, "type": "CORRELATION", "description": "Request tracking ID"},
+        {"position": 3, "type": "GENERIC", "value_pattern": "Tool_Checkout", "description": "Action name"},
+        {"position": "terminal", "type": "COMMAND", "description": "Request status"}
+      ],
+      "optional_blocks": [
+        {"type": "IDENTIFIER", "description": "Tool ID (e.g., ##pgcli##)"},
+        {"type": "STRING", "description": "Reason or error message"}
+      ],
+      "valid_statuses": ["Please", "Thank_You", "Thank_You_But_No"],
+      "valid_priorities": ["P1", "P2", "P3"]
+    },
+
+    "Tool_Return": {
+      "description": "Agent returns a checked-out tool",
+      "required_blocks": [
+        {"position": 1, "type": "ORIGIN"},
+        {"position": 2, "type": "CORRELATION"},
+        {"position": 3, "type": "GENERIC", "value_pattern": "Tool_Return"},
+        {"position": "terminal", "type": "COMMAND"}
+      ],
+      "optional_blocks": [
+        {"type": "IDENTIFIER", "description": "Checkout ID (e.g., ##CHKOUT-xxx##)"}
+      ],
+      "valid_statuses": ["Please", "Thank_You", "Thank_You_But_No"],
+      "valid_priorities": ["P2", "P3"]
+    },
+
+    "Tool_Request": {
+      "description": "Agent requests a tool it doesn't have access to",
+      "required_blocks": [
+        {"position": 1, "type": "ORIGIN"},
+        {"position": 2, "type": "CORRELATION"},
+        {"position": 3, "type": "GENERIC", "value_pattern": "Tool_Request"},
+        {"position": "terminal", "type": "COMMAND"}
+      ],
+      "optional_blocks": [
+        {"type": "IDENTIFIER", "description": "Tool name"},
+        {"type": "STRING", "description": "Justification"}
+      ],
+      "valid_statuses": ["Please", "Thank_You", "Thank_You_But_No", "Excuse_Me"],
+      "valid_priorities": ["P2", "P3"]
+    },
+
+    "Create_Backup": {
+      "description": "Backup agent initiates a backup operation",
+      "required_blocks": [
+        {"position": 1, "type": "ORIGIN"},
+        {"position": 2, "type": "CORRELATION"},
+        {"position": 3, "type": "GENERIC", "value_pattern": "Create_Backup"},
+        {"position": "terminal", "type": "COMMAND"}
+      ],
+      "optional_blocks": [
+        {"type": "IDENTIFIER", "description": "Target data path or volume"},
+        {"type": "NUMERIC", "description": "Size or count"}
+      ],
+      "valid_statuses": ["Please", "Thank_You", "Thank_You_But_No"],
+      "valid_priorities": ["P1", "P2", "P3"]
+    },
+
+    "Foreman_Install": {
+      "description": "Foreman installs a tool from approved source",
+      "required_blocks": [
+        {"position": 1, "type": "ORIGIN", "expected_value": "foreman_agent"},
+        {"position": 2, "type": "CORRELATION"},
+        {"position": 3, "type": "GENERIC", "value_pattern": "Foreman_Install"},
+        {"position": "terminal", "type": "COMMAND"}
+      ],
+      "optional_blocks": [
+        {"type": "IDENTIFIER", "description": "Tool name or repo"},
+        {"type": "VERSION", "description": "Version being installed"},
+        {"type": "STRING", "description": "Status message or error"}
+      ],
+      "valid_statuses": ["Please", "Thank_You", "Thank_You_But_No"],
+      "valid_priorities": ["P1", "P2", "P3"]
+    },
+
+    "Foreman_Update": {
+      "description": "Foreman proposes or executes a tool update",
+      "required_blocks": [
+        {"position": 1, "type": "ORIGIN", "expected_value": "foreman_agent"},
+        {"position": 2, "type": "CORRELATION"},
+        {"position": 3, "type": "GENERIC", "value_pattern": "Foreman_Update"},
+        {"position": "terminal", "type": "COMMAND"}
+      ],
+      "optional_blocks": [
+        {"type": "IDENTIFIER", "description": "Tool ID"},
+        {"type": "VERSION", "description": "New version"},
+        {"type": "STRING", "description": "Update details"}
+      ],
+      "valid_statuses": ["Please", "Thank_You", "Thank_You_But_No", "Pretty_Please"],
+      "valid_priorities": ["P1", "P2"]
+    },
+
+    "Security_Alert": {
+      "description": "System-wide security notification",
+      "required_blocks": [
+        {"position": 1, "type": "ORIGIN"},
+        {"position": 2, "type": "CORRELATION"},
+        {"position": 3, "type": "GENERIC", "value_pattern": "Security_Alert"},
+        {"position": "terminal", "type": "COMMAND"}
+      ],
+      "optional_blocks": [
+        {"type": "STRING", "description": "Alert description"},
+        {"type": "IDENTIFIER", "description": "Affected resource"},
+        {"type": "ENCRYPTED", "description": "Evidence hash"}
+      ],
+      "valid_statuses": ["Please", "Thank_You", "Pretty_Please"],
+      "valid_priorities": ["URGENT", "P1"],
+      "allows_halt": true
+    },
+
+    "Federation_Invite": {
+      "description": "Cross-instance federation invitation",
+      "required_blocks": [
+        {"position": 1, "type": "ORIGIN"},
+        {"position": 2, "type": "CORRELATION"},
+        {"position": 3, "type": "GENERIC", "value_pattern": "Federation_Invite"},
+        {"position": "terminal", "type": "COMMAND"}
+      ],
+      "optional_blocks": [
+        {"type": "IDENTIFIER", "description": "Remote instance ID"},
+        {"type": "ENCRYPTED", "description": "Signed invitation token"},
+        {"type": "VERSION", "description": "Protocol version"}
+      ],
+      "valid_statuses": ["Please", "Thank_You", "Thank_You_But_No"],
+      "valid_priorities": ["P2", "P3"]
+    },
+
+    "Agent_Ping": {
+      "description": "Health check / heartbeat between agents",
+      "required_blocks": [
+        {"position": 1, "type": "ORIGIN"},
+        {"position": 2, "type": "CORRELATION"},
+        {"position": 3, "type": "GENERIC", "value_pattern": "Agent_Ping|Ping"},
+        {"position": "terminal", "type": "COMMAND"}
+      ],
+      "optional_blocks": [],
+      "valid_statuses": ["Please", "Thank_You"],
+      "valid_priorities": ["P3"]
+    },
+
+    "Document_Process": {
+      "description": "Document agent processes a document (extract, summarize, search, redact)",
+      "required_blocks": [
+        {"position": 1, "type": "ORIGIN"},
+        {"position": 2, "type": "CORRELATION"},
+        {"position": 3, "type": "GENERIC", "value_pattern": "Document_Process"},
+        {"position": "terminal", "type": "COMMAND"}
+      ],
+      "optional_blocks": [
+        {"type": "IDENTIFIER", "description": "Document path or ID"},
+        {"type": "STRING", "description": "Processing instruction"},
+        {"type": "QUERY", "description": "Search query"}
+      ],
+      "valid_statuses": ["Please", "Thank_You", "Thank_You_But_No"],
+      "valid_priorities": ["P2", "P3"]
+    },
+
+    "LLM_Generate": {
+      "description": "Local LLM inference request via Ollama",
+      "required_blocks": [
+        {"position": 1, "type": "ORIGIN"},
+        {"position": 2, "type": "CORRELATION"},
+        {"position": 3, "type": "GENERIC", "value_pattern": "LLM_Generate"},
+        {"position": "terminal", "type": "COMMAND"}
+      ],
+      "optional_blocks": [
+        {"type": "IDENTIFIER", "description": "Model name"},
+        {"type": "STRING", "description": "Prompt text"},
+        {"type": "NUMERIC", "description": "Token limit or temperature"}
+      ],
+      "valid_statuses": ["Please", "Thank_You", "Thank_You_But_No"],
+      "valid_priorities": ["P2", "P3"]
+    }
+  },
+
+  "priority_levels": {
+    "URGENT": {"rank": 0, "description": "Preempts all other messages. Security alerts, system halt."},
+    "P1": {"rank": 1, "description": "High priority. Time-sensitive operations."},
+    "P2": {"rank": 2, "description": "Normal priority. Standard operations."},
+    "P3": {"rank": 3, "description": "Low priority. Background tasks, health checks."}
+  },
+
+  "default_ttl_seconds": {
+    "URGENT": 10,
+    "P1": 30,
+    "P2": 120,
+    "P3": 600
+  }
+}

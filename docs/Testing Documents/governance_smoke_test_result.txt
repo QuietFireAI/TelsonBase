@@ -1,0 +1,57 @@
+
+TelsonBase Governance Smoke Test
+  Target : http://localhost:8000
+  Agent  : smoke-test-agent-1772400143
+  Time   : 2026-03-01T21:22:23Z
+  ─────────────────────────────────────────
+
+── 1. Platform health
+[PASS] API liveness: HTTP 200
+[PASS] Redis: healthy
+
+── 2. Register agent — must start in QUARANTINE
+[INFO] instance_id : 226dae4cb28441e8
+[INFO] trust_level : quarantine
+[PASS] Agent starts in QUARANTINE
+
+── 3. Quarantine: internal read must be BLOCKED
+[PASS] Quarantine: internal read blocked
+
+── 4. Quarantine: external write must be BLOCKED
+[PASS] Quarantine: external write blocked
+
+── 5. Human promotion: QUARANTINE → PROBATION
+[PASS] Promotion QUARANTINE → PROBATION: HTTP 200
+
+── 6. Probation: internal read must be ALLOWED (autonomous)
+[PASS] Probation: internal read ALLOWED (autonomous — no approval needed)
+
+── 7. Probation: external write must be GATED (HITL approval)
+[PASS] Probation: external write GATED (approval_required=True)
+
+── 8. Kill switch: suspend agent
+[PASS] Kill switch: agent suspended (HTTP 200)
+
+── 9. Kill switch: suspended agent cannot act
+[PASS] Kill switch: suspended agent's action BLOCKED
+
+── 10. Reinstatement
+[PASS] Reinstatement: agent reinstated (HTTP 200)
+
+── 11. Audit chain integrity
+[PASS] Audit chain: accessible (113 entries)
+[PASS] Audit chain: SHA-256 hash chain intact (0 breaks, last 50 entries)
+
+── Trust report (informational)
+[INFO] Trust level   : ?
+[INFO] Manners score : 1.0
+[INFO] Actions allow : ?
+[INFO] Actions block : ?
+
+  ─────────────────────────────────────────
+  Passed : 13 / 13
+  Failed : 0
+
+  All governance checks passed.
+  Platform is operational — governance pipeline enforcing correctly.
+

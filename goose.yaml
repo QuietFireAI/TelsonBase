@@ -1,0 +1,94 @@
+# TelsonBase/goose.yaml
+# REM: =======================================================================================
+# REM: GOOSE MCP CONNECTION CONFIGURATION
+# REM: =======================================================================================
+# REM: Architect: ::Quietfire AI Project::
+# REM: Date: February 24, 2026
+# REM:
+# REM: Mission Statement: This file tells Goose (by Block) how to connect to TelsonBase as
+# REM: an MCP server. Copy this file to ~/.config/goose/config.yaml (or merge the
+# REM: mcp_servers section into your existing Goose config) and set your API key.
+# REM:
+# REM: Goose install (macOS/Linux):
+# REM:   curl -fsSL https://github.com/block/goose/releases/latest/download/install.sh | bash
+# REM:
+# REM: Goose install (Windows):
+# REM:   winget install block.goose
+# REM:   -- or --
+# REM:   Download from https://github.com/block/goose/releases/latest
+# REM:
+# REM: Once configured, Goose discovers all TelsonBase tools automatically via MCP
+# REM: tool discovery (tools/list). No manual tool registration required.
+# REM:
+# REM: Available MCP tools (auto-discovered by Goose):
+# REM:   system_status            — Full platform health + agent/audit summary
+# REM:   get_health               — Quick liveness check (redis, API)
+# REM:   list_agents              — List registered OpenClaw AI agents
+# REM:   get_agent                — Get details for a specific agent
+# REM:   register_as_agent        — Register Goose itself (or any agent) in TelsonBase
+# REM:   list_tenants             — List tenant organisations
+# REM:   create_tenant            — Create a new tenant
+# REM:   list_matters             — List client matters under a tenant
+# REM:   get_audit_chain_status   — Audit chain state (entry count, last hash)
+# REM:   verify_audit_chain       — Cryptographic chain integrity check
+# REM:   get_recent_audit_entries — Browse recent audit log entries
+# REM:   list_pending_approvals   — View pending tool-call approval requests
+# REM:   approve_tool_request     — Approve a queued tool-call request
+# REM:
+# REM: QMS Protocol:
+# REM:   Success: "Thank_You"
+# REM:   Failure: "Thank_You_But_No"
+# REM: =======================================================================================
+
+# REM: -------------------------------------------------------------------------------------
+# REM: STEP 1: Set your TelsonBase API key.
+# REM: Obtain from the TelsonBase portal → Settings → API Keys,
+# REM: or from the secrets/telsonbase_mcp_api_key file on the server.
+# REM: Replace the placeholder below before running Goose.
+# REM: -------------------------------------------------------------------------------------
+TELSONBASE_API_KEY: "REPLACE_WITH_YOUR_TELSONBASE_API_KEY"
+
+# REM: -------------------------------------------------------------------------------------
+# REM: STEP 2: Choose your Goose LLM provider (Goose uses its own LLM for reasoning;
+# REM: TelsonBase uses Ollama internally — these are separate).
+# REM: -------------------------------------------------------------------------------------
+# provider: anthropic   # uncomment if using Claude via Anthropic API
+# model: claude-sonnet-4-6
+
+# REM: -------------------------------------------------------------------------------------
+# REM: STEP 3: MCP server connection to TelsonBase.
+# REM: Replace <host> with the actual hostname or IP of your TelsonBase server.
+# REM: For local dev: http://localhost:8000
+# REM: For production: https://your-domain.com  (Traefik handles TLS)
+# REM: -------------------------------------------------------------------------------------
+mcp_servers:
+  telsonbase:
+    # REM: Streamable HTTP transport — the /mcp endpoint on the main TelsonBase API server.
+    # REM: Goose uses this to list and call all TelsonBase tools natively.
+    transport: http
+    url: "http://localhost:8000/mcp"
+    headers:
+      # REM: Bearer token authentication — same API key used for the REST API.
+      Authorization: "Bearer ${TELSONBASE_API_KEY}"
+    # REM: Optional: label shown in Goose UI
+    description: "TelsonBase by Quietfire AI — sovereign AI agent management platform"
+
+# REM: =======================================================================================
+# REM: EXAMPLE GOOSE SESSION
+# REM: =======================================================================================
+# REM:
+# REM:   $ goose session
+# REM:
+# REM:   Goose: Connected to TelsonBase MCP server. Available tools: system_status,
+# REM:          get_health, list_agents, register_as_agent, ...
+# REM:
+# REM:   You: What's the system status?
+# REM:   Goose: [calls system_status] → redis: healthy, 3 agents active, audit chain 142 entries
+# REM:
+# REM:   You: Register me as a Goose agent with trust level probation.
+# REM:   Goose: [calls register_as_agent] → instance_id: oc-xxxx, trust_level: probation
+# REM:
+# REM:   You: Show me all pending approvals.
+# REM:   Goose: [calls list_pending_approvals] → 2 pending requests ...
+# REM:
+# REM: =======================================================================================

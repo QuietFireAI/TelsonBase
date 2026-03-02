@@ -1,0 +1,45 @@
+============================================================================
+GNU Lesser General Public License v3.0
+============================================================================
+
+TelsonBase dependencies covered by this license:
+
+  Python Packages:
+    - psycopg2-binary 2.9.10       (PostgreSQL database adapter)
+
+  USAGE CONTEXT:
+    psycopg2 is used as a dynamically-linked library via Python's
+    import mechanism. Under LGPL-3.0, this constitutes "use of the
+    Library" (not a derivative work), so TelsonBase's own source code
+    is NOT required to be licensed under LGPL.
+
+    You are free to:
+    - Use psycopg2 in proprietary software
+    - Distribute your application that uses psycopg2
+
+    You must:
+    - Allow users to replace the LGPL-licensed library
+    - Include this license notice
+    - Provide the LGPL library's source code upon request
+      (available at: https://github.com/psycopg/psycopg2)
+
+============================================================================
+
+Full license text available at:
+https://www.gnu.org/licenses/lgpl-3.0.en.html
+
+GNU LESSER GENERAL PUBLIC LICENSE
+Version 3, 29 June 2007
+
+Copyright (C) 2007 Free Software Foundation, Inc.
+
+Everyone is permitted to copy and distribute verbatim copies of this
+license document, but changing it is not allowed.
+
+The full text of LGPL-3.0 supplements the GPL-3.0 with additional
+permissions for linking. The canonical source is:
+
+  https://www.gnu.org/licenses/lgpl-3.0.txt
+
+The psycopg2 source code is available at:
+  https://github.com/psycopg/psycopg2

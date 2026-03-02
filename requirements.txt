@@ -1,0 +1,112 @@
+# TelsonBase/requirements.txt
+# REM: =======================================================================================
+# REM: CORE PYTHON DEPENDENCIES FOR THE TelsonBase
+# REM: =======================================================================================
+# REM: Architect: ::Quietfire AI Project::
+# REM: Date: June 21, 2025 | Updated: February 23, 2026
+# REM:
+# REM: Mission Statement: This document specifies the essential Python libraries that form
+# REM: the software foundation of the TelsonBase. Each dependency listed here has been
+# REM: deliberately chosen to provide a specific, critical capability for the platform,
+# REM: from serving the main API to enabling complex background agent processing. This is
+# REM: the master list of ingredients for our sovereign AI ecosystem.
+# REM:
+# REM: FIXED v5.1.0CC: Deduplicated (was listed 3×), pinned all versions for
+# REM: reproducible builds. Unpinned deps WILL break on update.
+# REM: =======================================================================================
+
+# --- API & Web Server Framework ---
+# REM: Provides the main "front door" for the entire OS.
+fastapi==0.125.0
+uvicorn[standard]==0.27.1
+
+# --- Production WSGI Server ---
+# REM: Gunicorn manages worker processes in production. Uvicorn alone is dev-only.
+gunicorn==25.0.3
+
+# --- Data Validation & Settings Management ---
+# REM: Ensures all data flowing into and out of the API is structured and correct.
+pydantic==2.9.2
+pydantic-settings==2.6.1
+
+# --- Asynchronous Task & Agent Execution ---
+# REM: The "workhorse" system. Celery provides the distributed task queue that allows
+# REM: our AI agents to perform long-running, complex jobs in the background without
+# REM: blocking the main server.
+celery==5.3.6
+
+# --- Broker & In-Memory Cache ---
+# REM: The high-speed "postal service" for Celery. Redis acts as the message broker,
+# REM: passing job requests from the API server to the Celery workers.
+redis==5.0.1
+
+# --- Real-Time Messaging Protocol ---
+# REM: The client library for MQTT, a lightweight protocol for real-time, event-driven
+# REM: communication. This enables agents to subscribe to topics and react instantly
+# REM: to events, crucial for IoT integration or inter-agent notifications.
+paho-mqtt==1.6.1
+
+# --- HTTP Communication Library ---
+# REM: The standard tool for making HTTP requests. This gives our agents the ability
+# REM: to communicate with external APIs and retrieve data from across the web.
+requests==2.32.5
+
+# --- Sovereign AI Core Client ---
+# REM: TelsonBase communicates with Ollama via httpx (async HTTP client) directly.
+# REM: The ollama pip package is NOT used — we call the Ollama REST API ourselves
+# REM: for full control over auth headers, timeouts, and error handling.
+# REM: See: agents/ollama_agent.py, main.py LLM endpoints
+
+# --- JWT Authentication ---
+# REM: python-jose provides JWT token signing and verification.
+python-jose[cryptography]==3.5.0
+
+# --- Password Hashing ---
+# REM: passlib provides secure password hashing utilities.
+passlib[bcrypt]==1.7.4
+
+# --- TOTP Multi-Factor Authentication ---
+# REM: pyotp provides RFC 6238 TOTP generation and verification for operator MFA.
+pyotp==2.9.0
+
+# --- Structured JSON Logging ---
+# REM: Provides JSON-formatted log output for audit chain and observability.
+python-json-logger==2.0.7
+
+# --- Prometheus Metrics ---
+# REM: Client library for exposing application metrics to Prometheus.
+prometheus-client==0.20.0
+
+# --- Async HTTP Client ---
+# REM: High-performance HTTP client used by Ollama service and egress proxy.
+# REM: Replaces requests for async-capable code paths.
+httpx==0.28.1
+
+# --- MCP Protocol (Model Context Protocol) ---
+# REM: Anthropic's official MCP Python SDK. Exposes TelsonBase as an MCP server
+# REM: so Goose, Claude Desktop, and any MCP-compatible AI agent can connect
+# REM: and use TelsonBase tools natively. No new Docker container needed —
+# REM: the gateway mounts on the existing mcp_server at /mcp.
+mcp>=1.2.0
+
+# --- Cryptography ---
+# REM: Provides RSA, AES-GCM, x509 certificates for federation mTLS,
+# REM: secure storage encryption at rest, and trust key exchange.
+cryptography==46.0.5
+
+# --- PostgreSQL Database ---
+# REM: SQLAlchemy ORM for durable structured storage (audit, users, tenants, compliance).
+# REM: psycopg2-binary provides the PostgreSQL driver. Alembic handles schema migrations.
+sqlalchemy==2.0.36
+psycopg2-binary==2.9.10
+alembic==1.13.3
+
+# --- Web Automation Library ---
+# REM: Enables the web_agent to control a browser programmatically.
+# REM: STATUS: Reserved for future activation when web_agent exits pseudocode stage.
+# browser-use
+
+# --- Testing ---
+pytest==7.4.4
+pytest-asyncio==0.23.4
+pytest-mock==3.12.0
