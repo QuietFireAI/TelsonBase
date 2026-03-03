@@ -503,8 +503,12 @@ class OpenClawManager:
         # REM: worker since this worker last cached the instance. Governance decisions (allow/gate/block)
         # REM: MUST be authoritative — evict stale in-memory copy so get_instance() re-reads Redis.
         # REM: v9.0.0B — multi-worker fix: same pattern applied to get_tenant() in TenantManager.
-        self._instances.pop(instance_id, None)
+        # REM: v9.5.0B — local_fallback preserves in-memory instance when Redis is unavailable
+        # REM: (test environments, Redis outage). Redis-authoritative path is unchanged when Redis is up.
+        local_fallback = self._instances.pop(instance_id, None)
         instance = self.get_instance(instance_id)
+        if instance is None and local_fallback is not None and self._get_redis() is None:
+            instance = local_fallback
         if not instance:
             audit.log(
                 AuditEventType.OPENCLAW_ACTION_BLOCKED,
