@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TelsonBase — Zero-Trust AI Agent Governance</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #0d0d1a;
+      color: #e8e8f0;
+      min-height: 100vh;
+    }
+    .hero {
+      background: linear-gradient(135deg, #1a0d2e 0%, #0d1a2e 50%, #0a1a1a 100%);
+      border-bottom: 1px solid #2a1a4e;
+      padding: 60px 24px 48px;
+      text-align: center;
+    }
+    .badge {
+      display: inline-block;
+      background: rgba(120, 60, 220, 0.2);
+      border: 1px solid rgba(120, 60, 220, 0.4);
+      color: #a78bfa;
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      margin-bottom: 20px;
+    }
+    h1 {
+      font-size: clamp(2rem, 5vw, 3.5rem);
+      font-weight: 800;
+      background: linear-gradient(135deg, #a78bfa, #60a5fa, #34d399);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 16px;
+      line-height: 1.1;
+    }
+    .tagline {
+      font-size: clamp(1rem, 2.5vw, 1.25rem);
+      color: #94a3b8;
+      max-width: 600px;
+      margin: 0 auto 32px;
+      line-height: 1.6;
+    }
+    .stats {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      justify-content: center;
+      margin-bottom: 36px;
+    }
+    .stat {
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 8px;
+      padding: 8px 16px;
+      font-size: 13px;
+      font-weight: 600;
+      color: #c4b5fd;
+    }
+    .cta {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: linear-gradient(135deg, #7c3aed, #2563eb);
+      color: white;
+      text-decoration: none;
+      padding: 14px 28px;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: 700;
+      transition: opacity 0.2s;
+    }
+    .cta:hover { opacity: 0.85; }
+    .section { padding: 48px 24px; max-width: 900px; margin: 0 auto; }
+    h2 {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #e2e8f0;
+      margin-bottom: 24px;
+    }
+    .pipeline {
+      background: #111827;
+      border: 1px solid #1e293b;
+      border-radius: 12px;
+      padding: 24px;
+      font-family: 'Courier New', monospace;
+      font-size: 13px;
+      color: #94a3b8;
+      overflow-x: auto;
+      margin-bottom: 32px;
+    }
+    .pipeline .highlight { color: #f87171; font-weight: bold; }
+    .pipeline .tier { color: #a78bfa; }
+    .trust-flow {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 8px;
+      justify-content: center;
+      margin: 24px 0;
+    }
+    .tier-box {
+      background: rgba(124, 58, 237, 0.15);
+      border: 1px solid rgba(124, 58, 237, 0.3);
+      border-radius: 8px;
+      padding: 10px 16px;
+      text-align: center;
+      min-width: 100px;
+    }
+    .tier-box .name { font-weight: 700; color: #a78bfa; font-size: 13px; }
+    .tier-box .desc { font-size: 11px; color: #64748b; margin-top: 2px; }
+    .tier-box.apex {
+      background: rgba(16, 185, 129, 0.15);
+      border-color: rgba(16, 185, 129, 0.3);
+    }
+    .tier-box.apex .name { color: #34d399; }
+    .arrow { color: #4b5563; font-size: 18px; }
+    .features {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 16px;
+      margin-bottom: 32px;
+    }
+    .feature {
+      background: #111827;
+      border: 1px solid #1e293b;
+      border-radius: 10px;
+      padding: 20px;
+    }
+    .feature .icon { font-size: 24px; margin-bottom: 10px; }
+    .feature h3 { font-size: 14px; font-weight: 700; color: #e2e8f0; margin-bottom: 6px; }
+    .feature p { font-size: 13px; color: #64748b; line-height: 1.5; }
+    .footer {
+      text-align: center;
+      padding: 32px 24px;
+      border-top: 1px solid #1e293b;
+      color: #475569;
+      font-size: 13px;
+    }
+    .footer a { color: #7c3aed; text-decoration: none; }
+    .footer a:hover { text-decoration: underline; }
+    hr { border: none; border-top: 1px solid #1e293b; margin: 8px 0; }
+  </style>
+</head>
+<body>
+
+  <div class="hero">
+    <div class="badge">v9.1.0B · Beta · Apache 2.0</div>
+    <h1>TelsonBase</h1>
+    <p class="tagline">
+      Zero-trust governance for autonomous AI agents.<br>
+      Self-hosted. No cloud AI. Every permission earned.
+    </p>
+    <div class="stats">
+      <div class="stat">720 Tests Passing</div>
+      <div class="stat">0 High-Severity Findings</div>
+      <div class="stat">177 RBAC Endpoints</div>
+      <div class="stat">Native MCP / Goose</div>
+      <div class="stat">Self-Hosted</div>
+    </div>
+    <a class="cta" href="https://github.com/QuietFireAI/TelsonBase" target="_blank">
+      View on GitHub →
+    </a>
+  </div>
+
+  <div class="section">
+    <h2>Earned Trust — Not Granted</h2>
+    <p style="color:#94a3b8; margin-bottom:20px; line-height:1.6;">
+      Every agent starts at Quarantine. Trust is earned through demonstrated behavior,
+      sequential promotion, and human approval. Demotion is instant and automatic.
+    </p>
+    <div class="trust-flow">
+      <div class="tier-box"><div class="name">QUARANTINE</div><div class="desc">All gated</div></div>
+      <div class="arrow">▶</div>
+      <div class="tier-box"><div class="name">PROBATION</div><div class="desc">Internal only</div></div>
+      <div class="arrow">▶</div>
+      <div class="tier-box"><div class="name">RESIDENT</div><div class="desc">Read/write</div></div>
+      <div class="arrow">▶</div>
+      <div class="tier-box"><div class="name">CITIZEN</div><div class="desc">Autonomous</div></div>
+      <div class="arrow">▶</div>
+      <div class="tier-box apex"><div class="name">AGENT</div><div class="desc">Apex tier</div></div>
+    </div>
+  </div>
+
+  <div class="section" style="padding-top:0">
+    <h2>The 8-Step Governance Pipeline</h2>
+    <div class="pipeline">
+      <div>Step 1: Instance registered?         Reject if unknown</div>
+      <div><span class="highlight">Step 2: KILL SWITCH (suspended?)</span>      Reject immediately</div>
+      <div>Step 3: Nonce replay protection      Reject if replayed</div>
+      <div>Step 4: Tool on blocklist?           Reject if blocked</div>
+      <div>Step 5: Classify action category     READ / WRITE / DELETE / EXTERNAL / FINANCIAL</div>
+      <div>Step 6: Manners compliance score     Auto-demote if &lt; 0.50</div>
+      <div>Step 7: Trust level permission       Allow / Gate / Block per matrix</div>
+      <div>Step 8: Anomaly detection            Flag behavioral deviations</div>
+    </div>
+
+    <h2>What's Already Shipped</h2>
+    <div class="features">
+      <div class="feature">
+        <div class="icon">🔐</div>
+        <h3>Cryptographic Audit Chain</h3>
+        <p>SHA-256 hash-chained audit trail. Every decision logged, tamper-evident, verifiable.</p>
+      </div>
+      <div class="feature">
+        <div class="icon">⚡</div>
+        <h3>Kill Switch</h3>
+        <p>One API call suspends any agent instantly. Redis-persisted. Survives restarts. Only a human reinstates.</p>
+      </div>
+      <div class="feature">
+        <div class="icon">🧑‍💼</div>
+        <h3>Human-in-the-Loop Gates</h3>
+        <p>External calls, financial actions, and anomaly-flagged behaviors held for human approval before execution.</p>
+      </div>
+      <div class="feature">
+        <div class="icon">🔌</div>
+        <h3>Native MCP Gateway</h3>
+        <p>Goose by Block and Claude Desktop connect out of the box. 13 tools, trust-gated sessions. goose.yaml included.</p>
+      </div>
+      <div class="feature">
+        <div class="icon">🏠</div>
+        <h3>Fully Self-Hosted</h3>
+        <p>Your hardware. Your data. No external API calls in the default stack. Ollama for local LLM inference.</p>
+      </div>
+      <div class="feature">
+        <div class="icon">📋</div>
+        <h3>Compliance Frameworks</h3>
+        <p>SOC 2, HIPAA, HITRUST, CJIS, GDPR, PCI DSS, ABA Model Rules — documented, mapped to source, self-assessed.</p>
+      </div>
+    </div>
+
+    <div style="text-align:center; margin-top: 16px;">
+      <a class="cta" href="https://github.com/QuietFireAI/TelsonBase" target="_blank">
+        Full documentation and source on GitHub →
+      </a>
+    </div>
+  </div>
+
+  <div class="footer">
+    <p>TelsonBase v9.1.0B · <a href="https://github.com/QuietFireAI/TelsonBase" target="_blank">GitHub</a> · <a href="https://telsonbase.com" target="_blank">telsonbase.com</a> · Apache 2.0</p>
+    <p style="margin-top:8px;">Built by Jeff Phillips · Quietfire AI · Human-AI collaboration with Claude (Anthropic)</p>
+    <p style="margin-top:8px; font-size:11px; color:#334155;">Provided as-is. No warranty. See DISCLAIMER.md in the repository for full terms.</p>
+  </div>
+
+</body>
+</html>

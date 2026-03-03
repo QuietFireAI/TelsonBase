@@ -9,11 +9,47 @@
 These go live on drop day, before any community posts. You need something to link to.
 
 - [ ] **GitHub repo live** — public, README with screenshots + GIFs, marked pre-release/beta
+- [ ] **HuggingFace Space live** — `huggingface.co/spaces/QuietFireAI/TelsonBase` — see setup steps below
 - [ ] **Update website GitHub links** — replace `href="#"` in nav/footer with actual repo URL
 - [ ] **YouTube channel** — create if not already set up. Channel name: `TelsonBase` or `Quietfire AI`. Upload the 3 MP4 voice-over videos. Titles below.
 - [ ] **Medium publication** — publish launch post. Draft below.
 - [ ] **audiooverviews.io** — publish first audio overview (NotebookLM on the README or technical defense brief is a natural first piece). Cross-link to GitHub.
 - [ ] **videooverviews.io** — embed or link the YouTube MP4s. Announce the platform opening with TelsonBase as the launch subject.
+
+---
+
+## HuggingFace Space — Setup Steps (Do Before Drop Day)
+
+HuggingFace indexes in the HF search and discovery feed. Your audience there: ML practitioners, AI researchers, and practitioners building agent pipelines — exactly the right people.
+
+**One-time setup:**
+1. Go to huggingface.co → sign in (or create account)
+2. Create organization: `QuietFireAI` (Settings → Organizations → New org)
+3. Under QuietFireAI org → New Space
+   - Space name: `TelsonBase`
+   - SDK: **Static**
+   - License: Apache 2.0
+   - Visibility: Public
+4. Clone the new Space repo locally:
+   ```bash
+   git clone https://huggingface.co/spaces/QuietFireAI/TelsonBase
+   ```
+5. Copy in the two files from the main repo's `huggingface_space/` folder:
+   - `README.md` (Space card + YAML frontmatter)
+   - `index.html` (landing page)
+6. Commit and push:
+   ```bash
+   git add README.md index.html
+   git commit -m "Initial Space: TelsonBase zero-trust AI agent governance"
+   git push
+   ```
+7. Space goes live at: `https://huggingface.co/spaces/QuietFireAI/TelsonBase`
+
+**After GitHub goes public:** The Space links directly to the GitHub repo — no further changes needed.
+
+**HuggingFace post in community feed:**
+- After Space is live, post a short announcement in the HF community tab of the Space
+- Tag: `ai-governance`, `zero-trust`, `self-hosted`, `mcp`
 
 ---
 
@@ -143,6 +179,7 @@ Description on all three: Link to GitHub, link to telsonbase.online, one-sentenc
 | Day | Action |
 |---|---|
 | Drop day morning | GitHub goes public → update website links |
+| Drop day morning | HuggingFace Space goes public (flip visibility if pre-staged, or push files) |
 | Drop day 8am ET | Hacker News Show HN post |
 | Drop day 9am | r/selfhosted post |
 | Drop day 10am | r/LocalLLaMA post |
@@ -160,6 +197,7 @@ Description on all three: Link to GitHub, link to telsonbase.online, one-sentenc
 
 ## Accounts to Create Before Drop Day
 
+- [ ] HuggingFace — create account + QuietFireAI org + TelsonBase Space (see HuggingFace setup above)
 - [ ] Hacker News (if not already)
 - [ ] YouTube channel (TelsonBase or Quietfire AI)
 - [ ] Twitter/X (if not already active)
