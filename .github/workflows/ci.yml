@@ -50,6 +50,7 @@ jobs:
           DATABASE_URL: sqlite:///test.db
           IDENTICLAW_ENABLED: "false"
           OPENCLAW_ENABLED: "false"
+          TOOLROOM_PATH: /tmp/telsonbase_toolroom
 
       - name: Test summary
         if: always()
@@ -230,6 +231,7 @@ jobs:
           OLLAMA_BASE_URL: http://localhost:11434
           IDENTICLAW_ENABLED: "false"
           OPENCLAW_ENABLED: "false"
+          TOOLROOM_PATH: /tmp/telsonbase_toolroom
 
       - name: Run E2E integration tests
         # REM: E2E tests require a live running server (TestClient handles this).
@@ -252,6 +254,7 @@ jobs:
           OLLAMA_BASE_URL: http://localhost:11434
           IDENTICLAW_ENABLED: "false"
           OPENCLAW_ENABLED: "false"
+          TOOLROOM_PATH: /tmp/telsonbase_toolroom
 
       - name: Verify test count
         run: |

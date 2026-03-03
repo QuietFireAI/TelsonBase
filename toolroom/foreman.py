@@ -152,8 +152,9 @@ def _save_approved_sources(sources: List[str]) -> bool:
         logger.error(f"REM: Failed to save approved sources to Redis: {e}")
         return False
 
-# REM: Path where tools are stored on disk
-TOOLROOM_PATH = Path("/app/toolroom/tools")
+# REM: Path where tools are stored on disk — defaults to /app/toolroom/tools in Docker,
+# REM: falls back to env var for local dev and CI (same pattern as CAGE_PATH in cage.py)
+TOOLROOM_PATH = Path(os.environ.get("TOOLROOM_PATH", "/app/toolroom/tools"))
 
 # REM: Toolroom-specific approval rule
 # REM: All foreman actions in REQUIRES_APPROVAL_FOR trigger this rule.

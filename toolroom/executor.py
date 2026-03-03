@@ -35,8 +35,9 @@ from toolroom.manifest import ToolManifest, SandboxLevel
 
 logger = logging.getLogger(__name__)
 
-# REM: Base path where tools are installed
-TOOLROOM_TOOLS_PATH = Path("/app/toolroom/tools")
+# REM: Base path where tools are installed — defaults to /app/toolroom/tools in Docker,
+# REM: falls back to env var for local dev and CI (same pattern as CAGE_PATH in cage.py)
+TOOLROOM_TOOLS_PATH = Path(os.environ.get("TOOLROOM_PATH", "/app/toolroom/tools"))
 
 # REM: Minimal PATH for subprocess execution — no access to system tools beyond basics
 RESTRICTED_PATH = "/usr/local/bin:/usr/bin:/bin"
