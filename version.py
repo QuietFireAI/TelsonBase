@@ -479,5 +479,28 @@
 # REM:           clone URL fixed, proof sheet count corrected, ORCID + citation section
 # REM:         - 720 tests, 0 failed — launch candidate March 6, 2026
 # REM: =======================================================================================
+# REM: 9.5.0B - HuggingFace live demo + distribution strategy (March 3, 2026):
+# REM:         - OPENCLAW_ENABLED=true on DO server (demo requires live pipeline)
+# REM:         - 5 demo agents registered at all trust tiers (verified against live API):
+# REM:           demo_quarantine (60b364aacef04beb), demo_probation (2c2ce1b0a2364c50),
+# REM:           demo_resident (e64a3549463c48f6), demo_citizen (9856076620944eeb),
+# REM:           demo_agent / apex (db59ef829ac04d9e)
+# REM:         - huggingface_space/app.py: Gradio live demo connecting to DO server
+# REM:           All 5 trust tiers, governance pipeline explorer, kill switch demo
+# REM:           API key loaded from HF Space secrets (not in code)
+# REM:         - huggingface_space/README.md: SDK changed static→gradio, updated description
+# REM:         - huggingface_space/requirements.txt: gradio>=4.0.0, requests>=2.31.0
+# REM:         - DISCLAIMER.md: New — explicit NOT RESPONSIBLE section, AI platform disclaimer,
+# REM:           beta warning, no warranty, deploying org responsibility
+# REM:         - docs/System Documents/SOC2_TYPE_I.md: Management Assertion updated to
+# REM:           v9.5.0B, date March 6 2026, doc control v1.1, DISCLAIMER.md reference
+# REM:         - README.md: Guarantee language removed (6 absolute claims softened to
+# REM:           design intent), DISCLAIMER.md reference added, "A Note From Claude Code"
+# REM:           certification section, Goose MCP section added, guarantee-free language
+# REM:         - docs/LAUNCH_SOCIAL_CHECKLIST.md: HuggingFace added Phase 1, setup steps,
+# REM:           sequencing table, accounts list. ProductHunt strategy: week 2 post-momentum.
+# REM:         - CI fix: n8n import removed from api/__init__.py, dummy secrets added
+# REM:           to .github/workflows/ci.yml for docker compose config validation
+# REM: =======================================================================================
 
-__version__ = "9.1.0B"
+__version__ = "9.5.0B"

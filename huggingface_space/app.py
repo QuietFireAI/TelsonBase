@@ -87,7 +87,7 @@ def _format_decision(data: dict, tool_name: str) -> str:
         f"  Approval ID   {approval_id}",
         f"  QMS Status    {qms_status}",
         bar,
-        f"  {_ts()} UTC · TelsonBase v9.1.0B",
+        f"  {_ts()} UTC · TelsonBase v9.5.0B",
     ]
     return "\n".join(lines)
 
@@ -313,7 +313,7 @@ with gr.Blocks(
 
     gr.Markdown(
         "---\n"
-        "*TelsonBase v9.1.0B · [GitHub](https://github.com/QuietFireAI/TelsonBase) · "
+        "*TelsonBase v9.5.0B · [GitHub](https://github.com/QuietFireAI/TelsonBase) · "
         "Quietfire AI · Apache 2.0 · "
         "Built with human-AI collaboration (Jeff Phillips + Claude, Anthropic)*"
     )

@@ -1,6 +1,6 @@
 # TelsonBase — Disclaimer and Terms of Use
 
-**Version:** 9.1.0B
+**Version:** 9.5.0B
 **Effective Date:** March 6, 2026
 **Issued by:** Jeff Phillips, Quietfire AI
 
@@ -92,7 +92,7 @@ The Apache 2.0 license independently contains a disclaimer of warranties and lim
 
 ## 7. Beta Status
 
-TelsonBase v9.1.0B is a **community preview (beta) release**. Beta software may contain bugs, incomplete features, or behaviors that change without notice. Do not deploy beta software in production environments where failures would result in harm to persons or regulatory violations without independent validation appropriate to that environment.
+TelsonBase v9.5.0B is a **community preview (beta) release**. Beta software may contain bugs, incomplete features, or behaviors that change without notice. Do not deploy beta software in production environments where failures would result in harm to persons or regulatory violations without independent validation appropriate to that environment.
 
 ---
 
@@ -103,4 +103,4 @@ General support: support@telsonbase.com
 
 ---
 
-*TelsonBase v9.1.0B · Quietfire AI · March 6, 2026*
+*TelsonBase v9.5.0B · Quietfire AI · March 6, 2026*

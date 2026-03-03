@@ -6,6 +6,50 @@ Format: [Semantic Versioning](https://semver.org/)
 
 ---
 
+## [9.5.0B] — 2026-03-03 (HuggingFace live demo + distribution strategy)
+
+**Status:** 720 tests, 1 skipped, 0 failed — OPENCLAW enabled on DO, all 5 demo agents live
+**Contributors:** Jeff Phillips (Quietfire AI), Claude Code (Anthropic)
+
+### HuggingFace Live Demo Space
+- `huggingface_space/app.py`: Gradio app connecting to live TelsonBase DO server
+  - All 5 trust tiers represented (QUARANTINE through AGENT apex)
+  - Governance Pipeline Explorer: agent + tool picker, real 8-step pipeline decision
+  - Kill Switch Demo: suspend demo_citizen, verify Step 2 rejection, reinstate
+  - API credentials loaded from HF Space secrets — not in code
+- `huggingface_space/README.md`: SDK changed static → gradio, updated description
+- `huggingface_space/requirements.txt`: gradio>=4.0.0, requests>=2.31.0
+
+### Demo Agents (registered on live DO server, all verified)
+| Agent | Instance ID | Trust Tier | Key behavior |
+|---|---|---|---|
+| demo_quarantine | 60b364aacef04beb | QUARANTINE | file_read → HITL gated, file_delete → blocked |
+| demo_probation  | 2c2ce1b0a2364c50 | PROBATION  | file_read → autonomous, email_send → HITL gated, payment_send → blocked |
+| demo_resident   | e64a3549463c48f6 | RESIDENT   | file_write → autonomous, email_send → HITL gated |
+| demo_citizen    | 9856076620944eeb | CITIZEN    | most autonomous — kill switch target |
+| demo_agent      | db59ef829ac04d9e | AGENT      | payment_send, file_delete, config_update — all autonomous |
+
+### OPENCLAW_ENABLED=true on DO server
+- Governance pipeline now active on live server
+- 720/720 tests pass with OPENCLAW enabled (confirmed)
+
+### Legal / Distribution
+- `DISCLAIMER.md`: New — explicit NOT RESPONSIBLE, AI platform disclaimer, beta warning
+- `docs/System Documents/SOC2_TYPE_I.md`: Management Assertion updated v9.5.0B, Mar 6 2026
+- `README.md`: 6 absolute guarantee claims softened to design intent, DISCLAIMER.md linked
+- `README.md`: "A Note From Claude Code" certification section with verified claim table
+- `README.md`: Goose MCP gateway section added (3-step setup, 13-tool table, gate levels)
+
+### Distribution Strategy
+- `docs/LAUNCH_SOCIAL_CHECKLIST.md`: HuggingFace Phase 1, full setup steps, sequencing table
+- ProductHunt strategy: week 2 post-momentum — not day one
+
+### CI
+- `api/__init__.py`: Removed stale n8n_integration import (CI was failing)
+- `.github/workflows/ci.yml`: Dummy secrets created before docker compose config validation
+
+---
+
 ## [9.1.0B] — 2026-03-02 (Full .md audit + GitHub launch prep)
 
 **Status:** 720 tests, 0 failed — 32 documentation files corrected, GitHub repo live

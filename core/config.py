@@ -27,7 +27,7 @@
 # REM: =======================================================================================
 
 # REM: Version constant for API responses and dashboard
-VERSION = "9.1.0B"
+VERSION = "9.5.0B"
 
 from pydantic_settings import BaseSettings
 from pydantic import Field, field_validator
