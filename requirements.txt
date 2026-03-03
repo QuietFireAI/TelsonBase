@@ -19,6 +19,10 @@
 # REM: Provides the main "front door" for the entire OS.
 fastapi==0.125.0
 uvicorn[standard]==0.27.1
+# REM: Explicit starlette floor — closes Dependabot DoS alerts (#3, #4).
+# REM: fastapi 0.125.0 resolves to starlette 0.50.0 in practice (verified on DO server).
+# REM: This pin ensures pip never selects a vulnerable version.
+starlette>=0.47.2
 
 # --- Production WSGI Server ---
 # REM: Gunicorn manages worker processes in production. Uvicorn alone is dev-only.
@@ -87,7 +91,7 @@ httpx==0.28.1
 # REM: so Goose, Claude Desktop, and any MCP-compatible AI agent can connect
 # REM: and use TelsonBase tools natively. No new Docker container needed —
 # REM: the gateway mounts on the existing mcp_server at /mcp.
-mcp>=1.2.0
+mcp>=1.23.0
 
 # --- Cryptography ---
 # REM: Provides RSA, AES-GCM, x509 certificates for federation mTLS,
