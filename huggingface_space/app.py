@@ -21,9 +21,11 @@ HEADERS = {
 
 # Pre-registered demo agents (registered on live server with initial trust overrides)
 DEMO_AGENTS = {
-    "QUARANTINE — every action gated or blocked": "60b364aacef04beb",
-    "RESIDENT — read/write autonomous, external gated": "e64a3549463c48f6",
-    "CITIZEN — apex autonomous tier": "9856076620944eeb",
+    "QUARANTINE — every action gated or blocked":         "60b364aacef04beb",
+    "PROBATION — read autonomous, external gated":        "2c2ce1b0a2364c50",
+    "RESIDENT  — read/write autonomous, external gated":  "e64a3549463c48f6",
+    "CITIZEN   — autonomous except financial":            "9856076620944eeb",
+    "AGENT     — apex tier, fully autonomous":            "db59ef829ac04d9e",
 }
 
 # Tools mapped to their governance category — exact names from TOOL_CATEGORY_MAP
@@ -221,11 +223,15 @@ PIPELINE_DESCRIPTION = """
 Pick a demo agent and a tool. Submit. The 8-step governance pipeline evaluates the action
 and returns a decision: **Allowed**, **Gated (HITL)**, or **Blocked**.
 
-| Agent | Trust Tier | What to expect |
+| Agent | Tier | What to expect |
 |---|---|---|
-| QUARANTINE | Tier 1 | READ → HITL gate. DELETE → flat block. |
-| RESIDENT | Tier 3 | READ/WRITE → autonomous. EXTERNAL → HITL gate. |
-| CITIZEN | Tier 4 | Most actions autonomous. Watch what FINANCIAL returns. |
+| QUARANTINE | 1 | READ → HITL gate. WRITE/DELETE/EXTERNAL/FINANCIAL → blocked. |
+| PROBATION  | 2 | READ → autonomous. EXTERNAL → HITL gate. FINANCIAL/DELETE → blocked. |
+| RESIDENT   | 3 | READ/WRITE → autonomous. EXTERNAL → HITL gate. DELETE/FINANCIAL → blocked. |
+| CITIZEN    | 4 | READ/WRITE/DELETE/EXTERNAL → autonomous. FINANCIAL → autonomous. |
+| AGENT      | 5 | Apex tier. All categories autonomous — including FINANCIAL and SYSTEM_CONFIG. |
+
+Every tier was **earned**. AGENT is the result of demonstrated behavior, sequential promotion, and human approval.
 """
 
 KILLSWITCH_DESCRIPTION = """
