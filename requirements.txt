@@ -91,7 +91,7 @@ httpx==0.28.1
 # REM: so Goose, Claude Desktop, and any MCP-compatible AI agent can connect
 # REM: and use TelsonBase tools natively. No new Docker container needed —
 # REM: the gateway mounts on the existing mcp_server at /mcp.
-mcp>=1.2.0
+mcp>=1.23.0
 
 # --- Cryptography ---
 # REM: Provides RSA, AES-GCM, x509 certificates for federation mTLS,
