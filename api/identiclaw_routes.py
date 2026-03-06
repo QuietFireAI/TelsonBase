@@ -33,7 +33,7 @@ from core.qms import format_qms, QMSStatus
 
 logger = logging.getLogger(__name__)
 
-router = APIRouter(prefix="/v1/identity", tags=["Agent Identity (Identiclaw)"])
+router = APIRouter(prefix="/v1/identity", tags=["Agent Identity"])
 
 
 # REM: =======================================================================================

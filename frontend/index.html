@@ -1496,7 +1496,7 @@
             identity: {
                 title: 'Agent Identity (DID)', icon: 'key',
                 who: 'Security administrators and regulated industry deployments',
-                description: 'Cryptographic identity credentials for AI agents. Rather than a simple API key, each agent carries a DID — a Decentralized Identifier — backed by a Verifiable Credential. TelsonBase checks this credential at every action. If an agent is compromised or decommissioned, revoke its DID here and it is locked out everywhere instantly, regardless of what keys it still holds. Compatible with Identiclaw and any W3C DID-compliant provider. Particularly relevant in healthcare, legal, and financial deployments where agent accountability must be cryptographically provable.',
+                description: 'Cryptographic identity credentials for AI agents. Rather than a simple API key, each agent carries a DID — a Decentralized Identifier — backed by a Verifiable Credential. TelsonBase checks this credential at every action. If an agent is compromised or decommissioned, revoke its DID here and it is locked out everywhere instantly, regardless of what keys it still holds. Compatible with any W3C DID-compliant identity provider. Particularly relevant in healthcare, legal, and financial deployments where agent accountability must be cryptographically provable.',
                 source: 'live', sourceLabel: 'Live — real identity registry',
                 note: 'Requires IDENTICLAW_ENABLED=true in your .env. Agents registered here follow the same 5-tier trust progression as OpenClaw.',
             },
@@ -1900,7 +1900,7 @@
                 try {
                     await createApi(apiUrl).post('/v1/identity/register', {
                         did, display_name: name,
-                        credentials: [{ id:'vc-'+Date.now(), type:['VerifiableCredential','AgentCapability'], issuer:'did:web:identiclaw.com', issuanceDate:new Date().toISOString(), credentialSubject:{ id:did, scopes:scopeList }, proof:{ type:'Ed25519Signature2020', proofValue:'' } }]
+                        credentials: [{ id:'vc-'+Date.now(), type:['VerifiableCredential','AgentCapability'], issuer:'did:web:agent-identity.local', issuanceDate:new Date().toISOString(), credentialSubject:{ id:did, scopes:scopeList }, proof:{ type:'Ed25519Signature2020', proofValue:'' } }]
                     });
                     fetchLiveData();
                 } catch(e) { alert('Registration failed: '+e.message); }
@@ -2191,7 +2191,7 @@
                             <div className="card p-4 text-center fade-in"><p className="text-2xl font-bold text-red-400">{didAgents.filter(a=>a.revoked).length}</p><p className="text-xs" style={{color:'var(--text-muted)'}}>Revoked</p></div>
                             <div className="card p-4 text-center fade-in"><p className="text-2xl font-bold text-yellow-400">{didAgents.filter(a=>a.trust_level==='quarantine').length}</p><p className="text-xs" style={{color:'var(--text-muted)'}}>Quarantine</p></div>
                         </div>
-                        {didAgents.length===0 ? <EmptyState icon="key" title="No credentialed agents registered" subtitle="Register an agent DID to establish cryptographic identity — works with Identiclaw and any W3C DID-compatible provider"/> : <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">{didAgents.map(a=><IdentityCard key={a.did} agent={a} onRevoke={handleIdentityRevoke} onReinstate={handleIdentityReinstate} onRefresh={handleIdentityRefresh} isDemo={isDemo}/>)}</div>}
+                        {didAgents.length===0 ? <EmptyState icon="key" title="No credentialed agents registered" subtitle="Register an agent DID to establish cryptographic identity — works with any W3C DID-compatible identity provider"/> : <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">{didAgents.map(a=><IdentityCard key={a.did} agent={a} onRevoke={handleIdentityRevoke} onReinstate={handleIdentityReinstate} onRefresh={handleIdentityRefresh} isDemo={isDemo}/>)}</div>}
                         <div className="card p-4 fade-in">
                             <h3 className="text-sm font-semibold text-white mb-2 flex items-center gap-2"><Icon name="shield" size={16} className="text-cyan-400"/>Trust Level Progression</h3>
                             <div className="flex flex-wrap items-center gap-2 text-xs">
@@ -2212,7 +2212,7 @@
                                 <Icon name="key" size={14} className="text-purple-400 mt-0.5 flex-shrink-0"/>
                                 <p className="text-xs leading-relaxed" style={{color:'var(--text-secondary)'}}>
                                     This section manages agents with <span className="font-semibold" style={{color:'var(--text-primary)'}}>cryptographic identity</span> — a tamper-proof digital credential (DID + Verifiable Credential) that TelsonBase verifies before granting any action.
-                                    Compatible with <span className="font-semibold" style={{color:'var(--text-primary)'}}>Identiclaw</span> and any <span className="font-semibold" style={{color:'var(--text-primary)'}}>W3C DID-compatible</span> identity provider.
+                                    Compatible with any <span className="font-semibold" style={{color:'var(--text-primary)'}}>W3C DID-compatible</span> identity provider.
                                     Requires <code className="text-purple-600 text-xs">IDENTICLAW_ENABLED=true</code> in your environment.
                                 </p>
                             </div>

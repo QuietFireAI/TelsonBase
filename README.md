@@ -221,7 +221,7 @@ This isn't a roadmap. This is shipped code with tests.
 | **Manners Compliance Engine** | Anthropic safety framework, runtime scoring | 7 |
 | **Egress Firewall** | Domain whitelist, external call governance | 5 |
 | **Multi-Tenant Isolation** | Redis key namespacing, litigation holds | 8 |
-| **Agent Identity (Identiclaw)** | DID-based identity, Ed25519, verifiable credentials | 50 |
+| **Agent Identity** | DID-based identity, Ed25519, verifiable credentials | 50 |
 | **OpenClaw Governance** | Governed MCP proxy, kill switch, Manners auto-demotion | 55 |
 | **Session Management** | HIPAA-compliant idle timeout, privileged role limits | 6 |
 | **Federation** | Cross-instance trust with mTLS, RSA-4096 signatures | 5 |
@@ -413,7 +413,7 @@ This project was built through human-AI collaboration. Not "AI generated my code
 | **Claude Sonnet 4.6** | Primary development, security implementation |
 | **Claude Code (Sonnet/Opus 4.6)** | Production hardening, OpenClaw integration, testing |
 
-Built independently. No corporate backing, no venture funding, no AI company involvement. This is a developer in Ohio using publicly available AI models as genuine collaborators to build something the world needs right now. Technical integrations — Identiclaw, W3C DID — are ecosystem compatibility choices, not business dependencies. TelsonBase works with any W3C DID-compliant provider.
+Built independently. No corporate backing, no venture funding, no AI company involvement. This is a developer in Ohio using publicly available AI models as genuine collaborators to build something the world needs right now. Technical integrations — W3C DID — are ecosystem compatibility choices, not business dependencies. TelsonBase works with any W3C DID-compliant provider.
 
 The OpenClaw developer recently said he stopped treating AI as a tool and started treating it as a partner. That's how TelsonBase was built from the beginning.
 
