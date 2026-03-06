@@ -1886,3 +1886,31 @@ a:hover {
   letter-spacing: 0.05em;
   opacity: 0.7;
 }
+
+/* ============================================================
+   Pull Quote
+   ============================================================ */
+.pull-quote-section {
+  padding: 4rem 0;
+}
+
+.pull-quote {
+  text-align: center;
+  max-width: 700px;
+  margin: 0 auto;
+}
+
+.pull-quote-text {
+  font-size: clamp(1.8rem, 4vw, 2.8rem);
+  font-weight: 700;
+  line-height: 1.25;
+  color: var(--text-primary);
+  margin-bottom: 1rem;
+  letter-spacing: -0.02em;
+}
+
+.pull-quote-sub {
+  font-size: 1.1rem;
+  color: var(--accent);
+  font-weight: 500;
+}
