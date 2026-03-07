@@ -1972,3 +1972,26 @@ a:hover {
   text-transform: uppercase;
   text-shadow: 0 1px 4px rgba(0,0,0,0.8);
 }
+
+/* ============================================================
+   Demo Video Embed (responsive iframe)
+   ============================================================ */
+.demo-video-wrap {
+  position: relative;
+  width: 100%;
+  padding-bottom: 56.25%;
+  height: 0;
+  overflow: hidden;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+  background: #0e0a1a;
+}
+
+.demo-video-wrap iframe {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: 8px;
+}
