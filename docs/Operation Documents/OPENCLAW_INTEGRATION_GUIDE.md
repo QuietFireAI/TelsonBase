@@ -1,25 +1,26 @@
-# TelsonBase + OpenClaw: Governance Integration Guide
+# TelsonBase - OpenClaw Integration Guide
 
 **Version:** v11.0.1 · **Maintainer:** Quietfire AI
-**Time to complete:** 30-45 minutes
 
 ---
 
-## Why This Guide Exists
+## Why OpenClaw, and Why This Guide
 
-OpenClaw is a powerful autonomous agent framework. Left to its own defaults, it binds to
-`0.0.0.0`, exposes its dashboard to the internet, and executes actions without any human
-review. Security researchers found over 135,000 exposed instances. CVE-2026-25253 (RCE via
+OpenClaw is TelsonBase's first verified agent integration. It was chosen because of its
+widespread deployment - security researchers have found over 135,000 exposed instances in
+the wild - which makes it the highest-priority framework to govern. CVE-2026-25253 (RCE via
 malicious WebSocket link) was rated critical. The ClawHub skill registry was found to contain
-malware distributed at scale.
+malware distributed at scale. The risk profile is real and well-documented.
 
 TelsonBase wraps OpenClaw with a governance layer. Every action your claw wants to take -
-read a file, call an API, modify a document - is evaluated through an 8-step pipeline before
+read a file, call an API, modify a document - is evaluated through the 8-step pipeline before
 execution. Nothing runs without a decision. Every decision is written to a cryptographic audit
 chain. You stay in control.
 
 This is not about slowing OpenClaw down. It is about knowing what it is doing and having the
 power to stop it.
+
+OpenClaw is the first integration. Others are coming - see [Agent Framework Ecosystem](#agent-framework-ecosystem) at the end of this guide.
 
 ---
 
@@ -70,22 +71,17 @@ Before starting, verify each of these:
 
 ## Part 1: Install Your AI Agent
 
-TelsonBase is a governance layer - it does not care what agent sits behind it. This guide uses **OpenClaw** as the reference implementation because it is what TelsonBase was built and tested against. If you are integrating a different compatible agent, the TelsonBase API steps in Parts 4–7 apply regardless of which agent you use.
+TelsonBase is a governance layer - it does not care what agent sits behind it. This guide uses **OpenClaw** as the reference implementation because it is what TelsonBase was built and tested against first. If you are integrating a different compatible agent, the TelsonBase API steps in Parts 4-7 apply regardless of which agent you use.
 
 ### Install OpenClaw
 
-OpenClaw maintains their own installation documentation and wizard. Follow their official guide:
+OpenClaw maintains their own installation documentation. Follow their official guide:
 
-> **[→ OpenClaw Installation Guide](https://docs.openclaw.ai/install#install)**
+> **[→ OpenClaw Installation Documentation](https://docs.openclaw.ai/install#install)**
 
-Their guide covers installation on Windows, macOS, Linux, and WSL2. Once you have completed their setup and OpenClaw responds to `openclaw --version`, come back here and continue with Part 2.
+Their guide covers installation on Windows, macOS, Linux, and WSL2.
 
-**What you need before continuing:**
-- `openclaw --version` returns a version number
-- `openclaw status` shows the gateway running
-- The OpenClaw Control UI is accessible at `http://localhost:18789`
-
-> **Note:** Before connecting TelsonBase governance, bind OpenClaw to localhost only so it is not exposed on your local network. In your OpenClaw config file, set `gateway.host` to `127.0.0.1`. See [OpenClaw security hardening docs](https://docs.openclaw.ai/install#install) for details.
+**Before continuing:** Confirm your OpenClaw instance is installed and running per their documentation. Also verify it is not exposed on your local network before connecting to any external governance layer - consult OpenClaw's security hardening documentation for local binding configuration.
 
 **You are now ready to connect TelsonBase governance.**
 
@@ -393,7 +389,7 @@ business calling external APIs.
 Trust is earned through demonstrated behavior. You promote the claw manually after reviewing
 its action history and deciding it has earned more autonomy.
 
-### The Four Trust Levels
+### The Five Trust Levels
 
 | Level | What the Claw Can Do Autonomously | What Requires Approval | What Is Blocked |
 |---|---|---|---|
@@ -401,6 +397,11 @@ its action history and deciding it has earned more autonomy.
 | **PROBATION** | Internal reads | External calls, high-risk writes | Destructive actions |
 | **RESIDENT** | Most internal operations | High-risk, destructive | - |
 | **CITIZEN** | Almost everything | Anomaly-flagged actions only | - |
+| **AGENT** | Full autonomy (300 actions/min) | Nothing | Nothing |
+
+AGENT is the apex designation. It requires a 99.9% success rate, zero anomaly tolerance, and
+re-verification every 3 days. Promotion is sequential - a claw cannot skip from QUARANTINE to
+CITIZEN. Demotion can skip levels instantly.
 
 ### 6a. Promote to PROBATION
 
@@ -673,14 +674,15 @@ Requires HITL approval - a human must confirm before any external domain is whit
 ### Manners Compliance - Automatic Demotion
 
 TelsonBase tracks a Manners compliance score for every claw (1.0 = perfect, 0.0 = suspended).
-The score decreases each time a claw:
+The score decreases each time a claw attempts blocked actions repeatedly, triggers anomaly
+detection, or has an approval denied by a human reviewer.
 
-- Attempts a blocked action repeatedly
-- Triggers anomaly detection
-- Has an approval denied by a human reviewer
+The `OPENCLAW_MANNERS_THRESHOLD` setting (default: 0.5) controls when TelsonBase automatically
+demotes a claw. No human action required. The event is audited. The system also hard-quarantines
+any agent - regardless of score - that triggers three or more violations within a 24-hour window.
 
-If the score drops below `OPENCLAW_MANNERS_THRESHOLD` (default: 0.5), TelsonBase
-automatically demotes the claw to QUARANTINE. No human action required. The event is audited.
+For the full Manners scoring model and violation severity table, see
+`docs/Compliance Documents/MANNERS_COMPLIANCE.md`.
 
 ---
 
@@ -724,5 +726,38 @@ Trust report:       GET  /v1/openclaw/{id}/trust-report
 
 ---
 
-*TelsonBase v10.0.0Bminus - OpenClaw Integration | Quietfire AI*
+## Agent Framework Ecosystem
+
+### OpenClaw is the First. Others Are Coming.
+
+TelsonBase's governance pipeline is framework-agnostic. The `POST /v1/openclaw/{id}/action`
+endpoint evaluates any action from any agent - OpenClaw was integrated first because of its
+deployment scale and documented risk profile, not because it is the only option.
+
+Future releases will add verified integrations for other AI agent frameworks. Each integration
+goes through testing by Quietfire AI and community validation before being listed as supported.
+Testing covers the full governance pipeline: trust level enforcement, Manners scoring, kill
+switch behavior, HITL gate flow, and audit chain integrity.
+
+### Proposing a Framework for Integration
+
+If you are working with an agent framework you would like to see integrated:
+
+1. **Open a GitHub Discussion** in the `QuietFireAI/TelsonBase` repository under the
+   `agent-integrations` category. Describe the framework, its deployment scale, and the
+   governance risks it presents.
+
+2. **Contribute a proof of integration** - if you have already connected a framework to
+   TelsonBase's governance API, share the integration pattern. A working example accelerates
+   the process significantly.
+
+3. **Community testing** - proposed integrations that pass community testing against the
+   governance smoke test (`scripts/governance_smoke_test.sh`) are prioritized for official
+   inclusion.
+
+See `CONTRIBUTING.md` for the full contribution process.
+
+---
+
+*TelsonBase v11.0.1 · Quietfire AI · March 8, 2026*
 *Questions: support@telsonbase.com*
