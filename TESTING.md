@@ -68,6 +68,15 @@ docker compose exec mcp_server python -m pytest tests/ --cov=. \
 
 **Expected result:** `720 passed, 1 skipped`
 
+**The 1 skipped:** `test_contracts.py::TestOperationalContracts::test_alembic_upgrade_head_is_idempotent` — skips when `DATABASE_URL` is not set in the test environment. This test verifies that running `alembic upgrade head` twice on an already-migrated database is a no-op. It requires a live database connection to run and skips gracefully without one. Not a failure — by design.
+
+To run it explicitly with a live DB:
+```bash
+DATABASE_URL=postgresql://user:pass@localhost/telsonbase \
+  docker compose exec mcp_server python -m pytest \
+  tests/test_contracts.py::TestOperationalContracts::test_alembic_upgrade_head_is_idempotent -v
+```
+
 ### Suite Breakdown
 
 | File | Tests | What It Covers |
