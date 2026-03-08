@@ -223,7 +223,7 @@ QUARANTINE ──► PROBATION ──► RESIDENT ──► CITIZEN ──► AG
 | **Citizen** | All allowed tools | Anomaly-flagged only | -- |
 | **Agent** | Full autonomy (300 actions/min) | Nothing | Nothing |
 
-Promotion is sequential. You can't skip from Quarantine to Citizen. Demotion is instant and can skip levels. A Citizen agent whose Manners compliance score drops below 50% is automatically demoted to Quarantine. No human delay. No grace period. Agent is the apex tier - fully verified, human-approved designation with the strictest re-verification requirements.
+Promotion is sequential. You can't skip from Quarantine to Citizen. Demotion is instant and can skip levels. Every agent receives a real-time Manners compliance score (0.0-1.0). An agent scoring below 0.25 - or triggering three violations in any 24-hour window - is automatically suspended and quarantined. No human delay. No grace period. Agent is the apex tier - fully verified, human-approved designation with the strictest re-verification requirements.
 
 This is the architecture the industry needs. Not more guardrails inside the model. **Deterministic enforcement outside the model** that doesn't care if the LLM is being prompt-injected.
 

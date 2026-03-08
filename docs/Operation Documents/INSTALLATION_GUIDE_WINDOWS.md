@@ -314,7 +314,19 @@ For the full scoring model, violation types, and API reference: `docs/Compliance
 
 ## Running the Test Suite
 
-TelsonBase ships with 720 tests. Run them from inside the Docker container:
+720 tests covering what actually matters for a governance platform:
+
+| Domain | Count | What it covers |
+|---|---|---|
+| Security battery | 96 | Auth, signing, key hashing, injection prevention, encryption, RBAC |
+| QMS protocol | 115 | Message format, nonce replay, chain integrity, signature verification |
+| Tool governance | 129 | Capability enforcement, egress control, approval gates |
+| OpenClaw | 55 | Trust tier transitions, kill switch, Manners score updates |
+| End-to-end | 29 | Full agent lifecycle from registration to suspension |
+| Contracts | 7 | Enum stability - if you add a TenantType or TrustLevel, these fail fast |
+| Core + other | 289 | Multi-tenancy isolation, federation, audit trail, CAPTCHA, HITL |
+
+Run the full suite from inside the Docker container:
 
 ```bash
 docker compose exec mcp_server python -m pytest tests/ -v
@@ -322,9 +334,9 @@ docker compose exec mcp_server python -m pytest tests/ -v
 
 Expected result: **720 passed, 1 skipped, 0 failed**
 
-The 1 skip is expected — it is an Alembic idempotency test that requires a live database in a specific state. Everything else should be green.
+The 1 skip is expected - it is an Alembic idempotency test that requires a live database in a specific state. Everything else should be green.
 
-Run only the security battery (96 tests):
+Run only the security battery:
 ```bash
 docker compose exec mcp_server python -m pytest tests/security/ -v
 ```
@@ -333,6 +345,8 @@ Run a specific test file:
 ```bash
 docker compose exec mcp_server python -m pytest tests/test_auth.py -v
 ```
+
+Every test has a corresponding proof sheet in `proof_sheets/individual/`. Each sheet contains the exact pytest command to run it in isolation.
 
 ---
 
