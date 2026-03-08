@@ -1,19 +1,6 @@
 # TelsonBase - Production Hardening Decision Log
-# REM: =======================================================================================
-# REM: ENGINEERING DECISIONS MADE DURING THE AUTONOMOUS HARDENING COOK
-# REM: =======================================================================================
-# REM: Architect: ::Quietfire AI Project::
-# REM: Engineer: Claude (Opus 4.6)
-# REM: Date: February 10-11, 2026
-# REM:
-# REM: Context: Jeff gave Claude full engineering authority over items 1-22 of the
-# REM: production hardening roadmap. This document records every significant technical
-# REM: decision - what was chosen, what was rejected, why, and what it means for the
-# REM: project going forward.
-# REM:
-# REM: "id like to cut you loose on the stack, ill keep putting quarters in the juke box,
-# REM:  and youll let me know when its done" - Jeff Phillips
-# REM: =======================================================================================
+**Version:** v11.0.1 · **Maintainer:** Quietfire AI
+**Recorded:** February 10–11, 2026
 
 ---
 
@@ -268,3 +255,7 @@ Each checkpoint is taken AFTER tests pass, not before. CLAUDE.md is updated with
 ---
 
 *This document is the engineering record of autonomous technical decisions made under the working agreement between Jeff Phillips (architect, business direction) and Claude (engineering authority, production hardening). Every choice was made to move TelsonBase from "impressive prototype" to "deployable product that a law firm's compliance officer will approve."*
+
+---
+
+*TelsonBase v11.0.1 · Quietfire AI · March 8, 2026*

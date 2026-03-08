@@ -3,9 +3,7 @@
 **A Zero-Trust AI Agent Security Platform**
 **Built for Data Sovereignty. Designed for Local-First Deployment.**
 
-**Architect:** ::Jeff Phillips:: - ::support@telsonbase.com::
-**Organization:** Quietfire AI
-**Version:** 10.0.0Bminus (March 3, 2026)
+**Version:** v11.0.1 · **Maintainer:** Quietfire AI
 **License:** Apache 2.0
 
 ---
@@ -303,7 +301,6 @@ The rotation serves as a form of cross-validation. Each platform reviews the oth
 
 ## Contact
 
-**Jeff Phillips** - Architect
-support@telsonbase.com
+---
 
-**Quietfire AI** - quietfireai.com
+*TelsonBase v11.0.1 · Quietfire AI · March 8, 2026*

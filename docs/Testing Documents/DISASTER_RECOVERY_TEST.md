@@ -1,8 +1,7 @@
 # TelsonBase Disaster Recovery Test Procedure
 
-**Version:** 10.0.0Bminus
-**Last Updated:** March 3, 2026
-**Architect:** Jeff Phillips - support@telsonbase.com
+**Version:** v11.0.1 · **Maintainer:** Quietfire AI
+**Last Updated:** March 8, 2026
 **Script:** `scripts/dr_test.sh`
 
 ---
@@ -170,3 +169,7 @@ Test results are written to `logs/dr_test_YYYYMMDD.log` and should be retained f
 - [Disaster Recovery Plan](DISASTER_RECOVERY.md) - Full DR plan and recovery scenarios
 - [Encryption at Rest](ENCRYPTION_AT_REST.md) - Data protection at the volume level
 - [Incident Response](INCIDENT_RESPONSE.md) - Procedures when a real disaster occurs
+
+---
+
+*TelsonBase v11.0.1 · Quietfire AI · March 8, 2026*

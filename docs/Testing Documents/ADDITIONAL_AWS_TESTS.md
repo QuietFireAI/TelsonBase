@@ -96,3 +96,7 @@ If it self-heals, that's resilience evidence. If it doesn't, you found something
 ---
 
 File the papers March 1st. Then you decide who's worth showing it to.
+
+---
+
+*TelsonBase v11.0.1 · Quietfire AI · March 8, 2026*
