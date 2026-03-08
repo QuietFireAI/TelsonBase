@@ -1,7 +1,18 @@
-# TelsonBase Installation Guide for Windows
+# TelsonBase - Installation Guide for Windows
 
 **Version:** v11.0.1 · **Maintainer:** Quietfire AI
 **Target Audience:** Windows users, including those new to Docker
+
+---
+
+## Before You Start
+
+TelsonBase runs entirely in Docker. You do not install Python, Redis, or any other dependency directly on Windows — Docker handles all of that. What you need on your machine:
+
+1. Docker Desktop
+2. Git (for cloning the repo and running the setup script)
+
+Both are covered in Prerequisites below.
 
 ---
 
@@ -9,155 +20,205 @@
 
 ### 1. Install Docker Desktop for Windows
 
-Docker Desktop is required to run TelsonBase.
-
 **Download:** https://www.docker.com/products/docker-desktop/
 
-**System Requirements:**
-- Windows 10 64-bit: Pro, Enterprise, or Education (Build 19041+)
-- Windows 11 64-bit: Home, Pro, Enterprise, or Education
-- WSL 2 backend (recommended)
-- 4GB RAM minimum (8GB+ recommended for Ollama/LLM)
+**System requirements:**
+- Windows 10 64-bit: Build 19041 or later (Pro, Enterprise, or Education)
+- Windows 11 64-bit: any edition including Home
+- 8 GB RAM minimum — Ollama (local LLM) needs headroom
+- WSL 2 backend (recommended — Docker will prompt you to enable it)
 
-**Installation Steps:**
-1. Download Docker Desktop installer
-2. Run the installer (may require admin privileges)
-3. Follow the installation wizard
-4. Restart your computer when prompted
-5. Launch Docker Desktop from Start menu
-6. Wait for Docker to fully start (whale icon in system tray)
+**Steps:**
+1. Run the installer — it may ask for administrator privileges
+2. Follow the wizard and restart when prompted
+3. Open Docker Desktop from the Start menu after restart
+4. Wait for the whale icon in the system tray to show **"Docker Desktop is running"** before proceeding
 
-**Verify Installation:**
+**Verify:**
 ```powershell
 docker --version
 docker compose version
 ```
 
-> **Note:** TelsonBase uses the modern `docker compose` (V2 plugin, no hyphen). The legacy `docker-compose` command is not required.
+> TelsonBase uses `docker compose` (V2, built into Docker Desktop). The older `docker-compose` (with hyphen) is not needed.
 
-### 2. Install Git (Optional but Recommended)
+---
+
+### 2. Install Git for Windows
+
+Git is required. The installer also includes **Git Bash**, which you will use to run the secrets setup script.
 
 **Download:** https://git-scm.com/download/win
 
-Or use winget:
+Or via winget:
 ```powershell
 winget install Git.Git
 ```
+
+Accept the defaults during installation. When it finishes, you will have both `git` (available in PowerShell and Command Prompt) and **Git Bash** (a separate app in your Start menu).
 
 ---
 
 ## Installation
 
-### Option A: Clone from GitHub (Recommended)
+### Clone the Repository
 
-```powershell
-# Open PowerShell or Command Prompt
+Open PowerShell, Command Prompt, or Git Bash:
+
+```bash
 git clone https://github.com/QuietFireAI/TelsonBase.git
-cd telsonbase
+cd TelsonBase
 ```
 
-### Option B: Download ZIP
-
-1. Go to https://github.com/QuietFireAI/TelsonBase
-2. Click "Code" → "Download ZIP"
-3. Extract to a folder (e.g., `C:\telsonbase`)
-4. Open PowerShell/Command Prompt in that folder
+> Note the capital T — the directory is `TelsonBase`, not `telsonbase`.
 
 ---
 
 ## Configuration
 
-### 1. Create Environment File
+This is the step most people skip past too quickly. Do not skip it.
 
-```powershell
-# Copy the example environment file
+### Step 1 - Copy the environment file
+
+**In Git Bash or PowerShell:**
+```bash
+cp .env.example .env
+```
+
+**Or in Command Prompt:**
+```cmd
 copy .env.example .env
 ```
 
-### 2. Generate Secure Keys
+### Step 2 - Generate all secrets
 
-Open PowerShell and generate random keys:
+Open **Git Bash** (from the Start menu — not PowerShell) and run:
 
-```powershell
-# Generate API key (copy output to .env)
--join ((1..64) | ForEach-Object { "{0:x}" -f (Get-Random -Max 16) })
-
-# Or use OpenSSL if installed
-openssl rand -hex 32
+```bash
+bash scripts/generate_secrets.sh
 ```
 
-### 3. Edit .env File
+This script does three things:
+- Generates cryptographically random keys for the API, JWT, encryption, and all service passwords
+- Writes them into the `secrets/` directory as Docker secret files
+- Updates your `.env` file with the matching values
 
-Open `.env` in Notepad or your preferred editor:
+**Do not skip this step and do not generate keys manually.** TelsonBase uses Docker Secrets — keys must be in `secrets/` as files, not just in `.env`. The script handles both.
 
-```powershell
-notepad .env
+After the script completes, verify the secrets directory was created:
+
+```bash
+ls secrets/
 ```
 
-**Required Changes:**
+You should see files including `telsonbase_mcp_api_key`. That file's contents are your API key — keep it.
+
+```bash
+cat secrets/telsonbase_mcp_api_key
+```
+
+### Step 3 - Review .env (optional but recommended)
+
+Open `.env` in any editor and review the values. The defaults work for local development. The one setting you may want to change:
+
 ```env
-# Replace these with your generated keys
-MCP_API_KEY=paste_your_generated_key_here
-JWT_SECRET_KEY=paste_another_generated_key_here
-
-# For local development
-TRAEFIK_DOMAIN=localhost
+# Enable the full 8-step governance pipeline
+# Set to true to use OpenClaw agent governance features
+OPENCLAW_ENABLED=true
 ```
 
-**Save the file.**
+Set `OPENCLAW_ENABLED=true` if you want the full governance pipeline active (trust levels, kill switch, Manners compliance). Leave it `false` if you are exploring the platform for the first time — the platform runs fine without it, but agent governance features will not fire.
 
 ---
 
 ## Starting TelsonBase
 
-### 1. Ensure Docker Desktop is Running
+### Step 1 - Confirm Docker Desktop is running
 
-Look for the Docker whale icon in your system tray. It should show "Docker Desktop is running."
+Check the system tray for the whale icon showing "Docker Desktop is running" before proceeding.
 
-### 2. Start the Services
+### Step 2 - Start all services
 
-```powershell
-# From the telsonbase directory
+```bash
 docker compose up -d --build
 ```
 
-**First run will take several minutes** as Docker downloads and builds images.
+The first run downloads and builds images. This takes several minutes depending on your connection. Subsequent starts are fast.
 
-### 3. Verify Startup
+### Step 3 - Run the database migration
 
-```powershell
-# Check all containers are running
+**This step is required.** Without it, the API returns 500 errors on every request.
+
+```bash
+docker compose exec mcp_server alembic upgrade head
+```
+
+You will see output like:
+```
+INFO  [alembic.runtime.migration] Running upgrade  -> abc123, initial schema
+INFO  [alembic.runtime.migration] Running upgrade abc123 -> def456, add trust levels
+```
+
+This is a one-time step. You do not need to repeat it on subsequent restarts.
+
+### Step 4 - Verify startup
+
+```bash
 docker compose ps
+```
 
-# Test the health endpoint
+All 12 services should show **Up** or **healthy**:
+
+```
+NAME                        STATUS
+telsonbase-traefik-1        Up
+telsonbase-redis-1          Up (healthy)
+telsonbase-postgres-1       Up (healthy)
+telsonbase-mcp_server-1     Up (healthy)
+telsonbase-worker-1         Up
+telsonbase-beat-1           Up
+telsonbase-ollama-1         Up
+telsonbase-open-webui-1     Up
+telsonbase-mosquitto-1      Up
+telsonbase-prometheus-1     Up
+telsonbase-grafana-1        Up
+```
+
+If any service shows **Restarting**, check its logs:
+```bash
+docker compose logs mcp_server
+```
+
+### Step 5 - Check the health endpoint
+
+```bash
 curl http://localhost:8000/health
 ```
 
-If `curl` isn't available:
+If `curl` is not available in your shell, use PowerShell:
 ```powershell
-Invoke-WebRequest -Uri http://localhost:8000/health
+Invoke-WebRequest -Uri http://localhost:8000/health | Select-Object -ExpandProperty Content
 ```
 
-Or open a browser to: http://localhost:8000/health
+Or open a browser to: `http://localhost:8000/health`
 
 Expected response:
 ```json
-{"status": "healthy", "version": "7.4.0CC", ...}
+{"status": "healthy", "version": "11.0.1"}
 ```
 
-### 4. Pull the AI Model (Required for LLM Features)
+### Step 6 - Pull the AI model
 
-TelsonBase uses Ollama for local AI inference. After startup, pull the default model:
+TelsonBase uses Ollama for local LLM inference. Pull the default model after startup:
 
-```powershell
-# Pull gemma2:9b (default model - ~5.4 GB download)
+```bash
 docker exec telsonbase-ollama-1 ollama pull gemma2:9b
 ```
 
-This is a one-time step. The model persists in the `ollama_data` volume across restarts.
+This is a one-time download (~5.4 GB). The model is stored in the `ollama_data` Docker volume and persists across restarts.
 
-**Verify the model is available:**
-```powershell
+Verify:
+```bash
 curl http://localhost:11434/api/tags
 ```
 
@@ -165,55 +226,49 @@ curl http://localhost:11434/api/tags
 
 ## Accessing TelsonBase
 
-| Service | URL | Description |
-|---------|-----|-------------|
-| **Dashboard** | http://localhost:8000/dashboard | Security management UI |
-| **User Console** | http://localhost:8000/console | Operator-focused UI |
-| **API Docs** | http://localhost:8000/docs | Interactive API documentation |
+| Service | URL | What it is |
+|---|---|---|
+| **Admin Console** | http://localhost:8000/dashboard | Full governance dashboard |
+| **User Console** | http://localhost:8000/console | Operator-focused view |
+| **API Docs** | http://localhost:8000/docs | Interactive API reference (Swagger) |
 | **Health Check** | http://localhost:8000/health | System status |
-| **MCP Gateway** | http://localhost:8000/mcp | Goose / Claude Desktop connection point (operator tool) |
+| **MCP Gateway** | http://localhost:8000/mcp | Connection point for Goose / Claude Desktop |
+| **Open WebUI** | http://localhost:3000 | Chat interface for local LLM |
+| **Grafana** | http://localhost:3001 | Infrastructure metrics |
 
-### First Login to Dashboard
+### First login to the Admin Console
 
-1. Open http://localhost:8000/dashboard
-2. Enter your API key (from `.env` file, `MCP_API_KEY` value)
-3. You'll see the security dashboard
+1. Open `http://localhost:8000/dashboard`
+2. Click **Offline** in the header to open the connection panel
+3. Enter your API key — find it with:
+   ```bash
+   cat secrets/telsonbase_mcp_api_key
+   ```
+4. Click **Connect** — the header will switch to **Live** and show the system health dot
 
 ---
 
-## Running the Test Suites
+## Running the Test Suite
 
-TelsonBase includes two test runners. Both require the `MCP_API_KEY` environment variable to be set in your session.
+TelsonBase ships with 720 tests. Run them from inside the Docker container:
 
-### Set API Key in Session
-
-```powershell
-# In PowerShell (use your actual key from .env)
-$env:MCP_API_KEY = "your-api-key-here"
-
-# In Command Prompt
-set MCP_API_KEY=your-api-key-here
+```bash
+docker compose exec mcp_server python -m pytest tests/ -v
 ```
 
-### Basic Validation Suite
+Expected result: **720 passed, 1 skipped, 0 failed**
 
-Runs 21 core tests - authentication, API health, audit chain, agents, compliance.
+The 1 skip is expected — it is an Alembic idempotency test that requires a live database in a specific state. Everything else should be green.
 
-```powershell
-./run_tests.bat
+Run only the security battery (96 tests):
+```bash
+docker compose exec mcp_server python -m pytest tests/security/ -v
 ```
 
-All 21 tests should PASS before proceeding to advanced testing.
-
-### Advanced Test Suite
-
-Runs 20 test groups across 5 levels: security, chaos/resilience, schema validation, performance, and static analysis. Takes 60–90 minutes (includes LLM inference tests).
-
-```powershell
-./run_advanced_tests.bat
+Run a specific test file:
+```bash
+docker compose exec mcp_server python -m pytest tests/test_auth.py -v
 ```
-
-> **Note:** The advanced suite includes LLM inference tests (S2) that run on CPU and may take several minutes per call. This is normal.
 
 ---
 
@@ -221,72 +276,73 @@ Runs 20 test groups across 5 levels: security, chaos/resilience, schema validati
 
 ### "Docker daemon is not running"
 
-**Solution:**
-1. Open Docker Desktop from Start menu
-2. Wait for it to fully start (may take 1-2 minutes)
-3. Try the command again
+Open Docker Desktop from the Start menu and wait for the whale icon in the system tray to show **"Docker Desktop is running"**. Then retry.
+
+### WSL 2 not installed or incomplete
+
+Open PowerShell as Administrator and run:
+```powershell
+wsl --install
+```
+Restart your computer. Reopen Docker Desktop.
+
+### Hyper-V is not enabled
+
+1. Open **Turn Windows features on or off** (search in Start menu)
+2. Enable **Hyper-V** and **Windows Hypervisor Platform**
+3. Restart
 
 ### "Port already in use"
 
-**Solution:**
 ```powershell
-# Find what's using port 8000
+# Find what is using port 8000
 netstat -ano | findstr :8000
 
-# Kill the process (replace PID with the number from above)
-taskkill /PID <PID> /F
+# Kill it (replace 1234 with the PID from the output above)
+taskkill /PID 1234 /F
 ```
 
-Or change the port in `docker-compose.yml`:
+Alternatively, edit `docker-compose.yml` to use a different host port:
 ```yaml
 ports:
-  - "8001:8000"  # Use 8001 instead
+  - "8001:8000"  # access via localhost:8001 instead
 ```
-
-### "WSL 2 installation is incomplete"
-
-**Solution:**
-1. Open PowerShell as Administrator
-2. Run: `wsl --install`
-3. Restart your computer
-4. Reopen Docker Desktop
-
-### "Hyper-V is not enabled"
-
-**Solution:**
-1. Open "Turn Windows features on or off"
-2. Enable "Hyper-V" and "Windows Hypervisor Platform"
-3. Restart your computer
 
 ### Containers keep restarting
 
-**Check logs:**
-```powershell
-docker compose logs mcp_server
+Check the logs:
+```bash
+docker compose logs mcp_server --tail=50
 ```
 
-**Common causes:**
-- Missing `.env` file (copy from `.env.example`)
-- Invalid `.env` values (check format)
-- Port conflicts
+Most common causes:
+- `secrets/` directory missing (did not run `generate_secrets.sh`)
+- `.env` file missing (did not copy from `.env.example`)
+- Alembic migration not run yet (API will 500 until you run it)
 
-### run_tests.bat shows "MCP_API_KEY not set"
+### API returns 500 on every request
 
-You must set the API key in your shell before running the bat file:
-```powershell
-$env:MCP_API_KEY = "your-api-key-here"
-./run_tests.bat
+You have not run the database migration. Run it now:
+```bash
+docker compose exec mcp_server alembic upgrade head
 ```
+
+### `generate_secrets.sh` fails or is not found
+
+Make sure you are running the command in **Git Bash**, not in PowerShell or Command Prompt. Git Bash is a separate app installed with Git for Windows — find it in your Start menu.
 
 ---
 
-## Stopping TelsonBase
+## Stopping and Restarting
 
-```powershell
-# Stop all services
+```bash
+# Stop all services (data is preserved)
 docker compose down
 
-# Stop and remove volumes (WARNING: deletes data)
+# Start again (no rebuild needed)
+docker compose up -d
+
+# Stop and delete all data (volumes) — use with care
 docker compose down -v
 ```
 
@@ -294,23 +350,37 @@ docker compose down -v
 
 ## Updating TelsonBase
 
-```powershell
+```bash
 # Pull latest code
 git pull
 
 # Rebuild and restart
 docker compose up -d --build
+
+# Run migrations (in case the update added schema changes)
+docker compose exec mcp_server alembic upgrade head
 ```
+
+---
+
+## Development Mode (MailHog)
+
+For local email testing (password reset, user verification), start with the `dev` profile:
+
+```bash
+docker compose --profile dev up -d
+```
+
+This adds MailHog. Access it at `http://localhost:8025` to view emails sent by the platform. Production deployments omit the `--profile dev` flag and configure real SMTP values in `.env`.
 
 ---
 
 ## Getting Help
 
-1. **Documentation:** See `docs/` folder
-2. **Troubleshooting:** See `docs/Operation Documents/TROUBLESHOOTING.md`
-3. **Issues:** https://github.com/QuietFireAI/TelsonBase/issues
-4. **Email:** support@telsonbase.com
+- **Troubleshooting guide:** `docs/Operation Documents/TROUBLESHOOTING.md`
+- **GitHub Issues:** https://github.com/QuietFireAI/TelsonBase/issues
+- **Email:** support@telsonbase.com
 
 ---
 
-*TelsonBase v10.0.0Bminus - Protecting the telson through human-AI collaboration.*
+*TelsonBase v11.0.1 · Quietfire AI · March 8, 2026*
