@@ -304,8 +304,7 @@ with gr.Blocks(title="TelsonBase — Live Governance Demo") as demo:
     gr.Markdown(
         "---\n"
         "*TelsonBase v11.0.1 by Quietfire AI · "
-        "[GitHub](https://github.com/QuietFireAI/TelsonBase) · Apache 2.0 · "
-        "Built with human-AI collaboration (Jeff Phillips + Claude by Anthropic)*"
+        "[GitHub](https://github.com/QuietFireAI/TelsonBase) · Apache 2.0*"
     )
 
 if __name__ == "__main__":
