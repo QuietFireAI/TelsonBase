@@ -482,7 +482,7 @@ TelsonBase is open source under the [Apache License, Version 2.0](LICENSE).
 
 Free for any use - personal, commercial, production, research. Use it, modify it, deploy it, build on it. Attribution required: retain the copyright and license notices when distributing. Full terms: [`LICENSE`](LICENSE)
 
-TelsonBase is provided as-is with no warranty. Deploying organizations are responsible for their own configurations, agents, and compliance outcomes. AI platforms and model collaborators bear no liability. Full terms: [`DISCLAIMER.md`](DISCLAIMER.md)
+TelsonBase is provided as-is with no warranty. Deploying organizations are responsible for their own configurations, agents, and compliance outcomes. Full terms: [`TERMS_OF_USE.md`](TERMS_OF_USE.md)
 
 ---
 
