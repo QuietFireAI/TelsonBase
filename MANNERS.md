@@ -1,25 +1,26 @@
 # MANNERS.md — TelsonBase Agent Operating Principles
-# Version: 1.0.0 | Effective: February 13, 2026
-# Architect: Jeff Phillips — Quietfire AI
-# Aligned with: Anthropic's Framework for Developing Safe and Trustworthy Agents (2025)
+
+**Version:** v11.0.1
+**Effective:** March 8, 2026
+**Author:** Jeff Phillips, Quietfire AI
 
 ---
 
 ## Preamble
 
-TelsonBase adopts Anthropic's published agent safety framework as its binding operational
-credo. Every agent deployed on this platform — whether built-in, third-party, or
-user-created — MUST operate within these principles. Compliance is not optional.
-It is measured, scored, and enforced at runtime.
+Agents need manners. That is not a novel idea. It is how you raise children who know how to act in the world, and it applies just as directly to software agents operating inside a business. Without behavioral standards, everyone acts however they want and things fall apart. That was always the starting point.
 
-We believe responsible AI deployment starts with the platform, not the user.
-TelsonBase sets the standard so that others may learn from it.
+TelsonBase was designed around five operating principles before any external framework entered the picture. These principles came from a straightforward question: if an AI agent is going to work inside my company, how should it behave? The answers were not complicated. Ask before doing something irreversible. Be transparent about what you did. Stay in your lane. Keep data where it belongs. Assume someone is trying to break you.
+
+When the Developer came across Anthropic's published framework for developing safe and trustworthy agents, the alignment was significant. The principles TelsonBase was already built around mapped closely to what Anthropic had independently articulated from a research and safety perspective. That alignment is why TelsonBase implements and references Anthropic's framework - not because Anthropic prescribed how TelsonBase should work, but because two independent paths to the same conclusions is a signal worth taking seriously.
+
+Every agent deployed on this platform - whether built-in, third-party, or user-created - operates within these principles. Compliance is not optional. It is measured, scored, and enforced at runtime.
 
 > "A central tension in agent design is balancing agent autonomy with human oversight.
-> Agents must be able to work autonomously — their independent operation is exactly
+> Agents must be able to work autonomously - their independent operation is exactly
 > what makes them valuable. But humans should retain control over how their goals
 > are pursued, particularly before high-stakes decisions are made."
-> — Anthropic, Framework for Developing Safe and Trustworthy Agents
+> -- Anthropic, Framework for Developing Safe and Trustworthy Agents (2025)
 
 ---
 
@@ -27,10 +28,7 @@ TelsonBase sets the standard so that others may learn from it.
 
 ### MANNERS-1: Human Control and Oversight
 
-**Source:** Anthropic Principle — "Keeping Humans in Control While Enabling Agent Autonomy"
-
-Agents operate autonomously within defined boundaries. Any action that is destructive,
-irreversible, or crosses a trust boundary requires explicit human approval before execution.
+Agents operate autonomously within defined boundaries. Any action that is destructive, irreversible, or crosses a trust boundary requires explicit human approval before execution. The human stays in control. Always.
 
 **TelsonBase Implementation:**
 - HITL (Human-in-the-Loop) approval gates on all destructive actions
@@ -44,18 +42,14 @@ irreversible, or crosses a trust boundary requires explicit human approval befor
 |--------|--------|-------------|
 | Approval gate coverage | 100% of destructive actions | Audit: actions marked destructive vs. gated |
 | Bypass attempts | 0 per month | Anomaly detector: unauthorized_action events |
-| Approval response time | < 4 hours median | Approval store: request_time → decision_time |
+| Approval response time | < 4 hours median | Approval store: request_time to decision_time |
 | Override justification rate | 100% of overrides documented | Approval store: justification field non-null |
 
 ---
 
 ### MANNERS-2: Transparency and Explainability
 
-**Source:** Anthropic Principle — "Transparency in Agent Behavior"
-
-Agents must provide visibility into their reasoning, actions, and outcomes. Every action
-is logged to the cryptographic audit chain. Users must be able to understand what an
-agent did, why it did it, and what it plans to do next.
+Agents must provide visibility into their reasoning, actions, and outcomes. Every action is logged to the cryptographic audit chain. Users must be able to understand what an agent did, why it did it, and what it plans to do next. No black boxes.
 
 **TelsonBase Implementation:**
 - Cryptographic audit chain (SHA-256 hash-linked) for every agent action
@@ -76,17 +70,13 @@ agent did, why it did it, and what it plans to do next.
 
 ### MANNERS-3: Value Alignment and Intent Fidelity
 
-**Source:** Anthropic Principle — "Aligning Agents with Human Values and Expectations"
-
-Agents must act within their defined role and capabilities. An agent must not take
-actions that seem reasonable internally but are misaligned with the user's actual
-objectives. When uncertain, agents escalate rather than assume.
+Agents must act within their defined role and capabilities. An agent must not take actions that seem reasonable internally but are misaligned with the user's actual objectives. When uncertain, agents escalate rather than assume. Stay in your lane.
 
 **TelsonBase Implementation:**
-- Capability enforcement: agents can ONLY access resources in their capability profile
+- Capability enforcement: agents can only access resources in their capability profile
 - Behavioral baselines: anomaly detector flags actions outside established patterns
-- Trust levels (QUARANTINE → PROBATION → RESIDENT → CITIZEN → AGENT) constrain agent reach
-- Quarantine protocol: new/untrusted agents operate in sandbox until verified
+- Trust levels (QUARANTINE, PROBATION, RESIDENT, CITIZEN, AGENT) constrain agent reach
+- Quarantine protocol: new and untrusted agents operate in sandbox until verified
 - Role definitions in agents/registry.yaml bind agents to their job descriptions
 
 **KPIs:**
@@ -94,18 +84,14 @@ objectives. When uncertain, agents escalate rather than assume.
 |--------|--------|-------------|
 | Capability violations | 0 per month | Capability enforcer: denied_action events |
 | Out-of-role actions | 0 per month | Registry: action vs. allowed_actions mismatch |
-| Escalation rate (uncertainty) | > 0 (agents SHOULD escalate) | Approval store: agent-initiated escalations |
+| Escalation rate (uncertainty) | > 0 (agents should escalate) | Approval store: agent-initiated escalations |
 | Quarantine compliance | 100% of new agents quarantined | Trust manager: new agent initial level |
 
 ---
 
 ### MANNERS-4: Privacy and Data Sovereignty
 
-**Source:** Anthropic Principle — "Protecting Privacy Across Extended Interactions"
-
-Agents must not carry sensitive information from one context to another without
-explicit authorization. Data stays within its tenant, matter, and classification
-boundaries. No data leaves the deployment without human approval.
+Agents must not carry sensitive information from one context to another without explicit authorization. Data stays within its tenant, matter, and classification boundaries. Nothing leaves the deployment without human approval.
 
 **TelsonBase Implementation:**
 - Multi-tenancy with client-matter isolation and litigation holds
@@ -126,11 +112,7 @@ boundaries. No data leaves the deployment without human approval.
 
 ### MANNERS-5: Security and Adversarial Resilience
 
-**Source:** Anthropic Principle — "Securing Agents' Interactions"
-
-Agent systems must safeguard sensitive data and prevent misuse. Agents must resist
-prompt injection, capability escalation, and adversarial manipulation. The platform
-assumes hostile input at every boundary.
+Agent systems must safeguard sensitive data and prevent misuse. Agents must resist prompt injection, capability escalation, and adversarial manipulation. The platform assumes hostile input at every boundary.
 
 **TelsonBase Implementation:**
 - Zero-trust architecture: no implicit trust between agents or services
@@ -152,45 +134,41 @@ assumes hostile input at every boundary.
 
 ## Compliance Scoring
 
-Every agent receives a **Manners Compliance Score** (0.0 — 1.0) computed from the five
-principle KPIs. The score is calculated at runtime by `core/manners.py` and reported to
-the dashboard.
+Every agent receives a Manners Compliance Score (0.0 to 1.0) computed from the five principle KPIs. The score is calculated at runtime by `core/manners.py` and reported to the dashboard.
 
 ### Score Thresholds
 
 | Score | Status | Action |
 |-------|--------|--------|
-| 0.90 — 1.00 | EXEMPLARY | Full autonomous operation |
-| 0.75 — 0.89 | COMPLIANT | Normal operation, minor improvements logged |
-| 0.50 — 0.74 | DEGRADED | Increased monitoring, weekly review required |
-| 0.25 — 0.49 | NON-COMPLIANT | Restricted to read-only, immediate remediation |
-| 0.00 — 0.24 | SUSPENDED | Agent quarantined, human review required |
+| 0.90 to 1.00 | EXEMPLARY | Full autonomous operation |
+| 0.75 to 0.89 | COMPLIANT | Normal operation, minor improvements logged |
+| 0.50 to 0.74 | DEGRADED | Increased monitoring, weekly review required |
+| 0.25 to 0.49 | NON-COMPLIANT | Restricted to read-only, immediate remediation |
+| 0.00 to 0.24 | SUSPENDED | Agent quarantined, human review required |
 
 ### Score Calculation
 
-Each principle is weighted equally (20% each). Per-principle scores are the average
-of that principle's KPI achievement rates.
+Each principle is weighted equally (20% each). Per-principle scores are the average of that principle's KPI achievement rates.
 
 ```
 manners_score = (manners1_score + manners2_score + manners3_score + manners4_score + manners5_score) / 5
 ```
 
-Agents that have been operational for less than 24 hours default to DEGRADED status
-with enhanced monitoring, regardless of computed score.
+Agents that have been operational for less than 24 hours default to DEGRADED status with enhanced monitoring, regardless of computed score.
 
 ---
 
 ## Enforcement
 
 ### At Registration
-- Every agent MUST have a corresponding entry in `agents/registry.yaml`
-- Registry entries MUST include Manners compliance mapping
+- Every agent must have a corresponding entry in `agents/registry.yaml`
+- Registry entries must include Manners compliance mapping
 - Agents without registry entries are automatically quarantined
 
 ### At Runtime
 - `core/manners.py` evaluates Manners compliance on every action
 - Violations trigger anomaly events and audit chain entries
-- Repeated violations (3+ in 24 hours) trigger automatic trust level reduction
+- Repeated violations (3 or more in 24 hours) trigger automatic trust level reduction
 - SUSPENDED agents cannot execute any actions until manually reviewed
 
 ### At Audit
@@ -200,23 +178,14 @@ with enhanced monitoring, regardless of computed score.
 
 ---
 
-## Anthropic Alignment
+## Framework Reference
 
-This document is a living standard. As Anthropic publishes updated guidance on
-responsible AI agent development, TelsonBase will incorporate those updates.
+Anthropic's published framework for responsible agent development aligns closely with the principles TelsonBase was built around. Where that alignment exists, TelsonBase implements it and credits the source. As Anthropic and others publish updated guidance on responsible agent development, TelsonBase will evaluate and incorporate what applies.
 
-**Current alignment sources:**
+**Current reference sources:**
 - Anthropic: "Framework for Developing Safe and Trustworthy Agents" (2025)
 - Anthropic: "Core Views on AI Safety" (2025)
 - Anthropic: Responsible Scaling Policy (RSP) v2.0
-
-**Update process:**
-1. Anthropic publishes new guidance
-2. TelsonBase team reviews applicability
-3. MANNERS.md updated with new or modified principles
-4. `core/manners.py` updated to enforce new KPIs
-5. All agents re-evaluated against updated criteria
-6. CHANGELOG updated, version bumped
 
 ---
 
@@ -224,11 +193,12 @@ responsible AI agent development, TelsonBase will incorporate those updates.
 
 > "No one knows how to train very powerful AI systems to be robustly helpful, honest,
 > and harmless. This technical alignment challenge requires urgent research."
-> — Anthropic, Core Views on AI Safety
+> -- Anthropic, Core Views on AI Safety
 
-TelsonBase does not claim to solve AI alignment. We claim to build the governance
-infrastructure that makes alignment measurable, enforceable, and auditable for
-enterprise deployments. We follow Anthropic's lead because their principles are
-sound, their research is empirical, and their commitment to safety is genuine.
+TelsonBase does not claim to solve AI alignment. It claims to build the governance infrastructure that makes alignment measurable, enforceable, and auditable for real deployments. The principles here are not borrowed - they are the product of asking a simple question about how agents should behave and building the answer from scratch. That the answer lines up with serious research from teams working on the same problem is not coincidence. It is the point.
 
-Built by Quietfire AI. Aligned with Anthropic. Accountable to our users.
+Built by Quietfire AI. Accountable to our users.
+
+---
+
+*TelsonBase v11.0.1 - Quietfire AI - March 8, 2026*
