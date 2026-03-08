@@ -1,7 +1,6 @@
 # TelsonBase Environment Configuration Reference
 
 **Version:** v11.0.1 · **Maintainer:** Quietfire AI
-**AI Model Collaborators:** ChatGPT 3.5/4.0, Gemini 3, Claude Sonnet 4.5, Claude Opus 4.5
 
 ---
 

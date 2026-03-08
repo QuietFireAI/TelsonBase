@@ -2,7 +2,7 @@
 
 **Version:** v11.0.1 · **Maintainer:** Quietfire AI
 **Status:** Planning Document
-**Applies to:** TelsonBase v6.3.0CC
+**Applies to:** TelsonBase v11.0.1
 
 ---
 
@@ -580,3 +580,7 @@ For TelsonBase's current trajectory (law firm pilots, self-hosted, compliance-dr
 - `.github/workflows/ci.yml` -- CI/CD pipeline (test, docker-build, security-scan)
 - `monitoring/prometheus/alerts.yml` -- Prometheus alert rules (HighErrorRate, ServiceDown, etc.)
 - `monitoring/grafana/dashboards/telsonbase_overview.json` -- Grafana dashboard
+
+---
+
+*TelsonBase v11.0.1 · Quietfire AI · March 8, 2026*

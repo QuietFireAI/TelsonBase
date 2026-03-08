@@ -966,3 +966,7 @@ See [MCP Gateway](#mcp-gateway-goose--claude-desktop-integration) for complete G
 - [Developer Guide](DEVELOPER_GUIDE.md) - Building agents
 - [Security Architecture](SECURITY_ARCHITECTURE.md) - Security model
 - [Troubleshooting](TROUBLESHOOTING.md) - Common issues
+
+---
+
+*TelsonBase v11.0.1 · Quietfire AI · March 8, 2026*
