@@ -463,7 +463,22 @@ QMS formatting as a security watermark costs almost nothing at runtime but creat
 
 Each layer is independently verifiable. Each layer is cheap to check. Together they create compound difficulty that makes casual injection impractical.
 
-### 9.4 Timestamps
+### 9.4 Cross-Species Interoperability
+
+QMS was designed to work across agent species -- different LLMs, different frameworks, different architectures, different vendors. Most inter-agent protocols fail at the species boundary because they require external schema knowledge, registration handshakes, or shared libraries to parse correctly. An agent encountering an unknown JSON payload has no way to derive its meaning from structure alone.
+
+QMS is self-describing. The grammar is embedded in the format:
+
+- `::` signals a block boundary -- no schema needed to identify where values begin and end
+- `-` between blocks is the chain separator -- no parser configuration needed
+- Leading `_` on a word identifies it as a connector/command block -- type is visible in the token
+- `<...>`, `@@...@@`, `##...##`, `%%...%%` and other qualifiers identify data types inline
+
+An AI agent encountering QMS for the first time can infer the protocol from a handful of examples without documentation, without a schema registry, without a handshake. The format teaches itself. This matters at the edges of the system -- when a new agent species is introduced, when an external system needs to read a TelsonBase audit trail, when a human or AI is debugging a chain they have never seen before.
+
+This is not a small thing. The harder AI systems are to onboard, the more siloed they become. A protocol that any capable agent can learn by inspection keeps the system open without sacrificing structure.
+
+### 9.5 Timestamps
 
 QMS chains do NOT carry timestamps. The log infrastructure already timestamps every line. Duplicating it inside the chain adds noise without value. Let the chain carry semantics, let the log carry time.
 
