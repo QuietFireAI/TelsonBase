@@ -55,4 +55,4 @@ Source code, documentation, proof sheets, quick start, and full test suite.
 
 ---
 
-*TelsonBase v10.0.0Bminus · Quietfire AI · Apache 2.0*
+*TelsonBase v11.0.1 · Quietfire AI · Apache 2.0*
