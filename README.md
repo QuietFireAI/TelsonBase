@@ -140,49 +140,49 @@ QMS™ is an open standard (MIT licensed). The trademark covers the name. The pr
 
 ## See It Working
 
-Everything below is a live local instance. No mocks. No scripted responses. Real governance pipeline, real audit chain, real decisions.
+Everything below is a live instance. No mocks. No scripted responses. Real governance pipeline, real audit chain, real decisions.
 
 ---
 
 **GIF 1 - Policy Block**
 QUARANTINE agent attempts an external financial API call. TelsonBase blocks it before execution. Decision written to the tamper-evident audit chain. Agent never touched the endpoint.
 
-![Governance Blocked](screenshots/governance-blocked.gif)
+<video src="screenshots/governance-blocked.mp4" controls width="800"></video>
 
 ---
 
 **GIF 2 - Kill Switch**
 QUARANTINE agent fires an action - governance gates it, queues a human approval. Operator identifies suspicious behavior and hits the kill switch. Agent suspended. Subsequent action attempt hard-blocked. The gate, the suspension, and the block are all separate entries in the immutable audit chain.
 
-![Kill Switch](screenshots/kill-switch.gif)
+<video src="screenshots/kill-switch.mp4" controls width="800"></video>
 
 ---
 
 **GIF 3 - Human-in-the-Loop: Approve**
 PROBATION agent attempts an external http_post. TelsonBase holds it - cannot execute without human review. Operator reviews the full payload in the approval dashboard and approves. `::_Thank_You::` logged to the audit chain - the QMS™ command block for successful completion, attributed to the operator, hash-chained to every event before it. The agent's action goes through. Trust, verified.
 
-![HITL Approval](screenshots/hitl-approval.gif)
+<video src="screenshots/hitl-approval.mp4" controls width="800"></video>
 
 ---
 
 **GIF 4 - Human-in-the-Loop: Reject**
 The other side of the gate. Pending approval from a suspended agent - full payload, URGENT flag, operator identity visible. Human reviews, rejects. Approval queue clears to zero. `::_Thank_You_But_No::` logged to the audit chain - the QMS™ command block for refusal, attributed to the human operator, timestamped, hash-chained to every event before it. Not just agent actions. Human decisions too.
 
-![HITL Reject](screenshots/hitl-reject.gif)
+<video src="screenshots/hitl-reject.mp4" controls width="800"></video>
 
 ---
 
 **GIF 5 - Manners Scoring: Behavioral Score Drops in Real Time**
 Fresh agent registers at a Manners score of 1.0. Attempts `payment_send` — blocked (it's on the agent's blocklist). Score drops to 0.95. Attempts `transaction_execute` — blocked again (wrong trust tier for financial actions). Score drops to 0.91. Two violations, two different block reasons, one continuous behavioral record. The governance pipeline doesn't just block — it remembers.
 
-![Manners Score Drop](screenshots/manners-score.gif)
+<video src="screenshots/manners-score.mp4" controls width="800"></video>
 
 ---
 
 **GIF 6 - Trust Tiers: Earned Promotion Unlocks Actions**
 Fresh agent at QUARANTINE attempts `file_write` — blocked outright. Promoted to PROBATION — same action now triggers a HITL gate (human approval required, approval ID generated). Promoted to RESIDENT — same action, same agent, now executes autonomously. Three tiers, three outcomes, zero code changes. The agent didn't change. The governance did.
 
-![Trust Tier Promotion](screenshots/trust-tiers.gif)
+<video src="screenshots/trust-tiers.mp4" controls width="800"></video>
 
 ---
 
