@@ -278,10 +278,14 @@ class MannersEngine:
         )
 
         self._violations[agent_name].append(violation)
+
+        # REM: Invalidate cache immediately — must happen before any fallible calls
+        self._cached_reports.pop(agent_name, None)
+
         self._persist_violation(violation)
 
         # REM: Audit the violation
-        audit(
+        audit.log(
             event_type=AuditEventType.SECURITY_ALERT,
             agent_name=agent_name,
             action=f"manners_violation:{violation_type.value}",
@@ -301,9 +305,6 @@ class MannersEngine:
 
         # REM: Check for auto-suspension
         self._check_auto_suspend(agent_name)
-
-        # REM: Invalidate cache
-        self._cached_reports.pop(agent_name, None)
 
         return violation
 
@@ -532,7 +533,7 @@ class MannersEngine:
                 f"REM: MANNERS AUTO-SUSPEND — {agent_name} has {len(recent)} violations "
                 f"in {AUTO_SUSPEND_WINDOW_HOURS}h (threshold: {AUTO_SUSPEND_THRESHOLD})"
             )
-            audit(
+            audit.log(
                 event_type=AuditEventType.SECURITY_ALERT,
                 agent_name="manners_engine",
                 action="auto_suspend",
