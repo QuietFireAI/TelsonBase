@@ -63,6 +63,10 @@ backups/
 screenshots/*.mp4
 screenshots/*.mov
 
+# Brand/social assets (uploaded to GitHub Settings directly, not tracked in repo)
+screenshots/QF*
+screenshots/brand*
+
 # Internal operations docs — not for public repo
 docs/Operation Documents/COMPETITIVE_POSITIONING.md
 docs/Operation Documents/PRICING_MODEL.md
