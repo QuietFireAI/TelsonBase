@@ -66,7 +66,7 @@ Expected response:
 
 1. `"trust_level": "quarantine"` - every agent starts here, no exceptions. Quarantine means almost nothing is autonomous. READ actions are gated for human approval. Everything else is blocked. Trust is earned, not granted.
 
-2. `"agent_key"` - this is returned **once**. TelsonBase generated this key for your agent. It is not stored in plaintext anywhere. Copy it now and keep it somewhere safe. You will use it as the `X-Agent-Key` header when the agent submits its own actions.
+2. `"agent_key"` - this is returned **once**. TelsonBase generated this key for your agent. It is not stored in plaintext anywhere. Copy it now and keep it somewhere safe. You will use it as the `X-Agent-Key` header when the agent submits its own actions. In production, store this in an environment variable or secrets manager — never hardcode it or commit it to source control.
 
 Store your instance ID:
 ```bash
