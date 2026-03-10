@@ -26,13 +26,14 @@
 # REM: =======================================================================================
 
 import logging
-from datetime import datetime, timezone, timedelta
-from enum import Enum
-from typing import Dict, List, Optional, Any
 from dataclasses import dataclass, field
+from datetime import datetime, timedelta, timezone
+from enum import Enum
+from typing import Any, Dict, List, Optional
+
 from pydantic import BaseModel, Field
 
-from core.audit import audit, AuditEventType
+from core.audit import AuditEventType, audit
 
 logger = logging.getLogger(__name__)
 
@@ -283,6 +284,7 @@ class TrustLevelManager:
         """REM: Load trust records from Redis."""
         try:
             from core.persistence import RedisStore
+
             # REM: Will be implemented with Redis store
             pass
         except Exception as e:

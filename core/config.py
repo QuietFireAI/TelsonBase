@@ -29,14 +29,15 @@
 # REM: Version constant for API responses and dashboard
 VERSION = "11.0.1"
 
-from pydantic_settings import BaseSettings
-from pydantic import Field, field_validator
-from typing import List, Optional
-from functools import lru_cache
-import warnings
-import secrets
 import os
+import secrets
+import warnings
+from functools import lru_cache
 from pathlib import Path
+from typing import List, Optional
+
+from pydantic import Field, field_validator
+from pydantic_settings import BaseSettings
 
 # REM: ===================================================================================
 # REM: DOCKER SECRETS RESOLUTION — Read secrets from /run/secrets/ before env vars

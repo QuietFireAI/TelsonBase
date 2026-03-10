@@ -33,26 +33,23 @@
 # REM: =======================================================================================
 
 import logging
+import uuid
 from abc import ABC, abstractmethod
 from datetime import datetime, timezone
-from typing import Any, Dict, Optional, List
-from pydantic import BaseModel, Field
-import uuid
+from typing import Any, Dict, List, Optional
 
-from core.config import get_settings
-from core.audit import audit, AuditEventType
-from core.signing import MessageSigner, key_registry, SignedAgentMessage
-from core.capabilities import (
-    capability_enforcer, 
-    ResourceType, 
-    ActionType,
-    EnforcedFilesystem,
-    EnforcedExternal,
-    CAPABILITY_PROFILES
-)
+from pydantic import BaseModel, Field
+
 from core.anomaly import behavior_monitor
-from core.approval import approval_gate, ApprovalStatus
-from core.trust_levels import trust_manager, AgentTrustLevel, TRUST_LEVEL_CONSTRAINTS
+from core.approval import ApprovalStatus, approval_gate
+from core.audit import AuditEventType, audit
+from core.capabilities import (CAPABILITY_PROFILES, ActionType,
+                               EnforcedExternal, EnforcedFilesystem,
+                               ResourceType, capability_enforcer)
+from core.config import get_settings
+from core.signing import MessageSigner, SignedAgentMessage, key_registry
+from core.trust_levels import (TRUST_LEVEL_CONSTRAINTS, AgentTrustLevel,
+                               trust_manager)
 
 settings = get_settings()
 logger = logging.getLogger(__name__)

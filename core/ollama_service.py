@@ -19,8 +19,8 @@
 
 import logging
 import time
-from typing import Any, AsyncIterator, Dict, List, Optional
 from enum import Enum
+from typing import Any, AsyncIterator, Dict, List, Optional
 
 import httpx
 

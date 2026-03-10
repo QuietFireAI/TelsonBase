@@ -22,14 +22,14 @@
 # REM: v7.2.0CC: Initial implementation
 # REM: =======================================================================================
 
-import logging
-from datetime import datetime, timezone, timedelta
-from enum import Enum
-from typing import Dict, List, Optional, Any, Tuple
-from dataclasses import dataclass, field, asdict
 import json
+import logging
+from dataclasses import asdict, dataclass, field
+from datetime import datetime, timedelta, timezone
+from enum import Enum
+from typing import Any, Dict, List, Optional, Tuple
 
-from core.audit import audit, AuditEventType
+from core.audit import AuditEventType, audit
 
 logger = logging.getLogger(__name__)
 
@@ -547,7 +547,7 @@ class MannersEngine:
             )
             # REM: Trigger trust level reduction if trust_manager is available
             try:
-                from core.trust_levels import trust_manager, AgentTrustLevel
+                from core.trust_levels import AgentTrustLevel, trust_manager
                 current = trust_manager.get_trust_level(agent_name)
                 if current != AgentTrustLevel.QUARANTINE:
                     trust_manager.demote_agent(

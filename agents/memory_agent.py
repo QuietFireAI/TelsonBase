@@ -18,17 +18,17 @@
 # REM:   - Memory expiration and cleanup
 # REM: =======================================================================================
 
-import uuid
 import logging
-from datetime import datetime, timezone, timedelta
-from typing import Dict, List, Optional, Any, Tuple
-from dataclasses import dataclass, field
-from enum import Enum
+import uuid
 from collections import defaultdict
+from dataclasses import dataclass, field
+from datetime import datetime, timedelta, timezone
+from enum import Enum
+from typing import Any, Dict, List, Optional, Tuple
 
 from celery import shared_task
 
-from core.audit import audit, AuditEventType
+from core.audit import AuditEventType, audit
 
 logger = logging.getLogger(__name__)
 

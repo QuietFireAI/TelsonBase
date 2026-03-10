@@ -20,13 +20,13 @@
 # REM: =======================================================================================
 
 import logging
-from datetime import datetime, timezone, timedelta
-from typing import Dict, List, Optional, Any, Callable
-from dataclasses import dataclass, field
-from enum import Enum
 from collections import defaultdict
+from dataclasses import dataclass, field
+from datetime import datetime, timedelta, timezone
+from enum import Enum
+from typing import Any, Callable, Dict, List, Optional
 
-from core.audit import audit, AuditEventType
+from core.audit import AuditEventType, audit
 
 logger = logging.getLogger(__name__)
 
@@ -252,7 +252,8 @@ class ThreatResponseEngine:
     def _handle_rate_limit(self, agent_id: str, event: ThreatEvent) -> bool:
         """REM: Apply aggressive rate limiting."""
         try:
-            from core.rate_limiting import rate_limiter, RateLimitTier
+            from core.rate_limiting import RateLimitTier, rate_limiter
+
             # REM: Force agent to minimal tier temporarily
             state = rate_limiter._get_or_create_state(agent_id, RateLimitTier.MINIMAL)
             state.tier = RateLimitTier.MINIMAL

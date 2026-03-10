@@ -17,12 +17,13 @@
 
 import logging
 from datetime import datetime, timezone
-from typing import Optional, List
+from typing import List, Optional
+
 from fastapi import APIRouter, Depends, HTTPException, Query
 from pydantic import BaseModel, Field
 
-from core.auth import authenticate_request, AuthResult, require_permission
-from core.audit import audit, AuditEventType
+from core.audit import AuditEventType, audit
+from core.auth import AuthResult, authenticate_request, require_permission
 
 logger = logging.getLogger(__name__)
 

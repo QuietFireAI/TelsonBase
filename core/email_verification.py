@@ -21,15 +21,15 @@
 # REM: =======================================================================================
 
 import hmac
+import logging
 import secrets
 import uuid
-import logging
+from dataclasses import dataclass, field
 from datetime import datetime, timedelta, timezone
 from enum import Enum
-from typing import Dict, List, Optional, Any
-from dataclasses import dataclass, field
+from typing import Any, Dict, List, Optional
 
-from core.audit import audit, AuditEventType
+from core.audit import AuditEventType, audit
 
 logger = logging.getLogger(__name__)
 
@@ -82,6 +82,7 @@ class EmailVerificationManager:
         """REM: Load email verification records from Redis on startup."""
         try:
             from core.persistence import security_store
+
             # REM: Load verified emails (stored in hash, not TTL keys)
             verified_records = security_store.list_records("verified_emails")
             for user_id, record_data in verified_records.items():
@@ -170,6 +171,7 @@ class EmailVerificationManager:
         # REM: Fire-and-forget email delivery — does not block token creation
         try:
             import asyncio
+
             from core.email_sender import send_verification_email
             loop = asyncio.get_event_loop()
             if loop.is_running():

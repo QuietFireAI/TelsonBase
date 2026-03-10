@@ -20,14 +20,14 @@
 # REM:   - In-memory storage (Redis persistence can come later)
 # REM: =======================================================================================
 
-import uuid
 import logging
-from datetime import datetime, timezone
-from typing import Dict, List, Optional, Any
+import uuid
 from dataclasses import dataclass, field
+from datetime import datetime, timezone
 from enum import Enum
+from typing import Any, Dict, List, Optional
 
-from core.audit import audit, AuditEventType
+from core.audit import AuditEventType, audit
 
 logger = logging.getLogger(__name__)
 
@@ -161,6 +161,7 @@ class TenantManager:
         """REM: Load tenant and matter records from Redis on startup."""
         try:
             from core.persistence import tenancy_store
+
             # REM: Load tenants
             all_tenants = tenancy_store.list_tenants()
             for tenant_id, tenant_data in all_tenants.items():

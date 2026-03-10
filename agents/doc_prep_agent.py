@@ -27,14 +27,14 @@
 # REM:   DocPrep_Finalize_Please (requires approval) → DocPrep_Finalize_Thank_You
 # REM: =======================================================================================
 
-import logging
 import hashlib
+import logging
 from datetime import datetime, timezone
-from typing import Dict, Any, List, Optional
+from typing import Any, Dict, List, Optional
 
-from agents.base import SecureBaseAgent, AgentRequest
-from core.audit import audit, AuditEventType
-from core.qms import format_qms, QMSStatus
+from agents.base import AgentRequest, SecureBaseAgent
+from core.audit import AuditEventType, audit
+from core.qms import QMSStatus, format_qms
 from version import __version__ as APP_VERSION
 
 logger = logging.getLogger(__name__)
@@ -597,8 +597,9 @@ class DocPrepAgent(SecureBaseAgent):
 # REM: CELERY TASKS
 # REM: =======================================================================================
 
-from celery import shared_task
 from datetime import timedelta
+
+from celery import shared_task
 
 _agent_instance = None
 

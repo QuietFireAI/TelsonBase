@@ -22,14 +22,14 @@
 # REM:   - QMS-formatted logging throughout
 # REM: =======================================================================================
 
-import uuid
 import logging
-from datetime import datetime, timezone, timedelta
-from typing import Dict, List, Optional, Any
+import uuid
 from dataclasses import dataclass, field
+from datetime import datetime, timedelta, timezone
 from enum import Enum
+from typing import Any, Dict, List, Optional
 
-from core.audit import audit, AuditEventType
+from core.audit import AuditEventType, audit
 
 logger = logging.getLogger(__name__)
 

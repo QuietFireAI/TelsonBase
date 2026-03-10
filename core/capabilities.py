@@ -23,15 +23,16 @@
 # REM:   - "ollama.execute:*" - Can run any Ollama model
 # REM: =======================================================================================
 
-import re
-import fnmatch
 import asyncio
-from enum import Enum
-from typing import List, Set, Dict, Optional, Any
-from pydantic import BaseModel, Field
+import fnmatch
 import logging
+import re
+from enum import Enum
+from typing import Any, Dict, List, Optional, Set
 
-from core.audit import audit, AuditEventType
+from pydantic import BaseModel, Field
+
+from core.audit import AuditEventType, audit
 
 logger = logging.getLogger(__name__)
 

@@ -33,12 +33,12 @@ import hashlib
 import json
 import logging
 import time
-from datetime import datetime, timezone, timedelta
-from typing import Optional, Dict, List, Set, Any
+from datetime import datetime, timedelta, timezone
+from typing import Any, Dict, List, Optional, Set
 
 from pydantic import BaseModel, Field
 
-from core.audit import audit, AuditEventType
+from core.audit import AuditEventType, audit
 from core.config import get_settings
 
 logger = logging.getLogger(__name__)
@@ -444,8 +444,9 @@ class IdenticlawManager:
         REM: 100% local — no external calls. Uses cryptography library.
         """
         try:
-            from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PublicKey
             from cryptography.exceptions import InvalidSignature
+            from cryptography.hazmat.primitives.asymmetric.ed25519 import \
+                Ed25519PublicKey
 
             public_key = Ed25519PublicKey.from_public_bytes(public_key_bytes)
             public_key.verify(signature, message)

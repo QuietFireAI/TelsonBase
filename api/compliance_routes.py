@@ -16,12 +16,13 @@
 
 import logging
 from datetime import datetime, timezone
-from typing import Optional, List
+from typing import List, Optional
+
 from fastapi import APIRouter, Depends, HTTPException, Query
 from pydantic import BaseModel, Field
 
-from core.auth import authenticate_request, AuthResult, require_permission
-from core.audit import audit, AuditEventType
+from core.audit import AuditEventType, audit
+from core.auth import AuthResult, authenticate_request, require_permission
 
 logger = logging.getLogger(__name__)
 
@@ -454,7 +455,7 @@ async def breach_create(
     REM: QMS: Breach_Assess_Please with ::severity:: ::description::
     """
     try:
-        from core.breach import breach_manager, BreachSeverity
+        from core.breach import BreachSeverity, breach_manager
 
         try:
             severity = BreachSeverity(request.severity) if isinstance(request.severity, str) else request.severity
@@ -720,7 +721,7 @@ async def sanction_create(
     REM: QMS: Sanction_Create_Please with ::user_id:: ::violation:: ::severity::
     """
     try:
-        from core.sanctions import sanctions_manager, SanctionSeverity
+        from core.sanctions import SanctionSeverity, sanctions_manager
 
         try:
             severity = SanctionSeverity(request.severity) if isinstance(request.severity, str) else request.severity
@@ -875,7 +876,7 @@ async def training_completion(
     REM: QMS: Training_Complete_Please with ::user_id:: ::training_type::
     """
     try:
-        from core.training import training_manager, TrainingType
+        from core.training import TrainingType, training_manager
 
         try:
             training_type = TrainingType(request.training_type) if isinstance(request.training_type, str) else request.training_type
@@ -1021,7 +1022,6 @@ async def contingency_test_record(
     """
     try:
         from core.contingency import contingency_manager
-
         from core.contingency_testing import TestType as ContingencyTestType
         try:
             test_type = ContingencyTestType(request.test_type) if isinstance(request.test_type, str) else request.test_type
@@ -1074,7 +1074,6 @@ async def contingency_test_list(
     """
     try:
         from core.contingency import contingency_manager
-
         from core.contingency_testing import TestType as ContTestType
         test_type_enum = ContTestType(test_type) if test_type else None
         tests = contingency_manager.get_test_history(test_type=test_type_enum)
@@ -1207,7 +1206,6 @@ async def baa_list(
     """
     try:
         from core.baa import baa_manager
-
         from core.baa_tracking import BAAStatus
         status_filter = BAAStatus(status) if status else None
         baas = baa_manager.get_all_baas(status_filter=status_filter)

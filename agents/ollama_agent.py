@@ -32,20 +32,15 @@
 # REM: =======================================================================================
 
 import logging
-from typing import Dict, Any, List, Optional
+from typing import Any, Dict, List, Optional
 
-from agents.base import SecureBaseAgent, AgentRequest, AgentResponse
+from agents.base import AgentRequest, AgentResponse, SecureBaseAgent
+from core.audit import AuditEventType, audit
 from core.config import get_settings
-from core.audit import audit, AuditEventType
-from core.qms import format_qms, QMSStatus
-from core.ollama_service import (
-    get_ollama_service,
-    OllamaService,
-    OllamaServiceError,
-    OllamaConnectionError,
-    OllamaModelError,
-    RECOMMENDED_MODELS,
-)
+from core.ollama_service import (RECOMMENDED_MODELS, OllamaConnectionError,
+                                 OllamaModelError, OllamaService,
+                                 OllamaServiceError, get_ollama_service)
+from core.qms import QMSStatus, format_qms
 
 settings = get_settings()
 logger = logging.getLogger(__name__)

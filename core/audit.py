@@ -18,13 +18,14 @@
 # REM:   - Persisted chain state survives restarts
 # REM: =======================================================================================
 
-import logging
-import json
 import hashlib
-from datetime import datetime, timezone
-from typing import Optional, Dict, Any, List
-from enum import Enum
+import json
+import logging
 from dataclasses import dataclass, field
+from datetime import datetime, timezone
+from enum import Enum
+from typing import Any, Dict, List, Optional
+
 from pythonjsonlogger import jsonlogger
 
 

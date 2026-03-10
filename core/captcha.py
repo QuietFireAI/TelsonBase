@@ -22,15 +22,15 @@
 # REM: =======================================================================================
 
 import hmac
+import logging
 import random
 import uuid
-import logging
+from dataclasses import dataclass, field
 from datetime import datetime, timedelta, timezone
 from enum import Enum
-from typing import Dict, Optional, Any
-from dataclasses import dataclass, field
+from typing import Any, Dict, Optional
 
-from core.audit import audit, AuditEventType
+from core.audit import AuditEventType, audit
 
 logger = logging.getLogger(__name__)
 
@@ -87,6 +87,7 @@ class CAPTCHAManager:
         try:
             from core.persistence import security_store
             from core.secure_storage import secure_storage
+
             # REM: CAPTCHA uses TTL keys — cannot enumerate via hgetall.
             # REM: Challenges are short-lived (5 min), so we skip loading on init.
             # REM: This is intentionally a no-op; challenges are transient by design.

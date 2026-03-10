@@ -21,15 +21,15 @@
 
 import logging
 from datetime import datetime, timezone
-from typing import Optional, List, Dict, Any
+from typing import Any, Dict, List, Optional
 
-from fastapi import APIRouter, HTTPException, Depends
+from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel, Field
 
-from core.auth import authenticate_request, require_permission, AuthResult
-from core.audit import audit, AuditEventType
+from core.audit import AuditEventType, audit
+from core.auth import AuthResult, authenticate_request, require_permission
 from core.config import get_settings
-from core.qms import format_qms, QMSStatus
+from core.qms import QMSStatus, format_qms
 
 logger = logging.getLogger(__name__)
 

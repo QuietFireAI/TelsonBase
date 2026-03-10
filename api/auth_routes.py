@@ -27,18 +27,16 @@
 
 import asyncio
 import logging
-from datetime import datetime, timezone, timedelta
+from datetime import datetime, timedelta, timezone
 from typing import Optional
 
 from fastapi import APIRouter, Depends, HTTPException, Request
 from fastapi.responses import HTMLResponse
 from pydantic import BaseModel, Field
 
-from core.auth import (
-    authenticate_request, AuthResult, create_access_token,
-    decode_token, revoke_token
-)
-from core.audit import audit, AuditEventType
+from core.audit import AuditEventType, audit
+from core.auth import (AuthResult, authenticate_request, create_access_token,
+                       decode_token, revoke_token)
 
 logger = logging.getLogger(__name__)
 
@@ -96,10 +94,10 @@ async def register_user(request: RegisterRequest):
     REM: Subsequent users receive the viewer role by default.
     """
     try:
-        from core.user_management import user_manager
         from core.captcha import captcha_manager
-        from core.email_verification import email_verification as ev
         from core.email_sender import send_verification_email
+        from core.email_verification import email_verification as ev
+        from core.user_management import user_manager
 
         # REM: Detect first-user before registration (count==0 means first user)
         is_first_user = user_manager.is_first_user()
@@ -186,9 +184,9 @@ async def login_user(request: LoginRequest, http_request: Request):
     REM: complete authentication and receive the full JWT.
     """
     try:
-        from core.user_management import user_manager
-        from core.rbac import rbac_manager
         from core.mfa import mfa_manager
+        from core.rbac import rbac_manager
+        from core.user_management import user_manager
 
         # REM: Authenticate username/password
         user_dict = user_manager.authenticate_user(
@@ -454,8 +452,8 @@ async def get_profile(auth: AuthResult = Depends(authenticate_request)):
     REM: Returns user info, roles, permissions, MFA status, and session info.
     """
     try:
-        from core.user_management import user_manager
         from core.session_management import session_manager
+        from core.user_management import user_manager
 
         user_id = auth.actor
         profile = user_manager.get_user_profile(user_id)
@@ -500,8 +498,9 @@ async def logout(
     REM: Revokes the JWT token and terminates all active sessions for the user.
     """
     try:
-        from core.session_management import session_manager
         from fastapi.security import HTTPAuthorizationCredentials
+
+        from core.session_management import session_manager
 
         user_id = auth.actor
 

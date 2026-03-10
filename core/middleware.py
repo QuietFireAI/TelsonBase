@@ -18,23 +18,23 @@
 # REM:   Circuit open: Service_Unavailable_Thank_You_But_No with ::service::
 # REM: =======================================================================================
 
-import time
 import logging
+import time
 import uuid
-from datetime import datetime, timezone
-from typing import Dict, Optional, Callable, Any
 from collections import defaultdict
 from dataclasses import dataclass, field
+from datetime import datetime, timezone
 from enum import Enum
 from functools import wraps
+from typing import Any, Callable, Dict, Optional
 
-from fastapi import Request, Response, HTTPException
+from fastapi import HTTPException, Request, Response
 from fastapi.responses import JSONResponse
 from starlette.middleware.base import BaseHTTPMiddleware
 
+from core.audit import AuditEventType, audit
 from core.config import get_settings
-from core.audit import audit, AuditEventType
-from core.qms import format_qms, QMSStatus
+from core.qms import QMSStatus, format_qms
 
 settings = get_settings()
 logger = logging.getLogger(__name__)

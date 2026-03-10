@@ -22,13 +22,13 @@
 # REM: v6.3.0CC: Initial implementation for HIPAA healthcare compliance infrastructure
 # REM: =======================================================================================
 
-import uuid
 import logging
-from datetime import datetime, timezone, timedelta
-from typing import Dict, List, Optional, Any
+import uuid
 from dataclasses import dataclass, field
+from datetime import datetime, timedelta, timezone
+from typing import Any, Dict, List, Optional
 
-from core.audit import audit, AuditEventType
+from core.audit import AuditEventType, audit
 
 logger = logging.getLogger(__name__)
 
@@ -112,6 +112,7 @@ class PHIDisclosureManager:
         """REM: Write-through save of a single PHI disclosure record to Redis."""
         try:
             from core.persistence import compliance_store
+
             # REM: Find the record by disclosure_id in the patient's list
             records = self._disclosures.get(patient_id, [])
             record = None

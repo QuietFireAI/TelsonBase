@@ -24,14 +24,14 @@
 # REM:   Failure: "Thank_You_But_No"
 # REM: =======================================================================================
 
-import re
 import logging
-from datetime import datetime, timezone, timedelta
-from typing import Dict, Optional, Tuple, List
+import re
+from datetime import datetime, timedelta, timezone
+from typing import Dict, List, Optional, Tuple
 
 import bcrypt as _bcrypt_lib
 
-from core.audit import audit, AuditEventType
+from core.audit import AuditEventType, audit
 
 logger = logging.getLogger(__name__)
 

@@ -22,15 +22,15 @@
 import logging
 import secrets
 from datetime import datetime, timezone
-from typing import Optional, List, Dict, Any
+from typing import Any, Dict, List, Optional
 
-from fastapi import APIRouter, HTTPException, Depends, Header
+from fastapi import APIRouter, Depends, Header, HTTPException
 from pydantic import BaseModel, Field, model_validator
 
-from core.auth import authenticate_request, require_permission, AuthResult
-from core.audit import audit, AuditEventType
+from core.audit import AuditEventType, audit
+from core.auth import AuthResult, authenticate_request, require_permission
 from core.config import get_settings
-from core.qms import format_qms, QMSStatus
+from core.qms import QMSStatus, format_qms
 from core.rate_limiting import agent_rate_limit
 
 logger = logging.getLogger(__name__)
@@ -374,7 +374,8 @@ async def get_instance_status(
     """
     _check_enabled()
 
-    from core.openclaw import TRUST_PERMISSION_MATRIX, TrustLevel as _TrustLevel
+    from core.openclaw import TRUST_PERMISSION_MATRIX
+    from core.openclaw import TrustLevel as _TrustLevel
     manager = _get_manager()
     instance = manager.get_instance(instance_id)
     if not instance:

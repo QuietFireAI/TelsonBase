@@ -18,14 +18,14 @@
 # REM:   - Session-based permission caching
 # REM: =======================================================================================
 
-import uuid
 import logging
-from datetime import datetime, timezone, timedelta
-from typing import Dict, List, Optional, Set, Any
+import uuid
 from dataclasses import dataclass, field
+from datetime import datetime, timedelta, timezone
 from enum import Enum
+from typing import Any, Dict, List, Optional, Set
 
-from core.audit import audit, AuditEventType
+from core.audit import AuditEventType, audit
 
 logger = logging.getLogger(__name__)
 
@@ -505,7 +505,7 @@ def require_permission(permission: Permission):
     REM: FastAPI dependency factory that checks RBAC permissions.
     REM: Returns a Depends-compatible callable.
     """
-    from fastapi import Request, HTTPException
+    from fastapi import HTTPException, Request
 
     async def _check_permission(request: Request):
         # REM: If no users are registered, RBAC is not yet active — pass through

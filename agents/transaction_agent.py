@@ -28,16 +28,16 @@
 # REM:   Transaction_Cancel_Please (requires approval) → Transaction_Cancel_Thank_You
 # REM: =======================================================================================
 
-import logging
 import hashlib
+import logging
 import uuid
-from datetime import datetime, timezone, timedelta
-from typing import Dict, Any, List, Optional
+from datetime import datetime, timedelta, timezone
 from enum import Enum
+from typing import Any, Dict, List, Optional
 
-from agents.base import SecureBaseAgent, AgentRequest
-from core.audit import audit, AuditEventType
-from core.qms import format_qms, QMSStatus
+from agents.base import AgentRequest, SecureBaseAgent
+from core.audit import AuditEventType, audit
+from core.qms import QMSStatus, format_qms
 
 logger = logging.getLogger(__name__)
 

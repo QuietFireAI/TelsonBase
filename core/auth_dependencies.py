@@ -23,10 +23,11 @@
 # REM: =======================================================================================
 
 import logging
+
 from fastapi import Depends, HTTPException
 
-from core.auth import authenticate_request, AuthResult
-from core.audit import audit, AuditEventType
+from core.audit import AuditEventType, audit
+from core.auth import AuthResult, authenticate_request
 
 logger = logging.getLogger(__name__)
 
@@ -51,7 +52,7 @@ async def require_mfa(
             ...
     """
     # REM: Lazy import to avoid circular dependencies at module load time
-    from core.mfa import mfa_manager, MFAManager
+    from core.mfa import MFAManager, mfa_manager
     from core.rbac import rbac_manager
 
     # REM: Resolve the RBAC user from the auth actor identity.

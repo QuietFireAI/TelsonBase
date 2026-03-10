@@ -25,23 +25,23 @@
 # REM:   - Federation messages require additional encryption
 # REM: =======================================================================================
 
+import itertools
 import json
-import time
 import logging
 import threading
-import itertools
-from datetime import datetime, timezone
-from typing import Optional, Callable, Dict, Any, List
+import time
 from dataclasses import dataclass, field
+from datetime import datetime, timezone
+from typing import Any, Callable, Dict, List, Optional
 
 # REM: Atomic counter for unique message IDs — prevents collisions in rapid-fire loops
 _msg_counter = itertools.count()
 
 import paho.mqtt.client as mqtt
 
+from core.audit import AuditEventType, audit
 from core.config import get_settings
-from core.audit import audit, AuditEventType
-from core.qms import format_qms, QMSStatus
+from core.qms import QMSStatus, format_qms
 
 logger = logging.getLogger(__name__)
 settings = get_settings()

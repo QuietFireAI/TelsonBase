@@ -18,17 +18,17 @@
 # REM:   - Rate limit headers for API responses
 # REM: =======================================================================================
 
-import time
 import logging
-from datetime import datetime, timezone
-from typing import Dict, Optional, Tuple, Any
-from dataclasses import dataclass, field
-from enum import Enum
+import time
 from collections import defaultdict
+from dataclasses import dataclass, field
+from datetime import datetime, timezone
+from enum import Enum
+from typing import Any, Dict, Optional, Tuple
 
 from fastapi import Header, HTTPException, Request
 
-from core.audit import audit, AuditEventType
+from core.audit import AuditEventType, audit
 
 logger = logging.getLogger(__name__)
 

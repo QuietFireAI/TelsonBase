@@ -21,14 +21,14 @@
 # REM:   - Full audit trail of status changes and assessments
 # REM: =======================================================================================
 
-import uuid
 import logging
-from datetime import datetime, timezone, timedelta
-from typing import Dict, List, Optional, Any
+import uuid
 from dataclasses import dataclass, field
+from datetime import datetime, timedelta, timezone
 from enum import Enum
+from typing import Any, Dict, List, Optional
 
-from core.audit import audit, AuditEventType
+from core.audit import AuditEventType, audit
 
 logger = logging.getLogger(__name__)
 
@@ -450,6 +450,7 @@ class HITRUSTManager:
         """REM: Load HITRUST controls and risk assessments from Redis on startup."""
         try:
             from core.persistence import compliance_store
+
             # REM: Load controls (overrides baseline with persisted state)
             all_controls = compliance_store.list_records("hitrust_controls")
             for record_id, record_data in all_controls.items():

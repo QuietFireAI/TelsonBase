@@ -12,11 +12,12 @@
 # REM:   - Anomaly triggering (unusual behavior gets flagged)
 # REM: =======================================================================================
 
-import os
 import json
 import logging
+import os
 from datetime import datetime, timezone
-from typing import Dict, Any, Optional
+from typing import Any, Dict, Optional
+
 from celery import shared_task
 
 logger = logging.getLogger(__name__)
@@ -46,12 +47,11 @@ REQUIRES_APPROVAL_FOR = [
 
 def _get_stores():
     """REM: Lazy import to avoid circular dependencies."""
-    from core.persistence import (
-        signing_store, capability_store, anomaly_store, approval_store
-    )
+    from core.anomaly import AnomalyType, BehaviorMonitor
+    from core.capabilities import ActionType, CapabilityEnforcer, ResourceType
+    from core.persistence import (anomaly_store, approval_store,
+                                  capability_store, signing_store)
     from core.signing import AgentKeyRegistry, MessageSigner
-    from core.capabilities import CapabilityEnforcer, ResourceType, ActionType
-    from core.anomaly import BehaviorMonitor, AnomalyType
     return {
         'signing_store': signing_store,
         'capability_store': capability_store,
@@ -99,7 +99,7 @@ def check_capability(resource_type: str, action: str, target: str) -> bool:
         return False
     
     # REM: Build capability set and check
-    from core.capabilities import CapabilitySet, ResourceType, ActionType
+    from core.capabilities import ActionType, CapabilitySet, ResourceType
     cap_set = CapabilitySet.from_strings(caps)
     
     resource = ResourceType(resource_type)

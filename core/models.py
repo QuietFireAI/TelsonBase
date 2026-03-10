@@ -8,9 +8,10 @@
 # REM: =======================================================================================
 
 from datetime import datetime, timezone
-from sqlalchemy import (
-    Column, String, DateTime, Boolean, Text, JSON, Integer, Index, Float
-)
+
+from sqlalchemy import (JSON, Boolean, Column, DateTime, Float, Index, Integer,
+                        String, Text)
+
 from core.database import Base
 
 

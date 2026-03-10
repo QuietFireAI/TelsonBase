@@ -26,17 +26,17 @@
 # REM:   Quota changed: Tenant_Quota_Updated_Thank_You with ::tenant_id:: ::set_by::
 # REM: =======================================================================================
 
-import time
 import logging
-from datetime import datetime, timezone
-from typing import Dict, Optional, Tuple, Any
-from dataclasses import dataclass, field
+import time
 from collections import defaultdict
+from dataclasses import dataclass, field
+from datetime import datetime, timezone
+from typing import Any, Dict, Optional, Tuple
 
-from fastapi import Request, HTTPException, Depends
+from fastapi import Depends, HTTPException, Request
 from fastapi.responses import JSONResponse
 
-from core.audit import audit, AuditEventType
+from core.audit import AuditEventType, audit
 from core.auth import AuthResult, authenticate_request
 
 logger = logging.getLogger(__name__)
@@ -581,6 +581,7 @@ async def enforce_tenant_rate_limit(
 # REM: =======================================================================================
 
 from fastapi import APIRouter
+
 from core.auth import require_permission
 
 tenant_rate_limit_router = APIRouter(

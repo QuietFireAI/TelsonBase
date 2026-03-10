@@ -10,18 +10,21 @@
 # REM: =======================================================================================
 
 import hmac
-import uuid
 import json
 import logging
+import uuid
 from datetime import datetime, timedelta, timezone
-from typing import Optional, Dict, List, Any
-from fastapi import HTTPException, Security, Depends
-from fastapi.security import APIKeyHeader, HTTPBearer, HTTPAuthorizationCredentials
+from typing import Any, Dict, List, Optional
+
+from fastapi import Depends, HTTPException, Security
+from fastapi.security import (APIKeyHeader, HTTPAuthorizationCredentials,
+                              HTTPBearer)
 from jose import JWTError, jwt
 from pydantic import BaseModel
 
+from core.audit import (  # FIXED v3.0.1: Import AuditEventType directly
+    AuditEventType, audit)
 from core.config import get_settings
-from core.audit import audit, AuditEventType  # FIXED v3.0.1: Import AuditEventType directly
 
 settings = get_settings()
 logger = logging.getLogger(__name__)
@@ -413,8 +416,9 @@ async def authenticate_request(
     if did_auth:
         if settings.identiclaw_enabled:
             try:
-                from core.identiclaw import identiclaw_manager
                 from fastapi import Request
+
+                from core.identiclaw import identiclaw_manager
 
                 # REM: Extract request path and method from the scope
                 # REM: DID manager handles all verification locally (no external calls)

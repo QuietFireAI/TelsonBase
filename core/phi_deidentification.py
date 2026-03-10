@@ -24,12 +24,12 @@
 # REM: =======================================================================================
 
 import logging
-from datetime import datetime, timezone
-from typing import Dict, List, Tuple, Set, Any, Optional
 from dataclasses import dataclass, field
+from datetime import datetime, timezone
 from enum import Enum
+from typing import Any, Dict, List, Optional, Set, Tuple
 
-from core.audit import audit, AuditEventType
+from core.audit import AuditEventType, audit
 
 logger = logging.getLogger(__name__)
 

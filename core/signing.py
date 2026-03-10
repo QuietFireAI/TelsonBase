@@ -17,15 +17,16 @@
 # REM: v4.1.0CC: Added Redis persistence and key revocation with audit trail
 # REM: =======================================================================================
 
-import hmac
 import hashlib
+import hmac
 import json
+import logging
 import os
 import secrets
-from datetime import datetime, timezone, timedelta
-from typing import Dict, Optional, Any, Set
+from datetime import datetime, timedelta, timezone
+from typing import Any, Dict, Optional, Set
+
 from pydantic import BaseModel, Field, field_validator
-import logging
 
 logger = logging.getLogger(__name__)
 
@@ -217,7 +218,7 @@ class AgentKeyRegistry:
 
             # REM: Audit the revocation
             try:
-                from core.audit import audit, AuditEventType
+                from core.audit import AuditEventType, audit
                 audit.log(
                     AuditEventType.SECURITY_ALERT,
                     f"Agent signing key REVOKED: ::{agent_id}::",

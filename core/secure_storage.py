@@ -17,19 +17,19 @@
 # REM:   - Automatic encryption/decryption in storage layer
 # REM: =======================================================================================
 
-import os
 import base64
 import logging
+import os
 import secrets
-from typing import Optional, Dict, Any, Union
 from dataclasses import dataclass
+from typing import Any, Dict, Optional, Union
 
-from cryptography.hazmat.primitives.ciphers.aead import AESGCM
-from cryptography.hazmat.primitives import hashes
-from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
 from cryptography.hazmat.backends import default_backend
+from cryptography.hazmat.primitives import hashes
+from cryptography.hazmat.primitives.ciphers.aead import AESGCM
+from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
 
-from core.audit import audit, AuditEventType
+from core.audit import AuditEventType, audit
 
 logger = logging.getLogger(__name__)
 
@@ -224,8 +224,8 @@ class SecureStorageManager:
 
     def compute_integrity_hash(self, data: bytes, context: str = "") -> str:
         """REM: Compute HMAC-SHA256 for data integrity verification."""
-        import hmac as hmac_mod
         import hashlib
+        import hmac as hmac_mod
         key_material = self._encryption_key if self._initialized else b"integrity-check"
         h = hmac_mod.new(key_material, data + context.encode(), hashlib.sha256)
         return h.hexdigest()

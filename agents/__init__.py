@@ -9,26 +9,21 @@
 # REM: functions for Goose/MCP integration and API introspection.
 # REM: =======================================================================================
 
-from typing import Dict, List, Optional, Type, Any
 import logging
+from typing import Any, Dict, List, Optional, Type
 
 logger = logging.getLogger(__name__)
 
 # REM: Import base classes
-from agents.base import (
-    SecureBaseAgent,
-    AgentRequest,
-    AgentResponse,
-)
-
+from agents.base import AgentRequest, AgentResponse, SecureBaseAgent
+from agents.compliance_check_agent import ComplianceCheckAgent
+from agents.doc_prep_agent import DocPrepAgent
 # REM: Import concrete class-based agents
 # REM: Note: backup_agent and demo_agent are functional modules, not class-based.
 # REM: They're registered via metadata only — no class import needed.
 from agents.document_agent import DocumentAgent
 from agents.ollama_agent import OllamaAgent
 from agents.transaction_agent import TransactionCoordinatorAgent
-from agents.compliance_check_agent import ComplianceCheckAgent
-from agents.doc_prep_agent import DocPrepAgent
 
 # REM: =======================================================================================
 # REM: AGENT REGISTRY

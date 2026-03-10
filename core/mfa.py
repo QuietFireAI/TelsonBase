@@ -21,16 +21,16 @@
 
 import hmac
 import json
-import secrets
 import logging
-from datetime import datetime, timezone
-from typing import Dict, List, Optional, Any
+import secrets
 from dataclasses import dataclass, field
+from datetime import datetime, timezone
+from typing import Any, Dict, List, Optional
 
 import pyotp
 
-from core.audit import audit, AuditEventType
-from core.rbac import User, Role
+from core.audit import AuditEventType, audit
+from core.rbac import Role, User
 
 logger = logging.getLogger(__name__)
 

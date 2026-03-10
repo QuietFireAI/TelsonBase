@@ -18,16 +18,16 @@
 # REM: v4.1.0CC: Added Redis persistence for baselines and anomalies
 # REM: =======================================================================================
 
+import json
+import logging
 import statistics
 from collections import defaultdict
-from datetime import datetime, timezone, timedelta
-from typing import Dict, List, Optional, Set, Any, Tuple
-from dataclasses import dataclass, field, asdict
+from dataclasses import asdict, dataclass, field
+from datetime import datetime, timedelta, timezone
 from enum import Enum
-import logging
-import json
+from typing import Any, Dict, List, Optional, Set, Tuple
 
-from core.audit import audit, AuditEventType
+from core.audit import AuditEventType, audit
 
 logger = logging.getLogger(__name__)
 

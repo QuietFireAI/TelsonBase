@@ -12,12 +12,12 @@
 # REM: =======================================================================================
 
 import logging
-from datetime import datetime, timezone, timedelta
-from typing import Dict, List, Any, Optional
 from dataclasses import dataclass, field
+from datetime import datetime, timedelta, timezone
 from enum import Enum
+from typing import Any, Dict, List, Optional
 
-from core.audit import audit, AuditEventType
+from core.audit import AuditEventType, audit
 
 logger = logging.getLogger(__name__)
 
@@ -112,8 +112,8 @@ class SystemAnalyzer:
         Returns:
             Complete analysis report
         """
-        import uuid
         import time
+        import uuid
 
         logger.info(f"REM: Starting system-wide analysis triggered by ::{triggered_by}::_Please")
         start_time = time.time()
@@ -198,8 +198,8 @@ class SystemAnalyzer:
     ) -> Dict[str, Any]:
         """REM: Analyze agent health and security."""
         try:
-            from core.trust_levels import trust_manager, AgentTrustLevel
             from core.signing import key_registry
+            from core.trust_levels import AgentTrustLevel, trust_manager
 
             records = trust_manager.get_all_records()
             health = {

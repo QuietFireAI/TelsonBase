@@ -18,14 +18,14 @@
 # REM:   - Configurable strictness levels
 # REM: =======================================================================================
 
-import re
 import logging
-from typing import Dict, List, Optional, Set, Tuple, Any
+import re
 from dataclasses import dataclass, field
 from enum import Enum
 from pathlib import PurePosixPath
+from typing import Any, Dict, List, Optional, Set, Tuple
 
-from core.audit import audit, AuditEventType
+from core.audit import AuditEventType, audit
 
 logger = logging.getLogger(__name__)
 

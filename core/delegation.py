@@ -19,14 +19,14 @@
 # REM: =======================================================================================
 
 import json
-import uuid
 import logging
-from datetime import datetime, timezone, timedelta
-from typing import Dict, List, Optional, Set, Tuple, Any
+import uuid
 from dataclasses import dataclass, field
+from datetime import datetime, timedelta, timezone
 from enum import Enum
+from typing import Any, Dict, List, Optional, Set, Tuple
 
-from core.audit import audit, AuditEventType
+from core.audit import AuditEventType, audit
 
 logger = logging.getLogger(__name__)
 
@@ -103,6 +103,7 @@ class DelegationManager:
         if self._redis is None:
             try:
                 import redis as _redis
+
                 from core.config import get_settings
                 self._redis = _redis.Redis.from_url(
                     get_settings().redis_url, decode_responses=True

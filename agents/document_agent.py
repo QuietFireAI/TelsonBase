@@ -23,18 +23,18 @@
 # REM:   Document_Redact_Please (requires approval) → Document_Redact_Thank_You
 # REM: =======================================================================================
 
+import hashlib
+import logging
 import os
 import re
-import logging
-import hashlib
 from datetime import datetime, timezone
-from typing import Dict, Any, List, Optional
 from pathlib import Path
+from typing import Any, Dict, List, Optional
 
-from agents.base import SecureBaseAgent, AgentRequest, AgentResponse
+from agents.base import AgentRequest, AgentResponse, SecureBaseAgent
+from core.audit import AuditEventType, audit
 from core.config import get_settings
-from core.audit import audit, AuditEventType
-from core.qms import format_qms, QMSStatus
+from core.qms import QMSStatus, format_qms
 
 settings = get_settings()
 logger = logging.getLogger(__name__)

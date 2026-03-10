@@ -19,9 +19,9 @@
 # REM: =======================================================================================
 
 import logging
-from typing import Dict, List, Set, Any
 from dataclasses import dataclass, field
 from enum import Enum
+from typing import Any, Dict, List, Set
 
 logger = logging.getLogger(__name__)
 

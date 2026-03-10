@@ -46,14 +46,14 @@
 # REM: =======================================================================================
 
 import json
+import logging
 import os
 import re
 import uuid
-from typing import Optional, Tuple, Dict, Any, List
-from enum import Enum
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
-import logging
+from enum import Enum
+from typing import Any, Dict, List, Optional, Tuple
 
 logger = logging.getLogger(__name__)
 
@@ -826,7 +826,7 @@ def validate_chain_string(
             if "missing_origin" in error:
                 # REM: Anonymous transmission — elevated security concern
                 try:
-                    from core.audit import audit, AuditEventType
+                    from core.audit import AuditEventType, audit
                     audit.log(
                         AuditEventType.SECURITY_ALERT,
                         f"Anonymous QMS chain detected from ::{source}:: "
@@ -1029,7 +1029,7 @@ def validate_qms(
 
     if log_warning:
         try:
-            from core.audit import audit, AuditEventType
+            from core.audit import AuditEventType, audit
             audit.log(
                 AuditEventType.SECURITY_ALERT,
                 warning,
@@ -1174,7 +1174,7 @@ def log_qms_transaction(
     qms_message = format_qms(action, status, **(details or {}))
 
     try:
-        from core.audit import audit, AuditEventType
+        from core.audit import AuditEventType, audit
         audit.log(
             AuditEventType.AGENT_ACTION,
             qms_message,
@@ -1215,7 +1215,7 @@ def log_qms_chain(
         qms_status = "SYSTEM_HALT"
 
     try:
-        from core.audit import audit, AuditEventType
+        from core.audit import AuditEventType, audit
         event_type = (
             AuditEventType.SECURITY_ALERT if chain.is_halt
             else AuditEventType.AGENT_ACTION

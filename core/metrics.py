@@ -19,17 +19,15 @@
 # REM: This is NOT optional for production — you cannot manage what you cannot measure.
 # REM: =======================================================================================
 
-import time
 import logging
+import time
 from typing import Callable
 
-from prometheus_client import (
-    Counter, Histogram, Gauge, Info,
-    generate_latest, CONTENT_TYPE_LATEST,
-    CollectorRegistry, REGISTRY
-)
 from fastapi import Request, Response
 from fastapi.responses import Response as FastAPIResponse
+from prometheus_client import (CONTENT_TYPE_LATEST, REGISTRY,
+                               CollectorRegistry, Counter, Gauge, Histogram,
+                               Info, generate_latest)
 from starlette.middleware.base import BaseHTTPMiddleware
 
 logger = logging.getLogger(__name__)

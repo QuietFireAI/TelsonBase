@@ -37,15 +37,15 @@
 import hashlib
 import json
 import logging
-import uuid
 import time
-from datetime import datetime, timezone, timedelta
-from typing import Optional, Dict, List, Set, Any
+import uuid
+from datetime import datetime, timedelta, timezone
 from enum import Enum
+from typing import Any, Dict, List, Optional, Set
 
 from pydantic import BaseModel, Field
 
-from core.audit import audit, AuditEventType
+from core.audit import AuditEventType, audit
 from core.config import get_settings
 
 logger = logging.getLogger(__name__)
@@ -582,7 +582,7 @@ class OpenClawManager:
             instance.last_action_at = datetime.now(timezone.utc)
             self._persist_instance(instance)
             try:
-                from core.manners import manners_engine, ViolationType
+                from core.manners import ViolationType, manners_engine
                 manners_engine.record_violation(
                     agent_name=instance.name,
                     violation_type=ViolationType.CAPABILITY_VIOLATION,
@@ -692,7 +692,7 @@ class OpenClawManager:
             self._persist_instance(instance)
             self._log_action(instance_id, tool_name, "blocked")
             try:
-                from core.manners import manners_engine, ViolationType
+                from core.manners import ViolationType, manners_engine
                 manners_engine.record_violation(
                     agent_name=instance.name,
                     violation_type=ViolationType.OUT_OF_ROLE_ACTION,
@@ -751,6 +751,7 @@ class OpenClawManager:
             # REM: Create approval request in the approval system (visible in dashboard)
             try:
                 from core.approval import approval_gate
+
                 # REM: Select rule based on trust level and action category
                 if trust_level == TrustLevel.QUARANTINE:
                     rule_id = "rule-openclaw-quarantine-action"
