@@ -175,14 +175,14 @@ The other side of the gate. Pending approval from a suspended agent - full paylo
 **GIF 5 - Manners Scoring: Behavioral Score Drops in Real Time**
 Fresh agent registers at a Manners score of 1.0. Attempts `payment_send` — blocked (it's on the agent's blocklist). Score drops to 0.95. Attempts `transaction_execute` — blocked again (wrong trust tier for financial actions). Score drops to 0.91. Two violations, two different block reasons, one continuous behavioral record. The governance pipeline doesn't just block — it remembers.
 
-![Manners Score Drop](screenshots/manners-score.gif)
+[Watch: Manners Score Drop](screenshots/manners-score.mp4)
 
 ---
 
 **GIF 6 - Trust Tiers: Earned Promotion Unlocks Actions**
 Fresh agent at QUARANTINE attempts `file_write` — blocked outright. Promoted to PROBATION — same action now triggers a HITL gate (human approval required, approval ID generated). Promoted to RESIDENT — same action, same agent, now executes autonomously. Three tiers, three outcomes, zero code changes. The agent didn't change. The governance did.
 
-![Trust Tier Promotion](screenshots/trust-tiers.gif)
+[Watch: Trust Tier Promotion](screenshots/trust-tiers.mp4)
 
 ---
 
