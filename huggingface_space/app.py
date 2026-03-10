@@ -245,7 +245,18 @@ Step 2 of the pipeline fire — instant rejection, before trust levels, before e
 Hit **Reinstate Agent** when you're done to reset the demo for the next visitor.
 """
 
-with gr.Blocks(title="TelsonBase — Live Governance Demo") as demo:
+with gr.Blocks(
+    title="TelsonBase — Live Governance Demo",
+    theme=gr.themes.Base(
+        primary_hue=gr.themes.colors.violet,
+        neutral_hue=gr.themes.colors.slate,
+    ),
+    css="""
+        .output-box textarea { font-family: 'Courier New', monospace !important; font-size: 13px !important; }
+        .status-box textarea { font-family: 'Courier New', monospace !important; font-size: 13px !important; }
+        footer { display: none !important; }
+    """,
+) as demo:
 
     gr.Markdown(f"# TelsonBase — Live Governance Demo\n{DESCRIPTION}")
 
@@ -308,14 +319,4 @@ with gr.Blocks(title="TelsonBase — Live Governance Demo") as demo:
     )
 
 if __name__ == "__main__":
-    demo.launch(
-        theme=gr.themes.Base(
-            primary_hue=gr.themes.colors.violet,
-            neutral_hue=gr.themes.colors.slate,
-        ),
-        css="""
-            .output-box textarea { font-family: 'Courier New', monospace !important; font-size: 13px !important; }
-            .status-box textarea { font-family: 'Courier New', monospace !important; font-size: 13px !important; }
-            footer { display: none !important; }
-        """,
-    )
+    demo.launch()
