@@ -496,7 +496,7 @@ logger.info("REM: MCP gateway mounted at /mcp — session gate active, Goose int
 @app.get("/dashboard", response_class=HTMLResponse, tags=["Dashboard"])
 async def dashboard():
     """REM: Serve the TelsonBase Dashboard UI."""
-    index_path = FRONTEND_DIR / "index.html"
+    index_path = FRONTEND_DIR / "user-console.html"
     if index_path.exists():
         return HTMLResponse(content=index_path.read_text(), status_code=200)
     else:
