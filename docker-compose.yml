@@ -21,7 +21,7 @@ services:
   # REM: SERVICE 1: TRAEFIK - The Secure Gateway and City Entrance
   # REM: -----------------------------------------------------------------------------------
   traefik:
-    image: "traefik:v2.10"
+    image: "traefik:v2.11"
     command:
       # --- Core (all environments) ---
       - "--api.insecure=false"
