@@ -329,7 +329,15 @@ services:
     labels:
       - "traefik.enable=true"
       - "traefik.http.services.mcp_server.loadbalancer.server.port=8000"
-      # REM: TLS + HSTS labels are in docker-compose.prod.yml (production overlay)
+      # REM: Pin Traefik to the backend network for mcp_server. Without this, Traefik
+      # REM: picks the first container IP alphabetically — which may be a network Traefik
+      # REM: is not connected to (e.g. telsonbase_ai), causing silent proxy timeouts.
+      - "traefik.docker.network=telsonbase_backend"
+      # REM: Dev catch-all router — matches all HTTP traffic regardless of Host header.
+      # REM: Production overlay (docker-compose.prod.yml) overrides with Host(TRAEFIK_DOMAIN)
+      # REM: and adds the mcp_server-secure HTTPS router with ACME/TLS.
+      - "traefik.http.routers.mcp_server.rule=PathPrefix(`/`)"
+      - "traefik.http.routers.mcp_server.entrypoints=web"
     volumes:
       - ./backups:/app/backups
       - ./frontend:/app/frontend:ro
