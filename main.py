@@ -506,6 +506,19 @@ async def dashboard():
         )
 
 
+@app.get("/admin", response_class=HTMLResponse, tags=["Dashboard"])
+async def admin_panel():
+    """REM: Serve the TelsonBase Admin Panel UI (full operator dashboard)."""
+    admin_path = FRONTEND_DIR / "admin.html"
+    if admin_path.exists():
+        return HTMLResponse(content=admin_path.read_text(), status_code=200)
+    else:
+        return HTMLResponse(
+            content="<h1>Admin panel not found</h1><p>admin.html missing from /frontend directory</p>",
+            status_code=404
+        )
+
+
 @app.get("/console", response_class=HTMLResponse, tags=["Dashboard"])
 async def user_console():
     """REM: Serve the TelsonBase User Console UI (Layer B — simplified operator interface)."""
