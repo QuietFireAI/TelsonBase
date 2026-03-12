@@ -1802,7 +1802,7 @@
                     try { const id = await api.get('/v1/identity/list'); setDidAgents(id.agents||id||[]); } catch(e) {}
                     try { const oc = await api.get('/v1/openclaw/list'); setOpenclawInstances(oc||[]); } catch(e) {}
                     try { const hp = await api.get('/v1/compliance/hitrust/posture'); const baa = await api.get('/v1/compliance/baa').catch(()=>({agreements:[]})); const lh = await api.get('/v1/compliance/legal-holds').catch(()=>({holds:[]})); const br = await api.get('/v1/breach').catch(()=>({assessments:[]})); setComplianceData({ legalHolds:{active:(lh.holds||[]).filter(h=>h.status==='active').length,total:(lh.holds||[]).length}, breaches:{open:(br.assessments||[]).filter(b=>b.status==='open').length,total:(br.assessments||[]).length,overdue_notifications:0}, training:{completed:0,total:0,overdue:0}, hitrust:{posture_pct:hp.overall_posture_pct||0,controls_met:hp.controls_met||0,controls_total:hp.controls_total||0}, baas:{active:(baa.agreements||[]).filter(b=>b.status==='active').length,expiring_soon:0,total:(baa.agreements||[]).length} }); } catch(e) {}
-                    try { const tools = await api.get('/v1/toolroom/tools'); const cos = await api.get('/v1/toolroom/checkouts').catch(()=>({checkouts:[]})); setToolroomData({tools:tools.tools||tools||[],checkouts:cos.checkouts||cos||[]}); } catch(e) {}
+                    try { const tools = await api.get('/v1/toolroom/tools'); const cos = await api.get('/v1/toolroom/checkouts').catch(()=>({checkouts:[]})); setToolroomData(prev=>{ const apiTools=tools.tools||tools||[]; const localOnly=(prev.tools||[]).filter(t=>t.tool_id?.startsWith('tool-')&&!apiTools.some(at=>at.name===t.name)); const mergedApi=apiTools.map(t=>{ const local=(prev.tools||[]).find(lt=>lt.name===t.name); return(local?.status==='approved')?{...t,status:'approved'}:t; }); return {tools:[...mergedApi,...localOnly],checkouts:cos.checkouts||cos||[]}; }); } catch(e) {}
                     try { const us = await api.get('/v1/auth/users'); setUsers(us.users||us||[]); } catch(e) {}
                 } catch(err) { if(err.message==='Unauthorized'){setConnected(false);localStorage.removeItem('telsonbase_api_key');} }
                 setRefreshing(false);
@@ -2959,6 +2959,7 @@
                         if(isDemo){
                             const newClaw={instance_id:`claw-${Date.now()}`,name:vals.name,trust_level:vals.initial_trust_level,manners_score:1.0,action_count:0,actions_allowed:0,actions_blocked:0,actions_gated:0,suspended:false,registered_at:new Date().toISOString()};
                             setOpenclawInstances(prev=>[newClaw,...prev]);
+                            setAgents(prev=>[...prev,{agent_id:vals.name,trust_level:vals.initial_trust_level,capabilities:[],signing_key_registered:false}]);
                             return;
                         }
                         const api=createApi(apiUrl);
@@ -2970,6 +2971,7 @@
                             metadata:{agent_type:vals.agent_type},
                         });
                         try{const r=await api.get('/v1/openclaw/list');setOpenclawInstances(r.instances||r||[]);}catch(e){}
+                        try{const ag=await api.get('/v1/agents/');setAgents(ag.agents||[]);}catch(e){}
                     }}
                 />}
                 {showFederationModal && <FormModal
