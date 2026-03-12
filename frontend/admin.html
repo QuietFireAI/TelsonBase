@@ -195,6 +195,24 @@
         .info-source-live { background: rgba(34,197,94,0.12); color: #4ade80; border: 1px solid rgba(34,197,94,0.25); }
         .info-source-demo { background: rgba(180,83,9,0.08); color: #b45309; border: 1px solid rgba(180,83,9,0.20); }
         .info-source-partial { background: rgba(99,102,241,0.12); color: #818cf8; border: 1px solid rgba(99,102,241,0.25); }
+        /* Light Form Modal — matches admin panel light theme */
+        .form-modal {
+            background: var(--bg-surface);
+            border: 1px solid var(--border-default);
+            border-radius: 16px; width: 100%; max-width: 520px;
+            padding: 28px; position: relative;
+            animation: fade-in 0.2s ease-out;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.12), 0 2px 8px rgba(0,0,0,0.06);
+        }
+        .form-modal-close {
+            position: absolute; top: 16px; right: 16px;
+            background: rgba(0,0,0,0.04); border: 1px solid rgba(0,0,0,0.10);
+            border-radius: 8px; width: 30px; height: 30px;
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer; color: #71717a; font-size: 18px; line-height: 1;
+            transition: background 0.15s;
+        }
+        .form-modal-close:hover { background: rgba(0,0,0,0.08); color: #18181b; }
         /* =====================================================================
            LIGHT THEME: text-white GLOBAL OVERRIDE
            Original dark theme used text-white throughout for headings/content.
@@ -969,16 +987,16 @@
             };
             if(result) return (
                 <div className="info-modal-overlay" onClick={e=>{if(e.target===e.currentTarget)onClose();}}>
-                    <div className="info-modal" style={{maxWidth:'500px'}}>
-                        <button onClick={onClose} className="info-modal-close">×</button>
+                    <div className="form-modal" style={{maxWidth:'500px'}}>
+                        <button onClick={onClose} className="form-modal-close">×</button>
                         {result}
                     </div>
                 </div>
             );
             return (<div className="info-modal-overlay" onClick={e=>{if(e.target===e.currentTarget)onClose();}}>
-                <div className="info-modal" style={{maxWidth:'440px'}}>
-                    <button onClick={onClose} className="info-modal-close">×</button>
-                    <h3 className="text-white font-bold text-lg mb-5">{title}</h3>
+                <div className="form-modal" style={{maxWidth:'440px'}}>
+                    <button onClick={onClose} className="form-modal-close">×</button>
+                    <h3 className="font-bold text-lg mb-5" style={{color:'var(--text-primary)'}}>{title}</h3>
                     <form onSubmit={handleSubmit} className="space-y-4">
                         {fields.map(f=>(
                             <div key={f.name}>
@@ -1063,9 +1081,9 @@
 
             return (
                 <div className="info-modal-overlay" onClick={e=>{if(e.target===e.currentTarget)onClose();}}>
-                    <div className="info-modal" style={{maxWidth:'440px'}}>
-                        <button onClick={onClose} className="info-modal-close">×</button>
-                        <h3 className="text-white font-bold text-lg mb-5">Create User</h3>
+                    <div className="form-modal" style={{maxWidth:'440px'}}>
+                        <button onClick={onClose} className="form-modal-close">×</button>
+                        <h3 className="font-bold text-lg mb-5" style={{color:'var(--text-primary)'}}>Create User</h3>
                         <form onSubmit={handleSubmit} className="space-y-4">
                             {[{k:'username',l:'Username',t:'text',ph:'jsmith',hint:'Min 3 characters'},{k:'email',l:'Email',t:'email',ph:'user@example.com'},{k:'password',l:'Password',t:'password',ph:'',hint:'Min 12 characters'}].map(f=>(
                                 <div key={f.k}>

@@ -597,7 +597,7 @@ async def view_qms_spec():
 async def view_manners():
     """REM: Serve MANNERS.md — TelsonBase agent operating principles and compliance framework."""
     return _serve_doc(
-        Path(__file__).parent / "MANNERS.md",
+        Path(__file__).parent / "docs" / "MANNERS.md",
         "MANNERS — Agent Operating Principles"
     )
 
