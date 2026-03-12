@@ -25,8 +25,8 @@ proof_sheets/ @QuietFireAI
 # License and legal files
 LICENSE @QuietFireAI
 NOTICE @QuietFireAI
-TRADEMARKS.md @QuietFireAI
-COMMERCIAL_LICENSE.md @QuietFireAI
+licenses/TRADEMARKS.md @QuietFireAI
+licenses/COMMERCIAL_LICENSE.md @QuietFireAI
 licenses/ @QuietFireAI
 
 # CI and release pipeline

@@ -148,7 +148,7 @@ out any standard tool unless an operator explicitly lowers the designation.
 **Source files:**
 - `toolroom/foreman.py` - `handle_checkout_request()` - checkout enforcement
 - `toolroom/registry.py` - `ToolMetadata` - `min_trust_level`, `requires_api_access`, `allowed_agents` fields
-- `docs/TOOLROOM_TRUST_MATRIX.md` - full matrix: checkout eligibility by tier, recommended designations by category
+- `docs/System%20Documents/TOOLROOM_TRUST_MATRIX.md` - full matrix: checkout eligibility by tier, recommended designations by category
 - `routers/toolroom.py` - REST endpoints
 
 **Proof sheet:** `proof_sheets/tb-proof-054_toolroom_suite.md` - 129 tests across 28 classes
@@ -298,7 +298,7 @@ Because each entry's hash includes the previous entry's hash, tampering with any
 entry invalidates every subsequent entry in the chain. Tampering cannot be hidden - it
 can only be detected. You can hand a chain export to a forensic investigator and they can
 verify every entry independently of the TelsonBase API, using only standard Python and
-`hashlib`. See `docs/AUDIT_TRAIL.md` - Verify an Entry Offline.
+`hashlib`. See `docs/System%20Documents/AUDIT_TRAIL.md` - Verify an Entry Offline.
 
 **Source files:**
 - `core/audit.py` - `verify_chain()` - full verification loop
@@ -320,7 +320,7 @@ curl http://localhost:8000/v1/audit/chain/verify \
 
 **Skeptic follow-up:** *"What if someone flushes Redis?"*
 Redis flush = chain_state lost, new genesis starts. This is a known architectural limit,
-documented in `docs/AUDIT_TRAIL.md` - Known Limitations. PostgreSQL archival for long-term
+documented in `docs/System%20Documents/AUDIT_TRAIL.md` - Known Limitations. PostgreSQL archival for long-term
 retention is on the roadmap. A flush is detectable as an unusually early genesis in the
 chain history. Physical access to flush Redis is itself a security event - outside
 TelsonBase's threat model (assumes secure infrastructure).
@@ -566,7 +566,7 @@ The infrastructure to support and respond to a formal pen test is already in pla
 **Source files:**
 - `docs/PENTEST_PREPARATION.md` - attack surface inventory and test plan
 - `.github/workflows/ci.yml` - automated security scan on every commit
-- `docs/SECURITY_GUIDELINES.md` - vulnerability scope, reporting, and current security posture
+- `docs/System%20Documents/SECURITY_GUIDELINES.md` - vulnerability scope, reporting, and current security posture
 
 **Proof sheets:**
 - `proof_sheets/TB-PROOF-027_static_analysis.md` - Bandit results, 0 high-severity
@@ -647,7 +647,7 @@ re-architecture.
 Single worker is the correct choice for this workload. FastAPI + uvicorn handles all
 concurrency async within one process. Multi-worker is safe - the audit chain uses Redis
 WATCH/MULTI/EXEC transactions, so it is race-free at any worker count. See
-`docs/AUDIT_TRAIL.md` - Storage Architecture for the full rationale.
+`docs/System%20Documents/AUDIT_TRAIL.md` - Storage Architecture for the full rationale.
 
 ---
 

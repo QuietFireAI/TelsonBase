@@ -11,7 +11,7 @@ The Toolroom is the **single source of truth** for all tools available to agents
 
 ---
 
-**Tool access by trust tier:** See [`docs/TOOLROOM_TRUST_MATRIX.md`](../docs/TOOLROOM_TRUST_MATRIX.md) for the full matrix - what's available at each tier, how to set tool designations, and recommended defaults by tool category.
+**Tool access by trust tier:** See [`docs/TOOLROOM_TRUST_MATRIX.md`](../docs/System%20Documents/TOOLROOM_TRUST_MATRIX.md) for the full matrix - what's available at each tier, how to set tool designations, and recommended defaults by tool category.
 
 ---
 

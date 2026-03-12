@@ -84,7 +84,7 @@ grep -n "TRUST_PERMISSION_MATRIX\|VALID_PROMOTIONS\|VALID_DEMOTIONS\|TrustLevel.
 
 ## Toolroom Access by Trust Tier
 
-For how trust levels govern tool checkout eligibility, `min_trust_level` designation, and the `requires_api_access` gate, see [`docs/TOOLROOM_TRUST_MATRIX.md`](../docs/TOOLROOM_TRUST_MATRIX.md).
+For how trust levels govern tool checkout eligibility, `min_trust_level` designation, and the `requires_api_access` gate, see [`docs/TOOLROOM_TRUST_MATRIX.md`](../docs/System%20Documents/TOOLROOM_TRUST_MATRIX.md).
 
 ---
 

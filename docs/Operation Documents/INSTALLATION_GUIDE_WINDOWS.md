@@ -262,7 +262,7 @@ curl http://localhost:11434/api/tags
    ```
 4. Click **Connect** - the header will switch to **Live** and show the system health dot
 
-**You're in.** From here, head to: `docs/DASHBOARD_agent_registration.md` for the step-by-step walkthrough to register your first agent, promote it from QUARANTINE, and verify the governance loop.
+**You're in.** From here, head to: `docs/Operation%20Documents/DASHBOARD_agent_registration.md` for the step-by-step walkthrough to register your first agent, promote it from QUARANTINE, and verify the governance loop.
 
 ---
 
