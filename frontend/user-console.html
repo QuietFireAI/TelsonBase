@@ -571,10 +571,6 @@
                                 <span className={`text-xs font-medium ${connected?'text-green-400':'text-slate-500'}`}>{connected?'Live':'Offline'}</span>
                             </button>
                             {connected && <button onClick={handleDisconnect} className="p-2 rounded-lg transition hover:bg-white/5" style={{color:'var(--text-muted)'}} title="Logout"><Icon name="logOut" size={16}/></button>}
-                            <a href="/dashboard" className="text-xs flex items-center gap-1 px-2 py-1 rounded-lg border transition hover:bg-white/5" style={{borderColor:'var(--border-default)', color:'var(--text-muted)', textDecoration:'none'}} title="Admin Console">
-                                <Icon name="server" size={12}/>Admin
-                                <Icon name="externalLink" size={10}/>
-                            </a>
                         </div>
                     </div>
                 </header>
