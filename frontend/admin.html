@@ -135,7 +135,7 @@
             font-size: 8px;
             font-weight: 700;
             letter-spacing: 0.05em;
-            background: rgba(251,191,36,0.1);
+            background: rgba(234,88,12,0.08);
             color: #fbbf24;
             border: 1px solid rgba(251,191,36,0.2);
         }
@@ -602,10 +602,10 @@
         function AnomalyCard({ anomaly, onResolve, isDemo }) {
             const [expanded, setExpanded] = useState(false);
             const [resolving, setResolving] = useState(false);
-            const sc = { critical:'bg-red-500', high:'bg-orange-500', medium:'bg-yellow-500', low:'bg-blue-400' };
+            const sc = { critical:'bg-red-500', high:'bg-orange-500', medium:'bg-orange-500', low:'bg-blue-400' };
             return (<div className="card p-5 fade-in">
                 <div className="flex items-start justify-between mb-3"><div className="flex items-center gap-2"><span className={`badge text-white ${sc[anomaly.severity]}`}>{anomaly.severity}</span><span className="text-xs mono" style={{color:'var(--text-muted)'}}>{anomaly.anomaly_type}</span></div>
-                {anomaly.requires_human_review && <span className="badge text-yellow-400" style={{background:'rgba(251,191,36,0.1)'}}><Icon name="eye" size={12} className="mr-1"/>Review</span>}</div>
+                {anomaly.requires_human_review && <span className="badge text-orange-600" style={{background:'rgba(234,88,12,0.08)'}}><Icon name="eye" size={12} className="mr-1"/>Review</span>}</div>
                 <div className="flex items-center gap-2 mb-2"><Icon name="zap" size={14} className="text-cyan-400"/><span className="text-sm" style={{color:'var(--text-muted)'}}>Agent:</span><span className="text-sm text-cyan-400 mono">{anomaly.agent_id}</span></div>
                 <p className="text-sm mb-3" style={{color:'var(--text-secondary)'}}>{anomaly.description}</p>
                 <button onClick={()=>setExpanded(!expanded)} className="text-xs flex items-center gap-1 mb-3 hover:text-white transition" style={{color:'var(--text-muted)'}}><Icon name="chevronDown" size={12} className={`transition-transform ${expanded?'rotate-180':''}`}/>{expanded?'Hide':'Show'} evidence</button>
@@ -631,9 +631,9 @@
 
         function IdentityCard({ agent, onRevoke, onReinstate, onRefresh, isDemo }) {
             const [expanded, setExpanded] = useState(false);
-            const trustColors = { quarantine:'text-red-400', probation:'text-yellow-400', resident:'text-blue-400', citizen:'text-green-400', agent:'text-amber-400' };
-            const trustBg = { quarantine:'rgba(248,113,113,0.08)', probation:'rgba(251,191,36,0.08)', resident:'rgba(96,165,250,0.08)', citizen:'rgba(74,222,128,0.08)', agent:'rgba(245,158,11,0.08)' };
-            const trustBorder = { quarantine:'rgba(248,113,113,0.2)', probation:'rgba(251,191,36,0.2)', resident:'rgba(96,165,250,0.2)', citizen:'rgba(74,222,128,0.2)', agent:'rgba(245,158,11,0.3)' };
+            const trustColors = { quarantine:'text-red-400', probation:'text-orange-600', resident:'text-blue-400', citizen:'text-green-400', agent:'text-amber-700' };
+            const trustBg = { quarantine:'rgba(248,113,113,0.08)', probation:'rgba(234,88,12,0.08)', resident:'rgba(96,165,250,0.08)', citizen:'rgba(74,222,128,0.08)', agent:'rgba(146,64,14,0.08)' };
+            const trustBorder = { quarantine:'rgba(248,113,113,0.2)', probation:'rgba(234,88,12,0.25)', resident:'rgba(96,165,250,0.2)', citizen:'rgba(74,222,128,0.2)', agent:'rgba(146,64,14,0.25)' };
             const tl = agent.trust_level||'quarantine';
             const shortDid = agent.did ? (agent.did.length > 32 ? agent.did.slice(0,20)+'...'+agent.did.slice(-8) : agent.did) : 'unknown';
             return (<div className="card p-5 fade-in">
@@ -655,7 +655,7 @@
                     <div><span style={{color:'var(--text-muted)'}}>Registered</span><p className="text-slate-300 text-xs">{agent.registered_at ? new Date(agent.registered_at).toLocaleDateString() : 'N/A'}</p></div>
                 </div>
                 {(agent.manners_md_path || agent.profession_md_path) && <div className="flex gap-3 text-xs mb-3">
-                    {agent.manners_md_path && <span className="flex items-center gap-1" style={{color:'var(--text-muted)'}}><Icon name="shield" size={12} className="text-amber-400"/>MANNERS.md</span>}
+                    {agent.manners_md_path && <span className="flex items-center gap-1" style={{color:'var(--text-muted)'}}><Icon name="shield" size={12} className="text-amber-700"/>MANNERS.md</span>}
                     {agent.profession_md_path && <span className="flex items-center gap-1" style={{color:'var(--text-muted)'}}><Icon name="briefcase" size={12} className="text-cyan-400"/>Profession.md</span>}
                 </div>}
                 <div className="flex items-center gap-2 mt-2 pt-2 border-t" style={{borderColor:'var(--border-subtle)'}}>
@@ -685,7 +685,7 @@
             const [actionNote, setActionNote] = useState('');
             const TRUST_INFO = {
                 quarantine:{ color:'#f87171', bg:'rgba(248,113,113,0.08)', border:'rgba(248,113,113,0.2)', meaning:'New or untrusted agent. Under observation only — every request requires human approval before execution.', can:['Read with human approval'], blocked:['Write','Delete','External calls','Financial operations'], next:'probation', prev:null },
-                probation:  { color:'#b45309', bg:'rgba(251,191,36,0.08)',  border:'rgba(251,191,36,0.2)',  meaning:'Conditionally trusted. Reads autonomously, all writes and external calls require a human sign-off.',       can:['Read autonomously','Write with approval','External with approval'], blocked:['Delete','Financial operations'], next:'resident', prev:'quarantine' },
+                probation:  { color:'#b45309', bg:'rgba(234,88,12,0.08)',  border:'rgba(251,191,36,0.2)',  meaning:'Conditionally trusted. Reads autonomously, all writes and external calls require a human sign-off.',       can:['Read autonomously','Write with approval','External with approval'], blocked:['Delete','Financial operations'], next:'resident', prev:'quarantine' },
                 resident:   { color:'#60a5fa', bg:'rgba(96,165,250,0.08)',  border:'rgba(96,165,250,0.2)',  meaning:'Trusted agent. Reads and writes freely. High-risk operations (delete, financial) still require approval.', can:['Read autonomously','Write autonomously','Delete with approval','Financial with approval'], blocked:[], next:'citizen', prev:'probation' },
                 citizen:    { color:'#4ade80', bg:'rgba(74,222,128,0.08)',  border:'rgba(74,222,128,0.2)',  meaning:'Fully trusted. All operations run autonomously. Human review is triggered only when anomaly detection flags unusual behavior.', can:['All operations autonomous'], blocked:[], next:'agent', prev:'resident' },
                 agent:      { color:'#f59e0b', bg:'rgba(245,158,11,0.08)',  border:'rgba(245,158,11,0.3)',  meaning:'Full earned autonomy. This agent has proven consistent trust, maintained Manners compliance, and earned full delegation. Anomalies are logged as advisory — they do not gate execution. Trust is real, and revocable.', can:['All operations autonomous','Anomaly detection advisory only'], blocked:[], next:null, prev:'citizen' },
@@ -750,7 +750,7 @@
                         </div>
                     </div>
                     <div className="grid grid-cols-4 gap-3 mb-4">
-                        {[{label:'Actions',val:claw.action_count||0,color:'text-white',note:'Total evaluated'},{label:'Allowed',val:claw.actions_allowed||0,color:'text-green-400',note:'Autonomous'},{label:'Blocked',val:claw.actions_blocked||0,color:'text-red-400',note:'Denied'},{label:'Gated',val:claw.actions_gated||0,color:'text-yellow-400',note:'HITL approval'}].map(s=>(
+                        {[{label:'Actions',val:claw.action_count||0,color:'text-white',note:'Total evaluated'},{label:'Allowed',val:claw.actions_allowed||0,color:'text-green-400',note:'Autonomous'},{label:'Blocked',val:claw.actions_blocked||0,color:'text-red-400',note:'Denied'},{label:'Gated',val:claw.actions_gated||0,color:'text-orange-600',note:'HITL approval'}].map(s=>(
                             <div key={s.label} className="rounded-lg p-3 text-center" style={{background:'var(--bg-base)',border:'1px solid var(--border-subtle)'}}>
                                 <p className={`text-xl font-bold ${s.color}`}>{s.val}</p>
                                 <p className="text-xs font-medium" style={{color:'var(--text-muted)'}}>{s.label}</p>
@@ -761,9 +761,9 @@
                     <div className="mb-4">
                         <div className="flex items-center justify-between text-xs mb-1.5">
                             <span className="text-white font-medium">Manners Score <span className="font-normal" style={{color:'var(--text-muted)'}}>— Anthropic safety framework compliance</span></span>
-                            <span className={score>=75?'text-green-400':score>=50?'text-yellow-400':'text-red-400'}>{score.toFixed(0)}%</span>
+                            <span className={score>=75?'text-green-400':score>=50?'text-orange-600':'text-red-400'}>{score.toFixed(0)}%</span>
                         </div>
-                        <div className="w-full rounded-full h-2 mb-1.5" style={{background:'var(--bg-base)'}}><div className={`h-2 rounded-full ${score>=75?'bg-green-400':score>=50?'bg-yellow-400':'bg-red-400'}`} style={{width:`${score}%`,transition:'width 0.6s ease'}}/></div>
+                        <div className="w-full rounded-full h-2 mb-1.5" style={{background:'var(--bg-base)'}}><div className={`h-2 rounded-full ${score>=75?'bg-green-400':score>=50?'bg-orange-500':'bg-red-400'}`} style={{width:`${score}%`,transition:'width 0.6s ease'}}/></div>
                         <p className="text-xs" style={{color:'var(--text-muted)'}}>{score>=90?'Excellent — safe to promote if tenure is adequate.':score>=75?'Good standing.':score>=50?'Below threshold — review recent blocked actions before promoting.':'Poor — auto-demotion may trigger. Consider suspension.'}</p>
                     </div>
                     <p className="text-xs mono mb-4" style={{color:'var(--text-muted)'}}>Registered: {claw.registered_at ? new Date(claw.registered_at).toLocaleString() : 'N/A'}</p>
@@ -946,7 +946,7 @@
         }
 
         function FederationCard({ relationship }) {
-            const sc = { established:'text-green-400', pending_inbound:'text-yellow-400', pending_outbound:'text-yellow-400', revoked:'text-red-400' };
+            const sc = { established:'text-green-400', pending_inbound:'text-orange-600', pending_outbound:'text-orange-600', revoked:'text-red-400' };
             return (<div className="card p-5 fade-in">
                 <div className="flex items-center justify-between mb-3"><div className="flex items-center gap-3"><div className="w-10 h-10 rounded-lg flex items-center justify-center" style={{background:'rgba(167,139,250,0.1)'}}><Icon name="link2" size={20} className="text-purple-400"/></div><div><h3 className="text-white font-semibold text-sm">{relationship.remote_identity?.organization_name||'Remote Instance'}</h3><p className="text-xs mono" style={{color:'var(--text-muted)'}}>{relationship.remote_identity?.instance_id||relationship.relationship_id}</p></div></div>
                 <span className={`text-xs font-medium ${sc[relationship.status]||'text-slate-400'}`}>{relationship.status?.replace('_',' ')}</span></div>
@@ -1241,7 +1241,7 @@
                         <h2 className="text-xl font-bold text-white flex items-center gap-2">
                             <Icon name="messageCircle" size={22} className="text-indigo-400"/>
                             Chat
-                            {isDemo && <span className="badge text-amber-400 border border-amber-400/30 ml-2" style={{background:'rgba(251,191,36,0.08)'}}>DEMO</span>}
+                            {isDemo && <span className="badge text-amber-700 border border-amber-700/30 ml-2" style={{background:'rgba(234,88,12,0.08)'}}>DEMO</span>}
                         </h2>
                         <div className="flex items-center gap-3">
                             <div className="flex items-center gap-2">
@@ -1390,24 +1390,24 @@
                     ))}
                 </div>
                 {compTab==='overview' && <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
-                    <StatusCard title="Active Legal Holds" value={cd.legalHolds?.active||0} icon="lock" color="text-amber-400"/>
+                    <StatusCard title="Active Legal Holds" value={cd.legalHolds?.active||0} icon="lock" color="text-amber-700"/>
                     <StatusCard title="Open Breaches" value={cd.breaches?.open||0} icon="alertTriangle" color={cd.breaches?.open>0?'text-red-400':'text-green-400'}/>
-                    <StatusCard title="Training Overdue" value={cd.training?.overdue||0} icon="users" color={cd.training?.overdue>0?'text-yellow-400':'text-green-400'}/>
+                    <StatusCard title="Training Overdue" value={cd.training?.overdue||0} icon="users" color={cd.training?.overdue>0?'text-orange-600':'text-green-400'}/>
                     <StatusCard title="HITRUST Posture" value={`${cd.hitrust?.posture_pct||0}%`} icon="shield" color="text-blue-400" subtitle={`${cd.hitrust?.controls_met||0}/${cd.hitrust?.controls_total||0} controls`}/>
                     <StatusCard title="Active BAAs" value={cd.baas?.active||0} icon="fileText" color="text-purple-400" subtitle={cd.baas?.expiring_soon>0?`${cd.baas.expiring_soon} expiring soon`:'None expiring'}/>
                 </div>}
                 {compTab==='holds' && <div className="card p-5 fade-in">
                     <h3 className="text-white font-semibold mb-4">Legal Holds</h3>
-                    <div className="grid grid-cols-2 gap-4 mb-4"><div className="rounded-lg p-4 border text-center" style={{background:'var(--bg-base)',borderColor:'var(--border-subtle)'}}><p className="text-3xl font-bold text-amber-400">{cd.legalHolds?.active||0}</p><p className="text-xs mt-1" style={{color:'var(--text-muted)'}}>Active</p></div><div className="rounded-lg p-4 border text-center" style={{background:'var(--bg-base)',borderColor:'var(--border-subtle)'}}><p className="text-3xl font-bold text-slate-400">{cd.legalHolds?.total||0}</p><p className="text-xs mt-1" style={{color:'var(--text-muted)'}}>Total</p></div></div>
+                    <div className="grid grid-cols-2 gap-4 mb-4"><div className="rounded-lg p-4 border text-center" style={{background:'var(--bg-base)',borderColor:'var(--border-subtle)'}}><p className="text-3xl font-bold text-amber-700">{cd.legalHolds?.active||0}</p><p className="text-xs mt-1" style={{color:'var(--text-muted)'}}>Active</p></div><div className="rounded-lg p-4 border text-center" style={{background:'var(--bg-base)',borderColor:'var(--border-subtle)'}}><p className="text-3xl font-bold text-slate-400">{cd.legalHolds?.total||0}</p><p className="text-xs mt-1" style={{color:'var(--text-muted)'}}>Total</p></div></div>
                     <p className="text-sm" style={{color:'var(--text-secondary)'}}>Legal holds prevent destruction of relevant documents and data for active litigation matters.</p>
                 </div>}
                 {compTab==='breach' && <div className="card p-5 fade-in">
                     <h3 className="text-white font-semibold mb-4">Breach Assessments</h3>
-                    <div className="grid grid-cols-3 gap-4 mb-4"><div className="rounded-lg p-4 border text-center" style={{background:'var(--bg-base)',borderColor:'var(--border-subtle)'}}><p className="text-3xl font-bold text-red-400">{cd.breaches?.open||0}</p><p className="text-xs mt-1" style={{color:'var(--text-muted)'}}>Open</p></div><div className="rounded-lg p-4 border text-center" style={{background:'var(--bg-base)',borderColor:'var(--border-subtle)'}}><p className="text-3xl font-bold text-slate-400">{cd.breaches?.total||0}</p><p className="text-xs mt-1" style={{color:'var(--text-muted)'}}>Total</p></div><div className="rounded-lg p-4 border text-center" style={{background:'var(--bg-base)',borderColor:'var(--border-subtle)'}}><p className="text-3xl font-bold text-yellow-400">{cd.breaches?.overdue_notifications||0}</p><p className="text-xs mt-1" style={{color:'var(--text-muted)'}}>Overdue Notifications</p></div></div>
+                    <div className="grid grid-cols-3 gap-4 mb-4"><div className="rounded-lg p-4 border text-center" style={{background:'var(--bg-base)',borderColor:'var(--border-subtle)'}}><p className="text-3xl font-bold text-red-400">{cd.breaches?.open||0}</p><p className="text-xs mt-1" style={{color:'var(--text-muted)'}}>Open</p></div><div className="rounded-lg p-4 border text-center" style={{background:'var(--bg-base)',borderColor:'var(--border-subtle)'}}><p className="text-3xl font-bold text-slate-400">{cd.breaches?.total||0}</p><p className="text-xs mt-1" style={{color:'var(--text-muted)'}}>Total</p></div><div className="rounded-lg p-4 border text-center" style={{background:'var(--bg-base)',borderColor:'var(--border-subtle)'}}><p className="text-3xl font-bold text-orange-600">{cd.breaches?.overdue_notifications||0}</p><p className="text-xs mt-1" style={{color:'var(--text-muted)'}}>Overdue Notifications</p></div></div>
                 </div>}
                 {compTab==='training' && <div className="card p-5 fade-in">
                     <h3 className="text-white font-semibold mb-4">Training Compliance</h3>
-                    <div className="grid grid-cols-3 gap-4 mb-4"><div className="rounded-lg p-4 border text-center" style={{background:'var(--bg-base)',borderColor:'var(--border-subtle)'}}><p className="text-3xl font-bold text-green-400">{cd.training?.completed||0}</p><p className="text-xs mt-1" style={{color:'var(--text-muted)'}}>Completed</p></div><div className="rounded-lg p-4 border text-center" style={{background:'var(--bg-base)',borderColor:'var(--border-subtle)'}}><p className="text-3xl font-bold">{cd.training?.total||0}</p><p className="text-xs mt-1" style={{color:'var(--text-muted)'}}>Total Required</p></div><div className="rounded-lg p-4 border text-center" style={{background:'var(--bg-base)',borderColor:'var(--border-subtle)'}}><p className="text-3xl font-bold text-yellow-400">{cd.training?.overdue||0}</p><p className="text-xs mt-1" style={{color:'var(--text-muted)'}}>Overdue</p></div></div>
+                    <div className="grid grid-cols-3 gap-4 mb-4"><div className="rounded-lg p-4 border text-center" style={{background:'var(--bg-base)',borderColor:'var(--border-subtle)'}}><p className="text-3xl font-bold text-green-400">{cd.training?.completed||0}</p><p className="text-xs mt-1" style={{color:'var(--text-muted)'}}>Completed</p></div><div className="rounded-lg p-4 border text-center" style={{background:'var(--bg-base)',borderColor:'var(--border-subtle)'}}><p className="text-3xl font-bold">{cd.training?.total||0}</p><p className="text-xs mt-1" style={{color:'var(--text-muted)'}}>Total Required</p></div><div className="rounded-lg p-4 border text-center" style={{background:'var(--bg-base)',borderColor:'var(--border-subtle)'}}><p className="text-3xl font-bold text-orange-600">{cd.training?.overdue||0}</p><p className="text-xs mt-1" style={{color:'var(--text-muted)'}}>Overdue</p></div></div>
                     <div className="w-full h-3 rounded-full mt-4" style={{background:'var(--bg-base)'}}><div className="h-full rounded-full bg-green-500 transition-all" style={{width:`${cd.training?.total?(cd.training.completed/cd.training.total*100):0}%`}}/></div>
                     <p className="text-xs mt-2 text-center" style={{color:'var(--text-muted)'}}>{cd.training?.total?Math.round(cd.training.completed/cd.training.total*100):0}% completion rate</p>
                 </div>}
@@ -1418,7 +1418,7 @@
                 </div>}
                 {compTab==='baa' && <div className="card p-5 fade-in">
                     <h3 className="text-white font-semibold mb-4">Business Associate Agreements</h3>
-                    <div className="grid grid-cols-3 gap-4 mb-4"><div className="rounded-lg p-4 border text-center" style={{background:'var(--bg-base)',borderColor:'var(--border-subtle)'}}><p className="text-3xl font-bold text-purple-400">{cd.baas?.active||0}</p><p className="text-xs mt-1" style={{color:'var(--text-muted)'}}>Active</p></div><div className="rounded-lg p-4 border text-center" style={{background:'var(--bg-base)',borderColor:'var(--border-subtle)'}}><p className="text-3xl font-bold text-yellow-400">{cd.baas?.expiring_soon||0}</p><p className="text-xs mt-1" style={{color:'var(--text-muted)'}}>Expiring Soon</p></div><div className="rounded-lg p-4 border text-center" style={{background:'var(--bg-base)',borderColor:'var(--border-subtle)'}}><p className="text-3xl font-bold text-slate-400">{cd.baas?.total||0}</p><p className="text-xs mt-1" style={{color:'var(--text-muted)'}}>Total</p></div></div>
+                    <div className="grid grid-cols-3 gap-4 mb-4"><div className="rounded-lg p-4 border text-center" style={{background:'var(--bg-base)',borderColor:'var(--border-subtle)'}}><p className="text-3xl font-bold text-purple-400">{cd.baas?.active||0}</p><p className="text-xs mt-1" style={{color:'var(--text-muted)'}}>Active</p></div><div className="rounded-lg p-4 border text-center" style={{background:'var(--bg-base)',borderColor:'var(--border-subtle)'}}><p className="text-3xl font-bold text-orange-600">{cd.baas?.expiring_soon||0}</p><p className="text-xs mt-1" style={{color:'var(--text-muted)'}}>Expiring Soon</p></div><div className="rounded-lg p-4 border text-center" style={{background:'var(--bg-base)',borderColor:'var(--border-subtle)'}}><p className="text-3xl font-bold text-slate-400">{cd.baas?.total||0}</p><p className="text-xs mt-1" style={{color:'var(--text-muted)'}}>Total</p></div></div>
                 </div>}
                 {isDemo && <p className="text-xs text-center" style={{color:'var(--text-muted)'}}>Demo data — connect to API for live compliance data</p>}
             </div>);
@@ -1597,7 +1597,7 @@
                             </div>
                             {info.note && (
                                 <div className="rounded-lg px-4 py-3 border" style={{background:'rgba(251,191,36,0.04)',borderColor:'rgba(251,191,36,0.2)'}}>
-                                    <p className="text-xs font-semibold mb-1 text-amber-400">NOTE</p>
+                                    <p className="text-xs font-semibold mb-1 text-amber-700">NOTE</p>
                                     <p className="text-xs" style={{color:'var(--text-secondary)'}}>{info.note}</p>
                                 </div>
                             )}
@@ -1941,7 +1941,7 @@
                 { id:'qms', label:'QMS Log', icon:'terminal' },
                 { id:'sovereign', label:'Sovereign', icon:'lock' },
             ];
-            const sevColors = { critical:'bg-red-500', high:'bg-orange-500', medium:'bg-yellow-500', low:'bg-blue-400' };
+            const sevColors = { critical:'bg-red-500', high:'bg-orange-500', medium:'bg-orange-500', low:'bg-blue-400' };
 
             return (<div className="min-h-screen flex flex-col">
                 <header className="sticky top-0 z-50 border-b px-6 py-3" style={{background:'rgba(247,247,245,0.92)',backdropFilter:'blur(18px)',WebkitBackdropFilter:'blur(18px)',borderColor:'var(--border-subtle)'}}>
@@ -1956,7 +1956,7 @@
                             </div>
                         </div>
                         <div className="flex items-center gap-3">
-                            {isDemo && <span className="badge text-amber-400 border border-amber-400/30" style={{background:'rgba(251,191,36,0.08)'}}>DEMO</span>}
+                            {isDemo && <span className="badge text-amber-700 border border-amber-700/30" style={{background:'rgba(234,88,12,0.08)'}}>DEMO</span>}
                             {connected && currentUser && <span className="text-xs flex items-center gap-1.5" style={{color:'var(--text-secondary)'}}><Icon name="userCheck" size={14} className="text-cyan-400"/>{currentUser.username}<span className="badge text-cyan-400 ml-1" style={{background:'rgba(34,211,238,0.1)',fontSize:'9px'}}>{(currentUser.roles||[])[0]||'user'}</span></span>}
                             <button onClick={()=>connected?fetchLiveData():null} className="p-2 rounded-lg transition hover:bg-black/5" style={{color:connected?'var(--text-secondary)':'var(--text-muted)'}}><Icon name="refresh" size={18} className={refreshing?'animate-spin':''}/></button>
                             {connected && <button onClick={()=>{setConnected(false);localStorage.removeItem('telsonbase_api_key');localStorage.removeItem('telsonbase_jwt_token');setCurrentUser(null);setStatus(DEMO.status);setAgents(DEMO.agents);setApprovals(DEMO.approvals);setAnomalies(DEMO.anomalies);setAnomalySummary(DEMO.anomalySummary);setRelationships(DEMO.relationships);setQmsLog(DEMO.qmsLog);setSovereignScore(DEMO.sovereignScore);setUsers(DEMO.users);setSessions(DEMO.sessions);setAuditChain(DEMO.auditChain);setAuditEntries(DEMO.auditEntries);setTenants(DEMO.tenants);setMatters(DEMO.matters);setComplianceData(DEMO.compliance);setSecurityData(DEMO.security);setToolroomData(DEMO.toolroom);setLlmModels(DEMO.llmModels);setDidAgents([]);}} className="p-2 rounded-lg transition hover:bg-black/5" style={{color:'var(--text-muted)'}} title="Logout"><Icon name="logOut" size={16}/></button>}
@@ -1987,7 +1987,7 @@
                     {tab === 'overview' && (<div className="space-y-6">
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                             <StatusCard title="System Status" value={status?.status==='healthy'?'Healthy':'Degraded'} icon="server" color={status?.status==='healthy'?'text-green-400':'text-red-400'} delay="fade-in-d1" onClick={()=>navigateTo('security')}/>
-                            <StatusCard title="Pending Approvals" value={approvals.length} icon="clock" color={approvals.length>0?'text-yellow-400':'text-green-400'} subtitle={approvals.filter(a=>a.priority==='urgent').length>0?`${approvals.filter(a=>a.priority==='urgent').length} urgent`:'None urgent'} delay="fade-in-d2" onClick={()=>navigateTo('approvals')}/>
+                            <StatusCard title="Pending Approvals" value={approvals.length} icon="clock" color={approvals.length>0?'text-orange-600':'text-green-400'} subtitle={approvals.filter(a=>a.priority==='urgent').length>0?`${approvals.filter(a=>a.priority==='urgent').length} urgent`:'None urgent'} delay="fade-in-d2" onClick={()=>navigateTo('approvals')}/>
                             <StatusCard title="Unresolved Anomalies" value={anomalySummary?.total_unresolved||0} icon="alertTriangle" color={anomalySummary?.total_unresolved>0?'text-orange-400':'text-green-400'} subtitle={anomalySummary?.requires_human_review>0?`${anomalySummary.requires_human_review} need review`:'All clear'} delay="fade-in-d3" onClick={()=>navigateTo('anomalies')}/>
                             <StatusCard title="Registered Agents" value={agents.length} icon="zap" color="text-cyan-400" delay="fade-in-d4" onClick={()=>navigateTo('agents')}/>
                         </div>
@@ -2015,7 +2015,7 @@
                                     const ROLE={redis:'Message queue · session store',ollama:'Local LLM inference',postgresql:'Primary database',postgres:'Primary database',celery:'Background workers',rabbitmq:'Message broker',minio:'Object storage'};
                                     const role=ROLE[n.toLowerCase()]||'Integration service';
                                     return (<div key={n} className="rounded-lg p-3 border" style={{background:'var(--bg-base)',borderColor:'var(--border-subtle)'}}>
-                                        <div className="flex items-center gap-2 mb-1"><div className={`w-2 h-2 rounded-full flex-shrink-0 ${s==='healthy'?'bg-green-400':s==='degraded'?'bg-yellow-400':'bg-red-400'}`}/><span className="text-sm capitalize font-medium" style={{color:'var(--text-secondary)'}}>{n.replace(/_/g,' ')}</span></div>
+                                        <div className="flex items-center gap-2 mb-1"><div className={`w-2 h-2 rounded-full flex-shrink-0 ${s==='healthy'?'bg-green-400':s==='degraded'?'bg-orange-500':'bg-red-400'}`}/><span className="text-sm capitalize font-medium" style={{color:'var(--text-secondary)'}}>{n.replace(/_/g,' ')}</span></div>
                                         <p className="text-xs pl-4" style={{color:'var(--text-muted)'}}>{role}</p>
                                     </div>);
                                 })}</div>
@@ -2029,10 +2029,10 @@
                                 <button onClick={()=>navigateTo('compliance')} className="text-xs text-cyan-400 hover:text-cyan-300 transition">View details →</button>
                             </div>
                             <div className="grid grid-cols-2 sm:grid-cols-5 gap-4">
-                                <div className="card p-4 text-center cursor-pointer hover:border-cyan-800 transition" onClick={()=>navigateTo('compliance')}><p className="text-xs mb-1" style={{color:'var(--text-muted)'}}>Legal Holds</p><p className="text-xl font-bold text-amber-400">{complianceData?.legalHolds?.active||0}</p></div>
+                                <div className="card p-4 text-center cursor-pointer hover:border-cyan-800 transition" onClick={()=>navigateTo('compliance')}><p className="text-xs mb-1" style={{color:'var(--text-muted)'}}>Legal Holds</p><p className="text-xl font-bold text-amber-700">{complianceData?.legalHolds?.active||0}</p></div>
                                 <div className="card p-4 text-center cursor-pointer hover:border-cyan-800 transition" onClick={()=>navigateTo('compliance')}><p className="text-xs mb-1" style={{color:'var(--text-muted)'}}>Open Breaches</p><p className="text-xl font-bold text-red-400">{complianceData?.breaches?.open||0}</p></div>
-                                <div className="card p-4 text-center cursor-pointer hover:border-cyan-800 transition" onClick={()=>navigateTo('compliance')}><p className="text-xs mb-1" style={{color:'var(--text-muted)'}}>Training Overdue</p><p className="text-xl font-bold text-yellow-400">{complianceData?.training?.overdue||0}</p></div>
-                                <div className="card p-4 text-center cursor-pointer hover:border-cyan-800 transition" onClick={()=>navigateTo('compliance')}><p className="text-xs mb-1" style={{color:'var(--text-muted)'}}>HITRUST</p><p className={`text-xl font-bold ${(complianceData?.hitrust?.posture_pct||0)>=80?'text-green-400':(complianceData?.hitrust?.posture_pct||0)>=50?'text-yellow-400':'text-red-400'}`}>{complianceData?.hitrust?.posture_pct||0}%</p></div>
+                                <div className="card p-4 text-center cursor-pointer hover:border-cyan-800 transition" onClick={()=>navigateTo('compliance')}><p className="text-xs mb-1" style={{color:'var(--text-muted)'}}>Training Overdue</p><p className="text-xl font-bold text-orange-600">{complianceData?.training?.overdue||0}</p></div>
+                                <div className="card p-4 text-center cursor-pointer hover:border-cyan-800 transition" onClick={()=>navigateTo('compliance')}><p className="text-xs mb-1" style={{color:'var(--text-muted)'}}>HITRUST</p><p className={`text-xl font-bold ${(complianceData?.hitrust?.posture_pct||0)>=80?'text-green-400':(complianceData?.hitrust?.posture_pct||0)>=50?'text-orange-600':'text-red-400'}`}>{complianceData?.hitrust?.posture_pct||0}%</p></div>
                                 <div className="card p-4 text-center cursor-pointer hover:border-cyan-800 transition" onClick={()=>navigateTo('compliance')}><p className="text-xs mb-1" style={{color:'var(--text-muted)'}}>Active BAAs</p><p className="text-xl font-bold text-blue-400">{complianceData?.baas?.active||0}</p></div>
                             </div>
                         </div>
@@ -2055,7 +2055,7 @@
                             <div className="card p-8 fade-in flex flex-col items-center">
                                 <SovereignGauge score={sovereignScore?.score || 0} size={200}/>
                                 <p className="text-xs mt-4" style={{color:'var(--text-muted)'}}>Computed {sovereignScore?.last_computed ? new Date(sovereignScore.last_computed).toLocaleString() : 'N/A'}</p>
-                                {isDemo && <p className="text-xs mt-2 text-amber-400/70">Demo score — connect to API for live data</p>}
+                                {isDemo && <p className="text-xs mt-2 text-amber-700/70">Demo score — connect to API for live data</p>}
                                 <button
                                     disabled={recomputing}
                                     onClick={async()=>{
@@ -2148,11 +2148,11 @@
                                 </div>
                                 <div className="px-5 py-4">
                                     <p className="text-white font-medium text-sm mb-2 flex items-center gap-1.5"><span className="w-5 h-5 rounded-full bg-cyan-600 text-white text-xs flex items-center justify-center font-bold flex-shrink-0">3</span>First connection — or pre-register</p>
-                                    <p className="text-xs mb-2" style={{color:'var(--text-secondary)'}}>When an agent first calls the API, TelsonBase auto-assigns it an <span className="mono text-cyan-300">agent_id</span> at <span className="text-yellow-400 font-medium">QUARANTINE</span> and begins recording behavior.</p>
+                                    <p className="text-xs mb-2" style={{color:'var(--text-secondary)'}}>When an agent first calls the API, TelsonBase auto-assigns it an <span className="mono text-cyan-300">agent_id</span> at <span className="text-orange-600 font-medium">QUARANTINE</span> and begins recording behavior.</p>
                                     <p className="text-xs mb-2 text-cyan-300 font-medium">Or use <span className="text-white">Register Agent</span> to pre-register before first call:</p>
                                     <ul className="text-xs space-y-0.5" style={{color:'var(--text-secondary)'}}>
                                         <li className="flex items-start gap-1.5"><Icon name="check" size={11} className="text-cyan-400 mt-0.5 flex-shrink-0"/>Pre-assigns an <span className="mono text-cyan-300">instance_id</span> immediately</li>
-                                        <li className="flex items-start gap-1.5"><Icon name="check" size={11} className="text-cyan-400 mt-0.5 flex-shrink-0"/>Sets initial trust level — <span className="text-yellow-400">QUARANTINE</span> default or override for proven agents</li>
+                                        <li className="flex items-start gap-1.5"><Icon name="check" size={11} className="text-cyan-400 mt-0.5 flex-shrink-0"/>Sets initial trust level — <span className="text-orange-600">QUARANTINE</span> default or override for proven agents</li>
                                         <li className="flex items-start gap-1.5"><Icon name="check" size={11} className="text-cyan-400 mt-0.5 flex-shrink-0"/>Works for any agent type — OpenClaw, generic LLM, or automation</li>
                                         <li className="flex items-start gap-1.5"><Icon name="check" size={11} className="text-cyan-400 mt-0.5 flex-shrink-0"/>Trust override is audit-logged and requires justification</li>
                                     </ul>
@@ -2160,8 +2160,8 @@
                             </div>
                             <div className="px-5 py-3 border-t flex items-center justify-between gap-3" style={{borderColor:'rgba(34,211,238,0.15)'}}>
                                 <div className="flex items-center gap-2 text-xs" style={{color:'var(--text-muted)'}}>
-                                    <Icon name="shield" size={13} className="text-amber-400 flex-shrink-0"/>
-                                    <span>After connecting, promote from <span className="text-red-400">QUARANTINE</span><span className="text-slate-500"> → </span><span className="text-yellow-400">PROBATION</span><span className="text-slate-500"> → </span><span className="text-blue-400">RESIDENT</span><span className="text-slate-500"> → </span><span className="text-green-400">CITIZEN</span><span className="text-slate-500"> → </span><span className="text-amber-400">AGENT</span> as trust is earned. Kill switch available at any time.</span>
+                                    <Icon name="shield" size={13} className="text-amber-700 flex-shrink-0"/>
+                                    <span>After connecting, promote from <span className="text-red-400">QUARANTINE</span><span className="text-slate-500"> → </span><span className="text-orange-600">PROBATION</span><span className="text-slate-500"> → </span><span className="text-blue-400">RESIDENT</span><span className="text-slate-500"> → </span><span className="text-green-400">CITIZEN</span><span className="text-slate-500"> → </span><span className="text-amber-700">AGENT</span> as trust is earned. Kill switch available at any time.</span>
                                 </div>
                                 <button onClick={()=>setShowRegisterAgentModal(true)} className="flex-shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-cyan-700 hover:bg-cyan-600 text-white transition"><Icon name="plus" size={12}/>Register Agent</button>
                             </div>
@@ -2185,7 +2185,7 @@
                             <div className="card p-4 text-center fade-in"><p className="text-2xl font-bold">{didAgents.length}</p><p className="text-xs" style={{color:'var(--text-muted)'}}>Total Agents</p></div>
                             <div className="card p-4 text-center fade-in"><p className="text-2xl font-bold text-green-400">{didAgents.filter(a=>!a.revoked).length}</p><p className="text-xs" style={{color:'var(--text-muted)'}}>Active</p></div>
                             <div className="card p-4 text-center fade-in"><p className="text-2xl font-bold text-red-400">{didAgents.filter(a=>a.revoked).length}</p><p className="text-xs" style={{color:'var(--text-muted)'}}>Revoked</p></div>
-                            <div className="card p-4 text-center fade-in"><p className="text-2xl font-bold text-yellow-400">{didAgents.filter(a=>a.trust_level==='quarantine').length}</p><p className="text-xs" style={{color:'var(--text-muted)'}}>Quarantine</p></div>
+                            <div className="card p-4 text-center fade-in"><p className="text-2xl font-bold text-orange-600">{didAgents.filter(a=>a.trust_level==='quarantine').length}</p><p className="text-xs" style={{color:'var(--text-muted)'}}>Quarantine</p></div>
                         </div>
                         {didAgents.length===0 ? <EmptyState icon="key" title="No credentialed agents registered" subtitle="Register an agent DID to establish cryptographic identity — works with Identiclaw and any W3C DID-compatible provider"/> : <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">{didAgents.map(a=><IdentityCard key={a.did} agent={a} onRevoke={handleIdentityRevoke} onReinstate={handleIdentityReinstate} onRefresh={handleIdentityRefresh} isDemo={isDemo}/>)}</div>}
                         <div className="card p-4 fade-in">
@@ -2193,13 +2193,13 @@
                             <div className="flex flex-wrap items-center gap-2 text-xs">
                                 <span className="px-2 py-1 rounded-full text-red-400" style={{background:'rgba(248,113,113,0.08)',border:'1px solid rgba(248,113,113,0.2)'}}>Quarantine</span>
                                 <span style={{color:'var(--text-muted)'}}>→</span>
-                                <span className="px-2 py-1 rounded-full text-yellow-400" style={{background:'rgba(251,191,36,0.08)',border:'1px solid rgba(251,191,36,0.2)'}}>Probation</span>
+                                <span className="px-2 py-1 rounded-full text-orange-600" style={{background:'rgba(234,88,12,0.08)',border:'1px solid rgba(251,191,36,0.2)'}}>Probation</span>
                                 <span style={{color:'var(--text-muted)'}}>→</span>
                                 <span className="px-2 py-1 rounded-full text-blue-400" style={{background:'rgba(96,165,250,0.08)',border:'1px solid rgba(96,165,250,0.2)'}}>Resident</span>
                                 <span style={{color:'var(--text-muted)'}}>→</span>
                                 <span className="px-2 py-1 rounded-full text-green-400" style={{background:'rgba(74,222,128,0.08)',border:'1px solid rgba(74,222,128,0.2)'}}>Citizen</span>
                                 <span style={{color:'var(--text-muted)'}}>→</span>
-                                <span className="px-2 py-1 rounded-full text-amber-400" style={{background:'rgba(251,191,36,0.08)',border:'1px solid rgba(251,191,36,0.2)'}}>Agent</span>
+                                <span className="px-2 py-1 rounded-full text-amber-700" style={{background:'rgba(234,88,12,0.08)',border:'1px solid rgba(251,191,36,0.2)'}}>Agent</span>
                             </div>
                             <p className="text-xs mt-2" style={{color:'var(--text-muted)'}}>DID agents follow the same 5-tier trust ladder as OpenClaw. Cryptographic credentials are verified at each gate — a revoked ID is rejected instantly regardless of trust level.</p>
                         </div>
@@ -2220,7 +2220,7 @@
                             <h2 className="text-xl font-bold text-white flex items-center gap-2"><Icon name="shield" size={22} className="text-orange-400"/>OpenClaw Governance<span className="text-sm font-normal ml-2" style={{color:'var(--text-muted)'}}>({openclawInstances.length} registered{openclawInstances.filter(c=>c.suspended).length>0 && <span className="text-red-400 ml-1">, {openclawInstances.filter(c=>c.suspended).length} suspended</span>})</span></h2>
                         </div>
                         <div className="grid grid-cols-2 md:grid-cols-6 gap-3">
-                            {[{label:'Total Claws',count:openclawInstances.length,color:'text-white',filter:null},{label:'Quarantine',count:openclawInstances.filter(c=>c.trust_level==='quarantine').length,color:'text-red-400',filter:'quarantine'},{label:'Probation',count:openclawInstances.filter(c=>c.trust_level==='probation').length,color:'text-yellow-400',filter:'probation'},{label:'Resident',count:openclawInstances.filter(c=>c.trust_level==='resident').length,color:'text-blue-400',filter:'resident'},{label:'Citizen',count:openclawInstances.filter(c=>c.trust_level==='citizen').length,color:'text-green-400',filter:'citizen'},{label:'Agent',count:openclawInstances.filter(c=>c.trust_level==='agent').length,color:'text-amber-400',filter:'agent'}].map(s=>(
+                            {[{label:'Total Claws',count:openclawInstances.length,color:'text-white',filter:null},{label:'Quarantine',count:openclawInstances.filter(c=>c.trust_level==='quarantine').length,color:'text-red-400',filter:'quarantine'},{label:'Probation',count:openclawInstances.filter(c=>c.trust_level==='probation').length,color:'text-orange-600',filter:'probation'},{label:'Resident',count:openclawInstances.filter(c=>c.trust_level==='resident').length,color:'text-blue-400',filter:'resident'},{label:'Citizen',count:openclawInstances.filter(c=>c.trust_level==='citizen').length,color:'text-green-400',filter:'citizen'},{label:'Agent',count:openclawInstances.filter(c=>c.trust_level==='agent').length,color:'text-amber-700',filter:'agent'}].map(s=>(
                                 <div key={s.label} onClick={()=>setClawFilter(clawFilter===s.filter?null:s.filter)} className="card p-4 text-center fade-in cursor-pointer transition-all" style={{borderColor:clawFilter===s.filter?'rgba(251,146,60,0.45)':undefined,background:clawFilter===s.filter?'rgba(251,146,60,0.06)':undefined}}>
                                     <p className={`text-2xl font-bold ${s.color}`}>{s.count}</p>
                                     <p className="text-xs" style={{color:'var(--text-muted)'}}>{s.label}</p>
@@ -2230,9 +2230,9 @@
                         </div>
                         {clawFilter && <div className="flex items-center gap-2 text-xs"><span style={{color:'var(--text-muted)'}}>Showing <span style={{color:'#fb923c'}}>{clawFilter}</span> agents only</span><button onClick={()=>setClawFilter(null)} className="text-orange-400 hover:text-orange-300 transition">Clear filter ×</button></div>}
                         {openclawInstances.length===0 ? <EmptyState icon="shield" title="No OpenClaw instances registered" subtitle="Control Your Claw — register an OpenClaw agent to govern its actions"/> : <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">{openclawInstances.filter(c=>!clawFilter||c.trust_level===clawFilter).map(c=>{
-                            const trustColors = { quarantine:'text-red-400', probation:'text-yellow-400', resident:'text-blue-400', citizen:'text-green-400', agent:'text-amber-400' };
-                            const trustBg = { quarantine:'rgba(248,113,113,0.08)', probation:'rgba(251,191,36,0.08)', resident:'rgba(96,165,250,0.08)', citizen:'rgba(74,222,128,0.08)', agent:'rgba(245,158,11,0.08)' };
-                            const trustBorder = { quarantine:'rgba(248,113,113,0.2)', probation:'rgba(251,191,36,0.2)', resident:'rgba(96,165,250,0.2)', citizen:'rgba(74,222,128,0.2)', agent:'rgba(245,158,11,0.3)' };
+                            const trustColors = { quarantine:'text-red-400', probation:'text-orange-600', resident:'text-blue-400', citizen:'text-green-400', agent:'text-amber-700' };
+                            const trustBg = { quarantine:'rgba(248,113,113,0.08)', probation:'rgba(234,88,12,0.08)', resident:'rgba(96,165,250,0.08)', citizen:'rgba(74,222,128,0.08)', agent:'rgba(146,64,14,0.08)' };
+                            const trustBorder = { quarantine:'rgba(248,113,113,0.2)', probation:'rgba(234,88,12,0.25)', resident:'rgba(96,165,250,0.2)', citizen:'rgba(74,222,128,0.2)', agent:'rgba(146,64,14,0.25)' };
                             const tl = c.trust_level||'quarantine';
                             const score = (c.manners_score||1)*100;
                             return (<div key={c.instance_id} className="card p-5 fade-in cursor-pointer transition-all hover:border-orange-400/30" onClick={()=>setSelectedClaw(c)} title="Click for details and governance actions">
@@ -2253,14 +2253,14 @@
                                     <div><span className="text-2xl font-bold">{c.action_count||0}</span><p style={{color:'var(--text-muted)'}}>Actions</p></div>
                                     <div><span className="text-2xl font-bold text-green-400">{c.actions_allowed||0}</span><p style={{color:'var(--text-muted)'}}>Allowed</p></div>
                                     <div><span className="text-2xl font-bold text-red-400">{c.actions_blocked||0}</span><p style={{color:'var(--text-muted)'}}>Blocked</p></div>
-                                    <div><span className="text-2xl font-bold text-yellow-400">{c.actions_gated||0}</span><p style={{color:'var(--text-muted)'}}>Gated</p></div>
+                                    <div><span className="text-2xl font-bold text-orange-600">{c.actions_gated||0}</span><p style={{color:'var(--text-muted)'}}>Gated</p></div>
                                 </div>
                                 <div className="flex items-center justify-between text-xs mb-1.5">
                                     <span style={{color:'var(--text-muted)'}}>Manners Score</span>
-                                    <span className={score>=75?'text-green-400':score>=50?'text-yellow-400':'text-red-400'}>{score.toFixed(0)}%</span>
+                                    <span className={score>=75?'text-green-400':score>=50?'text-orange-600':'text-red-400'}>{score.toFixed(0)}%</span>
                                 </div>
                                 <div className="w-full rounded-full h-1.5 mb-3" style={{background:'var(--bg-base)'}}>
-                                    <div className={`h-1.5 rounded-full ${score>=75?'bg-green-400':score>=50?'bg-yellow-400':'bg-red-400'}`} style={{width:`${score}%`}}/>
+                                    <div className={`h-1.5 rounded-full ${score>=75?'bg-green-400':score>=50?'bg-orange-500':'bg-red-400'}`} style={{width:`${score}%`}}/>
                                 </div>
                                 <div className="flex items-center justify-between text-xs">
                                     <span style={{color:'var(--text-muted)'}}>Registered: {c.registered_at ? new Date(c.registered_at).toLocaleDateString() : 'N/A'}</span>
@@ -2272,7 +2272,7 @@
                             <h3 className="text-sm font-semibold text-white mb-2 flex items-center gap-2"><Icon name="shield" size={16} className="text-orange-400"/>Trust Level Governance Matrix</h3>
                             <div className="overflow-x-auto"><table className="w-full text-xs"><thead><tr style={{color:'var(--text-muted)'}}><th className="text-left py-1 pr-4">Level</th><th className="text-left py-1 pr-4">Autonomous</th><th className="text-left py-1 pr-4">Approval Required</th><th className="text-left py-1">Blocked</th></tr></thead><tbody>
                                 <tr className="text-red-400"><td className="py-1 pr-4 font-medium">Quarantine</td><td className="pr-4">None</td><td className="pr-4">Read-only</td><td>Write, Delete, External, Financial</td></tr>
-                                <tr className="text-yellow-400"><td className="py-1 pr-4 font-medium">Probation</td><td className="pr-4">Read-only</td><td className="pr-4">Write, External</td><td>Delete, Financial</td></tr>
+                                <tr className="text-orange-600"><td className="py-1 pr-4 font-medium">Probation</td><td className="pr-4">Read-only</td><td className="pr-4">Write, External</td><td>Delete, Financial</td></tr>
                                 <tr className="text-blue-400"><td className="py-1 pr-4 font-medium">Resident</td><td className="pr-4">Read, Write</td><td className="pr-4">Delete, External, Financial</td><td>None</td></tr>
                                 <tr className="text-green-400"><td className="py-1 pr-4 font-medium">Citizen</td><td className="pr-4">All</td><td className="pr-4">Anomaly-flagged only</td><td>None</td></tr>
                             </tbody></table></div>
@@ -2347,7 +2347,7 @@
                         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                             <StatusCard title="Total Active" value={sessions.length} icon="monitor" color="text-teal-400"/>
                             <StatusCard title="By Admin Role" value={sessions.filter(s=>s.role==='super_admin'||s.role==='admin').length} icon="shield" color="text-orange-400"/>
-                            <StatusCard title="Idle >5min" value={sessions.filter(s=>(Date.now()-new Date(s.last_activity).getTime())/60000>5).length} icon="clock" color="text-yellow-400"/>
+                            <StatusCard title="Idle >5min" value={sessions.filter(s=>(Date.now()-new Date(s.last_activity).getTime())/60000>5).length} icon="clock" color="text-orange-600"/>
                         </div>
                         <div className="card fade-in overflow-hidden">
                             <div className="px-4 py-3 border-b flex items-center gap-2" style={{borderColor:'var(--border-subtle)',background:'var(--bg-elevated)'}}>
@@ -2370,7 +2370,7 @@
                                         <p className="text-sm font-medium" style={{color:'var(--text-muted)'}}>No active sessions</p>
                                         <p className="text-xs mt-1.5 max-w-xs mx-auto" style={{color:'var(--text-muted)',opacity:0.7}}>This view will populate when operators log in via <span className="mono">/v1/auth/login</span>. Each session shows in real time as it is created.</p>
                                     </td></tr>
-                                ) : sessions.map((s,i)=>{const idle=Math.round((Date.now()-new Date(s.last_activity).getTime())/60000);const idleColor=idle<5?'text-green-400':idle<10?'text-yellow-400':'text-red-400';return(<tr key={i} className="border-b hover:bg-white/[0.02] transition" style={{borderColor:'var(--border-subtle)'}}>
+                                ) : sessions.map((s,i)=>{const idle=Math.round((Date.now()-new Date(s.last_activity).getTime())/60000);const idleColor=idle<5?'text-green-400':idle<10?'text-orange-600':'text-red-400';return(<tr key={i} className="border-b hover:bg-white/[0.02] transition" style={{borderColor:'var(--border-subtle)'}}>
                                     <td className="px-4 py-3 mono text-xs" style={{color:'var(--text-muted)'}}>{s.session_id}</td>
                                     <td className="px-4 py-3 text-white font-medium mono">{s.username}</td>
                                     <td className="px-4 py-3 mono text-xs" style={{color:'var(--text-secondary)'}}>{s.ip_address}</td>
@@ -2389,14 +2389,14 @@
                         <div className="flex items-center justify-between">
                             <h2 className="text-xl font-bold text-white flex items-center gap-2"><Icon name="fileText" size={22} className="text-emerald-400"/>Audit Trail</h2>
                             {connected && <div className="flex items-center gap-2 text-xs" style={{color:'var(--text-muted)'}}>
-                                <div className={`w-1.5 h-1.5 rounded-full ${auditStreaming?'bg-green-400 live-dot':'bg-yellow-400'}`}/>
+                                <div className={`w-1.5 h-1.5 rounded-full ${auditStreaming?'bg-green-400 live-dot':'bg-orange-500'}`}/>
                                 <span>{auditStreaming ? 'Live stream · entries pushed in real-time' : 'Polling · refreshing every 10s'}</span>
                             </div>}
                         </div>
                         <div className="rounded-lg border text-sm overflow-hidden" style={{borderColor:'var(--border-subtle)',background:'var(--bg-surface)'}}>
                             <div className="px-4 py-3" style={{color:'var(--text-secondary)'}}>
                                 <span className="font-medium text-white">What this chain captures: </span>every governance decision made by TelsonBase — agent trust promotions, approval gate outcomes, kill switch activations, policy violations, auth events, and Manners compliance scores. Each entry is SHA-256 hash-chained to the one before it. Tampering with any entry breaks the chain.
-                                {!connected && <span className="text-amber-400 ml-2">· Connect to API to see your live governance record.</span>}
+                                {!connected && <span className="text-amber-700 ml-2">· Connect to API to see your live governance record.</span>}
                             </div>
                             <button onClick={()=>setShowChainDev(v=>!v)} className="w-full px-4 py-2 text-xs text-left flex items-center justify-between border-t transition hover:bg-white/[0.03]" style={{borderColor:'var(--border-subtle)',color:'var(--text-muted)'}}>
                                 <span className="font-medium text-cyan-400 flex items-center gap-1.5"><Icon name="terminal" size={12}/>Developer — how the chain works and where to investigate</span>
@@ -2426,7 +2426,7 @@
                                     <p>Returns: <span className="mono" style={{color:'#86efac'}}>{'{'}"valid":bool, "breaks":[{'{'}sequence, issue, expected, computed{'}'}], "entries_checked":N{'}'}</span></p>
                                 </div>
                                 <div>
-                                    <p className="font-semibold text-white mb-1.5 flex items-center gap-1.5"><Icon name="alertTriangle" size={12} className="text-amber-400"/>Common causes of INVALID / "Not verified"</p>
+                                    <p className="font-semibold text-white mb-1.5 flex items-center gap-1.5"><Icon name="alertTriangle" size={12} className="text-amber-700"/>Common causes of INVALID / "Not verified"</p>
                                     <div className="space-y-1.5 pl-3 border-l" style={{borderColor:'rgba(251,191,36,0.3)'}}>
                                         <p><span className="text-amber-300 font-medium">Dashboard shows "Not verified" by default</span> — the status endpoint (<span className="mono text-cyan-300">GET /v1/audit/chain/status</span>) does not verify hashes, it only returns counters. Click <span className="text-white font-medium">Verify Chain</span> above to get an actual verdict.</p>
                                         <p><span className="text-amber-300 font-medium">Service restart reconciliation</span> — on startup, in-memory entries are loaded from Redis and compared to chain_state.last_hash. If they don't match, stale entries are discarded (<span className="mono text-cyan-300">core/audit.py:361</span>). Verify on a freshly-started instance will show fewer entries_checked than entries_count.</p>
@@ -2557,12 +2557,12 @@
                             </div>
                         )}
                         <div className="flex items-center justify-between pt-2">
-                            <h3 className="text-lg font-bold text-white flex items-center gap-2"><Icon name="briefcase" size={18} className="text-amber-400"/>Matters<span className="text-sm font-normal ml-2" style={{color:'var(--text-muted)'}}>({matters.length})</span></h3>
+                            <h3 className="text-lg font-bold text-white flex items-center gap-2"><Icon name="briefcase" size={18} className="text-amber-700"/>Matters<span className="text-sm font-normal ml-2" style={{color:'var(--text-muted)'}}>({matters.length})</span></h3>
                             <button onClick={()=>setShowMatterModal(true)} className="flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium border transition" style={{borderColor:'rgba(245,158,11,0.25)',color:'#b45309',background:'rgba(245,158,11,0.07)'}}><Icon name="plus" size={12}/>New Matter</button>
                         </div>
                         <div className="card p-3" style={{borderColor:'rgba(245,158,11,0.18)',background:'rgba(245,158,11,0.04)'}}>
                             <div className="flex gap-2.5">
-                                <div className="mt-0.5 flex-shrink-0"><Icon name="info" size={14} className="text-amber-400"/></div>
+                                <div className="mt-0.5 flex-shrink-0"><Icon name="info" size={14} className="text-amber-700"/></div>
                                 <p className="text-xs leading-relaxed" style={{color:'var(--text-secondary)'}}>A <strong style={{color:'#b45309'}}>Matter</strong> is a scoped work unit under a tenant — a claim, case, file, transaction, or project. Agents operate within a matter's data boundary. Use <strong style={{color:'#fb923c'}}>Litigation Hold</strong> to freeze all matter data for e-discovery or regulatory preservation — nothing under hold can be deleted or modified until explicitly released.</p>
                             </div>
                         </div>
@@ -2590,8 +2590,8 @@
                                             </button>
                                         </td>
                                         <td className="px-4 py-3"><span className="badge" style={{background:'rgba(99,102,241,0.15)',color:'#818cf8',cursor:'default'}}>{(m.type||'').toUpperCase()}</span></td>
-                                        <td className="px-4 py-3"><span className={`badge ${m.status==='active'?'bg-green-500/15 text-green-400':m.status==='closed'?'bg-slate-500/15 text-slate-400':'bg-yellow-500/15 text-yellow-400'}`} style={{cursor:'default'}}>{(m.status||'').toUpperCase()}</span></td>
-                                        <td className="px-4 py-3">{m.litigation_hold ? <span className="badge bg-amber-500/15 text-amber-400" style={{cursor:'default'}}>HOLD</span> : <span style={{color:'var(--text-muted)'}}>—</span>}</td>
+                                        <td className="px-4 py-3"><span className={`badge ${m.status==='active'?'bg-green-500/15 text-green-400':m.status==='closed'?'bg-slate-500/15 text-slate-400':'bg-orange-500/15 text-orange-600'}`} style={{cursor:'default'}}>{(m.status||'').toUpperCase()}</span></td>
+                                        <td className="px-4 py-3">{m.litigation_hold ? <span className="badge bg-amber-500/15 text-amber-700" style={{cursor:'default'}}>HOLD</span> : <span style={{color:'var(--text-muted)'}}>—</span>}</td>
                                         <td className="px-4 py-3 mono text-xs" style={{color:'var(--text-muted)'}}>{new Date(m.created_at).toLocaleDateString()}</td>
                                         <td className="px-4 py-3">
                                         {m.status==='closed' ? (
@@ -2694,7 +2694,7 @@
                         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                             <StatusCard title="Registered Tools" value={toolroomData?.tools?.filter(t=>t.status==='approved').length||0} icon="tool" color="text-orange-400"/>
                             <StatusCard title="Active Checkouts" value={activeCheckouts.length} icon="zap" color="text-cyan-400"/>
-                            <StatusCard title="Restricted Tools" value={toolroomData?.tools?.filter(t=>t.status==='restricted').length||0} icon="lock" color="text-yellow-400"/>
+                            <StatusCard title="Restricted Tools" value={toolroomData?.tools?.filter(t=>t.status==='restricted').length||0} icon="lock" color="text-orange-600"/>
                         </div>
 
                         <div className="card fade-in overflow-hidden">
@@ -2720,9 +2720,9 @@
                                                 {toolStatus === 'approved' ? (
                                                     <span className="badge bg-green-500/15 text-green-400 text-xs">Installed</span>
                                                 ) : toolStatus === 'pending_approval' ? (
-                                                    <span className="badge text-xs" style={{background:'rgba(251,191,36,0.12)',color:'#b45309',border:'1px solid rgba(251,191,36,0.25)'}}>Pending Approval</span>
+                                                    <span className="badge text-xs" style={{background:'rgba(234,88,12,0.08)',color:'#b45309',border:'1px solid rgba(251,191,36,0.25)'}}>Pending Approval</span>
                                                 ) : fb === 'submitted' ? (
-                                                    <span className="badge text-xs" style={{background:'rgba(251,191,36,0.12)',color:'#b45309',border:'1px solid rgba(251,191,36,0.25)'}}>Pending Approval</span>
+                                                    <span className="badge text-xs" style={{background:'rgba(234,88,12,0.08)',color:'#b45309',border:'1px solid rgba(251,191,36,0.25)'}}>Pending Approval</span>
                                                 ) : (
                                                     <button
                                                         onClick={()=>handleProposeToolInstall(tool.name)}
@@ -2760,7 +2760,7 @@
                                 ) : (toolroomData?.tools||[]).map((t,i)=>(<tr key={i} className="border-b hover:bg-white/[0.02] transition" style={{borderColor:'var(--border-subtle)'}}>
                                     <td className="px-4 py-3 text-white font-medium mono">{t.name}</td>
                                     <td className="px-4 py-3"><span className="badge" style={{background:'rgba(99,102,241,0.15)',color:'#818cf8'}}>{t.category}</span></td>
-                                    <td className="px-4 py-3"><span className={`badge ${t.status==='approved'?'bg-green-500/15 text-green-400':t.status==='pending_approval'?'bg-yellow-500/15 text-yellow-400':'bg-red-500/15 text-red-400'}`}>{t.status==='pending_approval'?'Pending Approval':t.status}</span></td>
+                                    <td className="px-4 py-3"><span className={`badge ${t.status==='approved'?'bg-green-500/15 text-green-400':t.status==='pending_approval'?'bg-orange-500/15 text-orange-600':'bg-red-500/15 text-red-400'}`}>{t.status==='pending_approval'?'Pending Approval':t.status}</span></td>
                                     <td className="px-4 py-3 mono" style={{color:'var(--text-secondary)'}}>{t.checkout_count}</td>
                                     <td className="px-4 py-3">
                                         {t.status==='pending_approval' ? (
@@ -2810,7 +2810,7 @@
                             <h2 className="text-xl font-bold text-white flex items-center gap-2">
                                 <Icon name="terminal" size={22} className="text-purple-400"/>QMS Message Log
                                 <span className="text-sm font-normal ml-2" style={{color:'var(--text-muted)'}}>({filteredQmsLog.length} of {qmsLog.length})</span>
-                                {connected ? <div className="w-2 h-2 rounded-full bg-green-400 ml-2 live-dot" title="Live feed"/> : <span className="badge ml-2" style={{background:'rgba(251,191,36,0.1)',color:'#b45309',border:'1px solid rgba(251,191,36,0.2)',fontSize:'9px'}}>DEMO</span>}
+                                {connected ? <div className="w-2 h-2 rounded-full bg-green-400 ml-2 live-dot" title="Live feed"/> : <span className="badge ml-2" style={{background:'rgba(234,88,12,0.08)',color:'#b45309',border:'1px solid rgba(251,191,36,0.2)',fontSize:'9px'}}>DEMO</span>}
                             </h2>
                         </div>
                         <div className="card p-4 fade-in" style={{borderColor:'rgba(168,85,247,0.2)',background:'rgba(168,85,247,0.03)'}}>
