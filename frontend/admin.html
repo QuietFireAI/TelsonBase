@@ -1461,7 +1461,7 @@
             { label: 'Platform',          items: ['security', 'sovereign', 'federation'],         sectionTag: null },
         ];
         // Tabs that have no live API endpoint wiring (shown as DEMO even when connected)
-        const ALWAYS_DEMO_TABS = new Set(['users', 'qms']);
+        const ALWAYS_DEMO_TABS = new Set([]);
         // Per-tab audience dot color (null = universal/everyone)
         const TAB_DOT = {
             openclaw: 'ai', toolroom: 'ai', identity: 'regulated',
@@ -1825,7 +1825,7 @@
                     try { const prof = await api.get('/v1/auth/profile'); setCurrentUser(prof); } catch(e) {}
                     try { const sess = await api.get('/v1/security/sessions'); setSessions(sess.sessions||sess||[]); } catch(e) {}
                     try { const ac = await api.get('/v1/audit/chain/status'); setAuditChain(ac); } catch(e) {}
-                    try { const ae = await api.get('/v1/audit/chain/entries?limit=500'); setAuditEntries((ae.entries||ae||[]).slice().reverse()); } catch(e) {}
+                    try { const ae = await api.get('/v1/audit/chain/entries?limit=500'); const entries=(ae.entries||ae||[]).slice().reverse(); setAuditEntries(entries); setQmsLog(entries.map(e=>({ts:new Date(e.timestamp).toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:false}),chain:e.message||`::${e.actor}::-::${e.event_type}::`,hash:(e.entry_hash||'').substring(0,6),verified:true,sequence:e.sequence,event_type:e.event_type,actor:e.actor}))); } catch(e) {}
                     try { const tn = await api.get('/v1/tenancy/tenants'); setTenants(tn.tenants||tn||[]); } catch(e) {}
                     try { const mt = await api.get('/v1/tenancy/matters'); setMatters(mt.matters||mt||[]); } catch(e) {}
                     try { const lm = await api.get('/v1/llm/models'); setLlmModels(lm.models||lm||[]); } catch(e) {}
