@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "telsonbase": {
+      "type": "http",
+      "url": "http://<your-server-ip>:8000/mcp",
+      "headers": {
+        "Authorization": "Bearer <agent_key-returned-from-register-endpoint>"
+      }
+    }
+  }
+}

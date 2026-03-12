@@ -111,3 +111,6 @@ package-lock.json
 # mypy / type checking
 .mypy_cache/
 .dmypy.json
+
+# Local MCP config — contains registered agent keys, never commit
+.mcp.json
