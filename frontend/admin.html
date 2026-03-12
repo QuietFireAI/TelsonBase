@@ -1748,9 +1748,12 @@
                 // REM: Auto-connect if API key OR JWT token present
                 if ((key || jwt) && url) {
                     setApiUrl(url);
-                    createApi(url).get('/v1/system/status').then(()=>{setConnected(true);fetchLiveData(url);}).catch(()=>{
-                        localStorage.removeItem('telsonbase_api_key');
-                        localStorage.removeItem('telsonbase_jwt_token');
+                    createApi(url).get('/v1/system/status').then(()=>{setConnected(true);fetchLiveData(url);}).catch((err)=>{
+                        if(err.message==='Unauthorized'){
+                            localStorage.removeItem('telsonbase_api_key');
+                            localStorage.removeItem('telsonbase_jwt_token');
+                        }
+                        // Network/server errors keep credentials — auto-reconnects on next open
                     });
                 }
             }, []);
