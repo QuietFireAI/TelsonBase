@@ -761,7 +761,7 @@
                     </div>
                     <div className="mb-4">
                         <div className="flex items-center justify-between text-xs mb-1.5">
-                            <span className="text-white font-medium">Manners Score <span className="font-normal" style={{color:'var(--text-muted)'}}>— Anthropic safety framework compliance</span></span>
+                            <span className="text-white font-medium">Manners Score <span className="font-normal" style={{color:'var(--text-muted)'}}>— behavioral compliance score</span></span>
                             <span className={score>=75?'text-green-400':score>=50?'text-orange-600':'text-red-400'}>{score.toFixed(0)}%</span>
                         </div>
                         <div className="w-full rounded-full h-2 mb-1.5" style={{background:'var(--bg-base)'}}><div className={`h-2 rounded-full ${score>=75?'bg-green-400':score>=50?'bg-orange-500':'bg-red-400'}`} style={{width:`${score}%`,transition:'width 0.6s ease'}}/></div>
@@ -1809,8 +1809,8 @@
             };
 
             const handleClawAction = async (instance_id, action, note) => {
+                const TR = ['quarantine','probation','resident','citizen','agent'];
                 if (isDemo) {
-                    const TR = ['quarantine','probation','resident','citizen','agent'];
                     let updatedClaw = null;
                     setOpenclawInstances(prev=>prev.map(c=>{
                         if(c.instance_id!==instance_id) return c;
@@ -1824,8 +1824,16 @@
                     if(updatedClaw) setSelectedClaw(updatedClaw);
                     return;
                 }
-                await createApi(apiUrl).post(`/v1/openclaw/${instance_id}/${action}`, {reason: note||''});
+                const api = createApi(apiUrl);
+                const body = {reason: note||''};
+                if (action==='promote'||action==='demote') {
+                    const cur = openclawInstances.find(c=>c.instance_id===instance_id);
+                    const idx = cur ? TR.indexOf(cur.trust_level) : -1;
+                    body.new_level = action==='promote' ? TR[Math.min(idx+1,4)] : TR[Math.max(idx-1,0)];
+                }
+                await api.post(`/v1/openclaw/${instance_id}/${action}`, body);
                 fetchLiveData();
+                try { const r = await api.get(`/v1/openclaw/${instance_id}`); if(r) setSelectedClaw(r); } catch(e) {}
             };
 
             const handleProposeToolInstall = async (toolName, agentId) => {
