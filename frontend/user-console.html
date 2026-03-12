@@ -11,27 +11,27 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,400;0,500;0,600;0,700;1,400&family=DM+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap');
         :root {
-            --bg-base: #0c1222; --bg-surface: #111a2e; --bg-elevated: #162038;
-            --border-subtle: #1e2d4a; --border-default: #263654;
-            --text-primary: #e2e8f0; --text-secondary: #8b9dc3; --text-muted: #4a6085;
-            --accent-cyan: #22d3ee;
+            --bg-base: #f7f7f5; --bg-surface: #ffffff; --bg-elevated: #ffffff;
+            --border-subtle: rgba(0,0,0,0.09); --border-default: rgba(0,0,0,0.16);
+            --text-primary: #18181b; --text-secondary: #52525b; --text-muted: #a1a1aa;
+            --accent-cyan: #18181b;
         }
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body { font-family: 'DM Sans', system-ui, sans-serif; background: var(--bg-base); color: var(--text-primary); min-height: 100vh; }
         code, .mono { font-family: 'JetBrains Mono', monospace; }
         ::-webkit-scrollbar { width: 6px; height: 6px; }
         ::-webkit-scrollbar-track { background: var(--bg-base); }
-        ::-webkit-scrollbar-thumb { background: var(--border-default); border-radius: 3px; }
+        ::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.14); border-radius: 3px; }
         @keyframes pulse-ring { 0% { transform: scale(0.8); opacity: 1; } 100% { transform: scale(2.2); opacity: 0; } }
         .pulse-ring::before { content: ''; position: absolute; inset: -3px; border-radius: 50%; border: 2px solid currentColor; animation: pulse-ring 2s ease-out infinite; }
         @keyframes fade-in { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
         .fade-in { animation: fade-in 0.4s ease-out both; }
         .fade-in-d1 { animation-delay: 0.05s; } .fade-in-d2 { animation-delay: 0.1s; }
         .fade-in-d3 { animation-delay: 0.15s; } .fade-in-d4 { animation-delay: 0.2s; }
-        body::before { content: ''; position: fixed; inset: 0; background: radial-gradient(ellipse at 20% 50%, rgba(14,116,144,0.06) 0%, transparent 60%), radial-gradient(ellipse at 80% 20%, rgba(99,102,241,0.04) 0%, transparent 50%); pointer-events: none; z-index: 0; }
+        body::before { content: ''; position: fixed; inset: 0; background: none; pointer-events: none; z-index: 0; }
         #root { position: relative; z-index: 1; }
-        .card { background: var(--bg-surface); border: 1px solid var(--border-subtle); border-radius: 12px; transition: border-color 0.2s; }
-        .card:hover { border-color: var(--border-default); }
+        .card { background: var(--bg-surface); border: 1px solid var(--border-subtle); border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 2px 8px rgba(0,0,0,0.04); transition: border-color 0.2s, box-shadow 0.2s; }
+        .card:hover { border-color: rgba(0,0,0,0.20); box-shadow: 0 2px 6px rgba(0,0,0,0.08), 0 4px 16px rgba(0,0,0,0.06); }
         .badge { display: inline-flex; align-items: center; padding: 2px 8px; border-radius: 6px; font-size: 11px; font-weight: 600; letter-spacing: 0.02em; text-transform: uppercase; }
         @keyframes pulse-pretty { 0%,100% { opacity: 1; } 50% { opacity: 0.5; } }
         .pulse-pretty { animation: pulse-pretty 1.5s ease-in-out infinite; }
@@ -549,7 +549,7 @@
 
             return (<div className="min-h-screen flex flex-col">
                 {/* ===== HEADER ===== */}
-                <header className="sticky top-0 z-50 border-b px-6 py-3" style={{background:'var(--bg-surface)',borderColor:'var(--border-subtle)'}}>
+                <header className="sticky top-0 z-50 border-b px-6 py-3" style={{background:'rgba(247,247,245,0.92)',backdropFilter:'blur(18px)',WebkitBackdropFilter:'blur(18px)',borderColor:'var(--border-subtle)'}}>
                     <div className="flex items-center justify-between max-w-6xl mx-auto">
                         <div className="flex items-center gap-3">
                             <div className="w-9 h-9 rounded-lg flex items-center justify-center" style={{background:'rgba(34,211,238,0.12)'}}><Icon name="shield" size={20} className="text-cyan-400"/></div>
