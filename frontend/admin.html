@@ -2977,7 +2977,6 @@
                          ],
                          hint:'OpenClaw and Generic use the same governance pipeline. DID agents use cryptographic identity — select to be redirected.'},
                         {name:'name', label:'Agent Name', required:true, placeholder:'research-assistant-v1', hint:'Human-readable name shown in governance logs and audit trail.'},
-                        {name:'api_key', label:'API Key for this Agent', required:true, defaultValue:'tb_'+Math.random().toString(36).substring(2,10)+Math.random().toString(36).substring(2,10), placeholder:'tb_...', hint:'Auto-generated — copy this key and set it in your agent config before closing. You can also paste an existing key.'},
                         {name:'initial_trust_level', label:'Starting Trust Level', type:'select', required:true, defaultValue:'quarantine',
                          options:[
                              {value:'quarantine', label:'Quarantine — all actions require approval (recommended)'},

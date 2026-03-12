@@ -19,7 +19,7 @@ tags:
  - human-in-the-loop
  - kill-switch
  - audit-trail
-short_description: Five trust tiers. One Manners Score. Trust earned by behavior, not assigned.
+short_description: Manners Score + 5 trust tiers. Trust is earned by agents.
 ---
 
 # TelsonBase - Live Governance Demo
