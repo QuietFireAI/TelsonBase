@@ -260,7 +260,7 @@ Every control references a source file and a passing test. Run `proof_sheets/` t
 
 **The regulated industries -law firms, healthcare, insurance, accounting -TelsonBase was built against the standards they operate under.** HIPAA. SOC 2. HITRUST. CJIS. GDPR. PCI DSS. ABA Model Rules. Attorney-client privilege. Protected health information. Financial records. The kind of data where "we'll figure out security later" means malpractice, regulatory action, or worse. The compliance mappings are in the repository because if it holds up to those frameworks, it works everywhere below them.
 
-Small businesses get the same platform. Five employees or fifty -every agent action is governed, every decision logged, every permission earned. No enterprise contract required.
+**Small businesses** get the same platform. Five employees or fifty -every agent action is governed, every decision logged, every permission earned. No enterprise contract required.
 
 And anyone running agents who simply wants to stay in control of their data. Your own agents, local inference via Ollama, everything on your hardware. No subscription. No data harvesting. No terms that change. Access it from your home network or your phone.
 
@@ -445,7 +445,7 @@ Two things. The main two things.
 
 **Agents earn their autonomy.** Every agent starts at QUARANTINE, at zero - no tools, no external access, no assumptions. They work their way up through five trust tiers, but behavior alone doesn't get them there. Demonstrated safe behavior opens the door. A human has to walk them through it. QUARANTINE → PROBATION → RESIDENT → CITIZEN → AGENT. Promotion is sequential and requires explicit human authorization. Demotion is instant and can skip levels. Trust at any level is revocable in a single API call.
 
-**Behavior has a score.** Every agent carries a Manners compliance score - a live measurement across five principles: Human Control, Transparency, Value Alignment, Privacy, and Security. The score moves in real time. Blocked actions cost points. Good behavior holds the score. Drop below 50% and the agent is automatically demoted to Quarantine, no human required.
+**Behavior has a score.** Every agent carries a [**Manners compliance score**](docs/System%20Documents/MANNERS.md) - a live measurement across five principles: Human Control, Transparency, Value Alignment, Privacy, and Security. The score moves in real time. Blocked actions cost points. Good behavior holds the score. Drop below 50% and the agent is automatically demoted to Quarantine, no human required.
 
 These two things together are the main architecture. Everything else in TelsonBase - the audit trail, the kill switches, the compliance frameworks, the 8-step governance pipeline - exists to support them. The tools an agent can access follow the same logic: authorization requires both the trust level and a demonstrated need. That's not a restriction - that's a credential.
 
