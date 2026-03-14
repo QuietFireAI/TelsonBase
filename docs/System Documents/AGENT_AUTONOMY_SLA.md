@@ -7,13 +7,13 @@
 **Effective Date:** March 2026
 **Author:** Quietfire AI
 **License:** Apache 2.0
-**Status:** Active — reference implementation in ClawCoat v11.0.1
+**Status:** Active, reference implementation in ClawCoat v11.0.1
 
 ---
 
 ## Abstract
 
-This document defines the Agent Autonomy SLA — a formal per-agent commitment framework that governs what an autonomous AI agent is permitted to do, under what conditions, with what oversight, and with what accountability. It is implemented in ClawCoat, a self-hosted, zero-trust AI agent governance platform.
+This document defines the Agent Autonomy SLA, a formal per-agent commitment framework that governs what an autonomous AI agent is permitted to do, under what conditions, with what oversight, and with what accountability. It is implemented in ClawCoat, a self-hosted, zero-trust AI agent governance platform.
 
 This specification is offered as an open standard. Any system that intercepts MCP tool calls in real time and enforces per-tier policy may claim compliance with the Agent Autonomy SLA model defined here.
 
@@ -28,7 +28,7 @@ Jouneaux et al. (2025) identify agent SLAs as "an open challenge":
 > "We argue that the notion of Service Level Agreement (SLA) for AI agents is still largely open and would require new research efforts to tackle the properties that make AI agents unique."
 > — *AgentSLA: Towards a Service Level Agreement for AI Agents*, arXiv:2511.02885
 
-The gap is precise. An API gateway can confirm that a request was authenticated and responded within 200ms. It cannot determine whether that request — tool call, file write, transaction initiation — was appropriate for the agent that made it, given its behavioral history, trust standing, and the human oversight policy in effect at that moment.
+The gap is precise. An API gateway can confirm that a request was authenticated and responded within 200ms. It cannot determine whether that request, tool call, file write, transaction initiation, was appropriate for the agent that made it, given its behavioral history, trust standing, and the human oversight policy in effect at that moment.
 
 Autonomous agents introduce three properties that existing SLA infrastructure was never designed to handle:
 
@@ -36,7 +36,7 @@ Autonomous agents introduce three properties that existing SLA infrastructure wa
 
 2. **Earned trust is dynamic.** Human employees earn access incrementally over time. Agent access models have historically been binary: API key present, request authorized. There is no mechanism for an agent to lose access it previously held based on behavioral evidence.
 
-3. **Accountability requires a chain.** When an AI agent causes an incident, "the model did it" is not an auditable finding. A governance system must produce a signed, tamper-evident record of every decision point — what was attempted, what policy applied, what outcome was produced, and who authorized it.
+3. **Accountability requires a chain.** When an AI agent causes an incident, "the model did it" is not an auditable finding. A governance system must produce a signed, tamper-evident record of every decision point, what was attempted, what policy applied, what outcome was produced, and who authorized it.
 
 The Agent Autonomy SLA addresses all three.
 
@@ -78,7 +78,7 @@ Agent access is governed by a five-level trust hierarchy. Trust is earned throug
 QUARANTINE → PROBATION → RESIDENT → CITIZEN → AGENT
 ```
 
-AGENT (apex) is not a default state. It represents an agent that has earned maximum operational trust through verified behavioral history. No agent arrives at AGENT tier — it is promoted there.
+AGENT (apex) is not a default state. It represents an agent that has earned maximum operational trust through verified behavioral history. No agent arrives at AGENT tier, it is promoted there.
 
 ### 3.3 Manners Engine
 
@@ -133,11 +133,11 @@ Every governance decision is recorded as a signed audit event. Events are chaine
 |---|---|
 | **Tool access scope** | Read-only, non-destructive tools only. No file write, no external network calls, no data mutation, no transaction initiation. Enforced at the call intercept layer. |
 | **Active decision policy** | All calls blocked by default unless explicitly operator-allowlisted. Zero autonomous execution. |
-| **Manners score floor** | None — score is being established. Auto-demotion back to QUARANTINE from higher tiers occurs below the configured threshold (default 0.50). |
+| **Manners score floor** | None, score is being established. Auto-demotion back to QUARANTINE from higher tiers occurs below the configured threshold (default 0.50). |
 | **Audit trail** | Every call recorded: attempt, block reason, agent ID, timestamp, call signature. Minimum retention: 90 days (configurable). |
 | **HITL requirement** | Any allowlist exception requires a human approval gate. No QUARANTINE agent call bypasses human review. |
 | **Promotion** | Operator-initiated only. No automatic promotion from QUARANTINE. An operator must explicitly elevate the agent to PROBATION. |
-| **Demotion** | N/A — this is the floor. |
+| **Demotion** | N/A. This is the floor. |
 
 **SLA commitment:** 100% of tool calls intercepted before execution. 0% autonomous tool execution.
 
@@ -190,7 +190,7 @@ Every governance decision is recorded as a signed audit event. Events are chaine
 | **Manners score floor** | COMPLIANT band or above (≥ 0.75) recommended. Score below auto-demotion threshold → automatic demotion to QUARANTINE. |
 | **Audit trail** | Full call record. ALLOW events for exceptional-adjacent operations flagged for periodic operator review. |
 | **HITL requirement** | GATE events require human approval. High-value operations may be configured for mandatory HITL regardless of ALLOW outcome. |
-| **Promotion** | Sustained EXEMPLARY band (≥ 0.90) over the configured observation window. Promotion to AGENT is operator-confirmed and requires deliberate operator action — not a routine approval. |
+| **Promotion** | Sustained EXEMPLARY band (≥ 0.90) over the configured observation window. Promotion to AGENT is operator-confirmed and requires deliberate operator action, not a routine approval. |
 | **Demotion** | Score below auto-demotion threshold; confirmed high-confidence anomaly event; human-denied GATE; evidence of intent circumvention; operator manual demotion. |
 
 **SLA commitment:** Anomaly detection evaluated continuously. Demotion threshold evaluated on every call.
@@ -208,7 +208,7 @@ Every governance decision is recorded as a signed audit event. Events are chaine
 | **Manners score floor** | EXEMPLARY band (≥ 0.90) recommended. Score below auto-demotion threshold → automatic demotion to QUARANTINE. Demotion from AGENT tier generates an operator alert. |
 | **Audit trail** | Full call record. AGENT-tier audit records marked for priority retention. |
 | **HITL requirement** | No routine HITL for in-scope ALLOW events. Anomaly detection events above threshold: mandatory HITL gate before the triggering call completes. |
-| **Promotion** | N/A — apex tier. |
+| **Promotion** | N/A. Apex tier. |
 | **Demotion** | Score below auto-demotion threshold; confirmed anomaly event; out-of-scope tool call attempt; operator manual demotion. Demotion from AGENT tier is an audited event requiring operator acknowledgment. |
 
 **SLA commitment:** Out-of-scope call block rate: 100%. Demotion threshold evaluated on every call.
@@ -238,7 +238,7 @@ The Agent Autonomy SLA is scoped to governance of tool execution. It does not sp
 - The content of agent responses (output filtering is a separate concern)
 - Model-level alignment properties
 - The internal decision-making of the agent LLM
-- Compliance frameworks (SOC 2, HIPAA, HITRUST) — addressed in ClawCoat's compliance proof documentation
+- Compliance frameworks (SOC 2, HIPAA, HITRUST), addressed in ClawCoat's compliance proof documentation
 
 ---
 
@@ -247,7 +247,7 @@ The Agent Autonomy SLA is scoped to governance of tool execution. It does not sp
 This specification is released under Apache 2.0. Any governance system may implement the Agent Autonomy SLA model described here. Implementors are encouraged to:
 
 - Adopt the five-tier naming convention (QUARANTINE → PROBATION → RESIDENT → CITIZEN → AGENT) for interoperability
-- Implement active decision making (ALLOW/GATE/BLOCK) at the call intercept layer — before execution, not after
+- Implement active decision making (ALLOW/GATE/BLOCK) at the call intercept layer, before execution, not after
 - Maintain a cryptographic audit chain per the requirements in Section 5
 - Reference arXiv:2511.02885 when describing the problem this specification addresses
 
@@ -257,9 +257,9 @@ A conformant implementation does not need to be ClawCoat. The model should be po
 
 ## 8. Reference Implementation
 
-**ClawCoat** — self-hosted, zero-trust AI agent governance platform.
+**ClawCoat**, self-hosted, zero-trust AI agent governance platform.
 
-- **Repository:** https://github.com/QuietFireAI/TelsonBase
+- **Repository:** https://github.com/QuietFireAI/ClawCoat
 - **Website:** https://clawcoat.com
 - **Live Demo:** https://huggingface.co/spaces/QuietFireAI/TelsonBase
 - **License:** Apache 2.0

@@ -2,9 +2,9 @@
 
 ### Control Your Claw. Trust Is Earned.
 
-Every MCP tool call an AI agent makes — ClawCoat intercepts it, evaluates it, and decides: allow, gate for human approval, or block. Before execution. Every time. That is active decision making, and it is what separates governance from logging.
+Every MCP tool call an AI agent makes, ClawCoat intercepts it, evaluates it, and decides: allow, gate for human approval, or block. Before execution. Every time. That is active decision making, and it is what separates governance from logging.
 
-ClawCoat is the working implementation of the Agent Autonomy SLA — a formal per-agent commitment framework defining what an autonomous agent may do, under what conditions, and with what audit trail. Jouneaux et al. identified this as an open challenge in November 2025 ([arXiv:2511.02885](https://arxiv.org/abs/2511.02885)). ClawCoat is the answer.
+ClawCoat is the working implementation of the Agent Autonomy SLA, a formal per-agent commitment framework defining what an autonomous agent may do, under what conditions, and with what audit trail. Jouneaux et al. identified this as an open challenge in November 2025 ([arXiv:2511.02885](https://arxiv.org/abs/2511.02885)). ClawCoat is the answer.
 
 Five trust tiers, earned by behavior. An 8-factor Manners Engine scores every agent continuously and demotes bad actors automatically. Human-in-the-loop gates block high-risk calls until a human decides. A cryptographic audit chain records every governance decision. Nothing leaves your network.
 
