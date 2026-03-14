@@ -1,5 +1,5 @@
 ---
-title: TelsonBase
+title: ClawCoat
 emoji: 🦞
 colorFrom: purple
 colorTo: indigo
@@ -11,50 +11,58 @@ license: apache-2.0
 tags:
  - ai-governance
  - ai-agents
+ - mcp-gateway
+ - agent-security
  - trust-tiers
- - manners-score
- - mcp
- - self-hosted
- - goose
+ - active-decision-making
  - human-in-the-loop
- - kill-switch
  - audit-trail
-short_description: Manners Score + 5 trust tiers. Trust is earned by agents.
+ - zero-trust
+ - self-hosted
+ - mcp
+ - goose
+ - kill-switch
+ - agentic-ai
+short_description: Every agent tool call: allow, gate, or block. Before execution. Five trust tiers.
 ---
 
-# ClawCoat - Live Governance Demo
+# ClawCoat — Active Decision Making for AI Agents
 
-**Five trust tiers. One Manners Score. Trust is earned by agents, granted by humans.**
+**Every MCP tool call an AI agent makes, ClawCoat intercepts it, evaluates it, and decides: allow, gate for human approval, or block. Before execution. Every time.**
 
-This Space connects to a **live TelsonBase server** running the real governance pipeline.
-Select a demo agent, pick an action, and see an actual governance decision in real time.
+This Space connects to a live ClawCoat server running the real governance pipeline. Select a demo agent, pick an action, and see an actual governance decision in real time.
 
-## What the Demo Shows
+## What You're Seeing
 
-- **Manners Score** - every action scored against five behavioral principles in real time (0.0–1.0)
-- **Five trust tiers** - QUARANTINE → PROBATION → RESIDENT → CITIZEN → AGENT, earned sequentially
-- **Governance pipeline** - 8 steps, real decisions, real server — Allowed, Gated, or Blocked
-- **Kill switch** - suspend an agent instantly, watch every subsequent action rejected at Step 2
-- **HITL gating** - actions held for human approval regardless of trust level
+This is not a simulation. The decisions come from a live server running the full ClawCoat stack — trust tier enforcement, Manners Engine scoring, HITL approval gates, and a cryptographic audit chain recording every event.
+
+- **Active decision making** — every call intercepted before execution. Allow, gate, or block.
+- **Five trust tiers** — QUARANTINE → PROBATION → RESIDENT → CITIZEN → AGENT, earned by behavior
+- **Manners Engine** — 8-factor behavioral score (0.0–1.0) updated on every action
+- **Kill switch** — suspend an agent instantly, every subsequent action rejected
+- **HITL gates** — actions held for human approval regardless of trust tier
+- **Audit chain** — every governance decision recorded, cryptographically chained
 
 ## Trust Tier Flow
 
 ```
-QUARANTINE ──► PROBATION ──► RESIDENT ──► CITIZEN ──► AGENT
- (all gated)  (internal ok) (read/write)  (autonomous)  (apex)
+QUARANTINE → PROBATION → RESIDENT → CITIZEN → AGENT
+ (all gated)  (safe tools)  (read/write)  (broad)   (apex)
 ```
 
-Every agent starts at Quarantine. Trust is earned through demonstrated behavior, one tier at a time.
-The Manners Score drives it — drop below 0.25 and the agent auto-suspends. No human delay required.
-Demotion is instant. The kill switch is always available to a human admin.
+No agent arrives at AGENT tier. Every agent starts at QUARANTINE and earns its way up through demonstrated behavioral compliance. The Manners Engine drives automatic demotion. Human operators drive promotion.
+
+## The Agent Autonomy SLA
+
+ClawCoat is the working implementation of the Agent Autonomy SLA — a formal per-tier commitment framework defining what an autonomous agent may do, under what conditions, and with what audit trail. Jouneaux et al. identified this as an open challenge in November 2025 ([arXiv:2511.02885](https://arxiv.org/abs/2511.02885)). ClawCoat is the answer.
 
 ## Full Repository
 
-**→ [github.com/QuietFireAI/ClawCoat](https://github.com/QuietFireAI/ClawCoat)**
+**[github.com/QuietFireAI/ClawCoat](https://github.com/QuietFireAI/ClawCoat)**
 
-Source code, documentation, proof sheets, quick start, and full test suite.
-746 tests passing. 0 high-severity findings. Apache 2.0.
+Source code, documentation, proof sheets, deployment guide, and full test suite.
+746 tests passing. 0 high-severity findings. Apache 2.0. Self-hosted.
 
 ---
 
-*TelsonBase v11.0.1 · Quietfire AI · Apache 2.0*
+*ClawCoat v11.0.1 · Quietfire AI · Apache 2.0*
