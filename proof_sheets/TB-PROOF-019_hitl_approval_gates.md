@@ -1,7 +1,7 @@
 # TB-PROOF-019: Human-in-the-Loop Approval Gates
 
 **Sheet ID:** TB-PROOF-019
-**Claim Source:** telsonbase.com - AI Safety Section
+**Claim Source:** clawcoat.com - AI Safety Section
 **Status:** VERIFIED
 **Last Verified:** March 8, 2026
 **Version:** v11.0.1

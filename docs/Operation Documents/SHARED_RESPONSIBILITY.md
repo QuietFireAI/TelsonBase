@@ -1,4 +1,4 @@
-# TelsonBase - Shared Responsibility Matrix
+# ClawCoat - Shared Responsibility Matrix
 
 **Version:** v11.0.1 · **Maintainer:** Quietfire AI
 

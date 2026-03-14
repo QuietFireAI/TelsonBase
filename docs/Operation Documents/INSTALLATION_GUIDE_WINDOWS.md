@@ -1,4 +1,4 @@
-# TelsonBase - Installation Guide for Windows
+# ClawCoat - Installation Guide for Windows
 
 **Version:** v11.0.1 · **Maintainer:** Quietfire AI
 **Target Audience:** Windows users, including those new to Docker
@@ -66,7 +66,7 @@ Accept the defaults during installation. When it finishes, you will have both `g
 Open PowerShell, Command Prompt, or Git Bash:
 
 ```bash
-git clone https://github.com/QuietFireAI/TelsonBase.git
+git clone https://github.com/QuietFireAI/ClawCoat.git
 cd TelsonBase
 ```
 
@@ -481,8 +481,8 @@ This adds MailHog. Access it at `http://localhost:8025` to view emails sent by t
 ## Getting Help
 
 - **Troubleshooting guide:** `docs/Operation Documents/TROUBLESHOOTING.md`
-- **GitHub Issues:** https://github.com/QuietFireAI/TelsonBase/issues
-- **Email:** support@telsonbase.com
+- **GitHub Issues:** https://github.com/QuietFireAI/ClawCoat/issues
+- **Email:** support@clawcoat.com
 
 ---
 

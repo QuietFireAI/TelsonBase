@@ -1,4 +1,4 @@
-# TelsonBase - Encryption at Rest Guide
+# ClawCoat - Encryption at Rest Guide
 
 **Version:** v11.0.1 · **Maintainer:** Quietfire AI
 
@@ -221,7 +221,7 @@ Use this checklist during initial deployment or when hardening an existing insta
 
 TelsonBase encryption at rest follows a shared responsibility model between the platform and the customer.
 
-### TelsonBase Provides (Application Level)
+### ClawCoat Provides (Application Level)
 
 | Responsibility | Implementation |
 |---------------|----------------|

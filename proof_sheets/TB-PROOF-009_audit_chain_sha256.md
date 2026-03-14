@@ -1,7 +1,7 @@
 # TB-PROOF-009: SHA-256 Hash-Chained Audit Trail
 
 **Sheet ID:** TB-PROOF-009
-**Claim Source:** telsonbase.com - Capabilities Section
+**Claim Source:** clawcoat.com - Capabilities Section
 **Status:** VERIFIED
 **Last Verified:** March 8, 2026
 **Version:** v11.0.1

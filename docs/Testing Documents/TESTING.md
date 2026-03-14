@@ -1,4 +1,4 @@
-# TelsonBase Testing Guide
+# ClawCoat Testing Guide
 
 **Version:** v11.0.1 | **Tests Passing:** 720 (1 skipped*) | **Updated:** March 8, 2026
 

@@ -27,7 +27,7 @@ Violations may result in:
 2. Temporary ban
 3. Permanent ban
 
-Report issues to: support@telsonbase.com
+Report issues to: support@clawcoat.com
 
 ## Scope
 

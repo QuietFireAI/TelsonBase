@@ -1,10 +1,10 @@
-# TelsonBase Terms of Use
+# ClawCoat Terms of Use
 
 **Version:** v11.0.1
 **Effective Date:** March 6, 2026
 **Issued by:** Jeff Phillips, operating as Quietfire AI
 
-These Terms of Use govern access to and use of TelsonBase software, documentation, and related materials published at https://github.com/QuietFireAI/TelsonBase. By downloading, cloning, deploying, or using TelsonBase in any form, you agree to these terms. If you do not agree, do not use the software.
+These Terms of Use govern access to and use of TelsonBase software, documentation, and related materials published at https://github.com/QuietFireAI/ClawCoat. By downloading, cloning, deploying, or using TelsonBase in any form, you agree to these terms. If you do not agree, do not use the software.
 
 **Note:** Prior to v11.0.1, this document was named `DISCLAIMER.md`. References to `DISCLAIMER.md` in existing documentation, code comments, or earlier versions of this repository refer to this document.
 
@@ -171,8 +171,8 @@ When optional integrations are enabled, data may be transmitted to and processed
 
 ## 15. Contact
 
-Security concerns: security@telsonbase.com
-General support: support@telsonbase.com
+Security concerns: security@clawcoat.com
+General support: support@clawcoat.com
 
 ---
 

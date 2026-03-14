@@ -1,4 +1,4 @@
-# TelsonBase v10.0.0Bminus - User Console UI Test Plan
+# ClawCoat v10.0.0Bminus - User Console UI Test Plan
 
 **Date:** 2026-02-12
 **Tester:** Jeff

@@ -1,4 +1,4 @@
-# TelsonBase - OpenClaw Integration Guide
+# ClawCoat - OpenClaw Integration Guide
 
 **Version:** v11.0.1 · **Maintainer:** Quietfire AI
 
@@ -760,4 +760,4 @@ See `CONTRIBUTING.md` for the full contribution process.
 ---
 
 *TelsonBase v11.0.1 · Quietfire AI · March 8, 2026*
-*Questions: support@telsonbase.com*
+*Questions: support@clawcoat.com*

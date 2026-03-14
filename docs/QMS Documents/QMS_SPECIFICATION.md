@@ -400,7 +400,7 @@ Note: same `@@REQ_c7d8e9f0@@` through the entire clarification exchange.
 
 The `::%%%%::` fires the siren. The `::%%Database connection lost%%::` is the incident report. A human reading this log at 3 AM knows exactly what broke without touching a terminal.
 
-### 7.6 TelsonBase Toolroom Example
+### 7.6 ClawCoat Toolroom Example
 
 ```
 ::<demo_agent/001>::-::@@REQ_f9a0b1c2@@::-::Tool_Checkout::-::##sha256_calculator##::-::_Please::

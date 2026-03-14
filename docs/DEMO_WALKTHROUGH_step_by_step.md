@@ -1,4 +1,4 @@
-# TelsonBase - Demo Walkthrough
+# ClawCoat - Demo Walkthrough
 
 **Version:** v11.0.1 · **Maintainer:** Quietfire AI
 

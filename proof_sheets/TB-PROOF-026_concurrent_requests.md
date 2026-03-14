@@ -1,7 +1,7 @@
 # TB-PROOF-026: 50 Concurrent Requests Handled
 
 **Sheet ID:** TB-PROOF-026
-**Claim Source:** telsonbase.com - Security Testing Section
+**Claim Source:** clawcoat.com - Security Testing Section
 **Status:** VERIFIED
 **Last Verified:** March 8, 2026
 **Version:** v11.0.1

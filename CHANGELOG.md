@@ -546,7 +546,7 @@ CI threshold: `701 → 716`
 
 Version 8.0.0 marks TelsonBase's first public release. The CC suffix is retired -
 version numbers are pure semver going forward. The engineering checklist is complete.
-telsonbase.com is live. The governance pipeline is proven.
+clawcoat.com is live. The governance pipeline is proven.
 
 ### OpenClaw Governance - Live Test Complete (10/10)
 
@@ -593,7 +593,7 @@ Python's `configparser` INI parser. Converted to `#` comments.
 
 ### Infrastructure
 
-- telsonbase.com live - deep purple glassmorphism, "Control Your Claw" hero,
+- clawcoat.com live - deep purple glassmorphism, "Control Your Claw" hero,
   Chief of Staff framing, trust level pipeline visualization
 - Pre-drop engineering checklist: 10/10 complete
 - Validation report: `docs/Testing Documents/VALIDATION_REPORT_v7.4.0CC.md`
@@ -1714,5 +1714,5 @@ Based on Gemini's documentation analysis and recommendations:
 
 ---
 
-**Architect:** Jeff Phillips - support@telsonbase.com
+**Architect:** Jeff Phillips - support@clawcoat.com
 **Project:** TelsonBase by Quietfire AI

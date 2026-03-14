@@ -1,4 +1,4 @@
-# TelsonBase Glossary
+# ClawCoat Glossary
 
 **Version:** v11.0.1 · **Maintainer:** Quietfire AI
 

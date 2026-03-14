@@ -1,4 +1,4 @@
-# TelsonBase - Secrets Management
+# ClawCoat - Secrets Management
 
 **Version:** v11.0.1 · **Maintainer:** Quietfire AI
 

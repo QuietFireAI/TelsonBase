@@ -1,4 +1,4 @@
-# TelsonBase Audit Trail
+# ClawCoat Audit Trail
 **Version:** v11.0.1 · **Maintainer:** Quietfire AI
 
 Every governance decision made by TelsonBase is written to a hash-chained audit record. Not logged to a file. Not stored in a table. **Hash-chained** - each entry cryptographically binds to the one before it. You can hand this record to a regulator, opposing counsel, or a forensic investigator and prove that nothing was altered after the fact.

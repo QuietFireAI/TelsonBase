@@ -1,4 +1,4 @@
-# TelsonBase - Compliance Certification Roadmap
+# ClawCoat - Compliance Certification Roadmap
 
 **Version:** v11.0.1 · **Updated:** March 8, 2026 · **Maintainer:** Quietfire AI
 **Platform:** Zero-Trust AI Agent Security Platform

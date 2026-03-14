@@ -1,4 +1,4 @@
-# TelsonBase High Availability Architecture
+# ClawCoat High Availability Architecture
 
 **Version:** v11.0.1 · **Maintainer:** Quietfire AI
 **Status:** Planning Document
@@ -327,10 +327,10 @@ metadata:
 spec:
   tls:
    - hosts:
-       - telsonbase.com
+       - clawcoat.com
       secretName: telsonbase-tls
   rules:
-   - host: telsonbase.com
+   - host: clawcoat.com
       http:
         paths:
          - path: /
@@ -520,7 +520,7 @@ A single 8-core / 32 GB node comfortably hosts the full stack with headroom for 
 | **Swarm ports** | TCP 2377 (cluster management), TCP/UDP 7946 (node discovery), UDP 4789 (VXLAN overlay) |
 | **Firewall** | Block Swarm/K8s management ports from external access. Only ports 80 and 443 should be externally reachable. |
 | **Multi-site** | If nodes are in separate physical locations, use a site-to-site VPN (WireGuard recommended). Latency under 10ms is required for synchronous PostgreSQL replication. |
-| **DNS** | Internal DNS or `/etc/hosts` entries for node discovery. External DNS for telsonbase.com pointing to the primary node or a floating VIP. |
+| **DNS** | Internal DNS or `/etc/hosts` entries for node discovery. External DNS for clawcoat.com pointing to the primary node or a floating VIP. |
 
 ---
 

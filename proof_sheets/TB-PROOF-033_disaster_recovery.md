@@ -1,7 +1,7 @@
 # TB-PROOF-033: Disaster Recovery RPO=24hr RTO=15min
 
 **Sheet ID:** TB-PROOF-033
-**Claim Source:** telsonbase.com - Reports Section
+**Claim Source:** clawcoat.com - Reports Section
 **Status:** VERIFIED
 **Last Verified:** March 8, 2026
 **Version:** v11.0.1

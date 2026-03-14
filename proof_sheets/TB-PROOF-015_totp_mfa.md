@@ -1,7 +1,7 @@
 # TB-PROOF-015: RFC 6238 TOTP Multi-Factor Authentication
 
 **Sheet ID:** TB-PROOF-015
-**Claim Source:** telsonbase.com - Capabilities Section
+**Claim Source:** clawcoat.com - Capabilities Section
 **Status:** VERIFIED
 **Last Verified:** March 8, 2026
 **Version:** v11.0.1

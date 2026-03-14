@@ -1,7 +1,7 @@
 # TB-PROOF-035: OpenClaw Governance Pipeline
 
 **Sheet ID:** TB-PROOF-035
-**Claim Source:** telsonbase.com - OpenClaw Integration
+**Claim Source:** clawcoat.com - OpenClaw Integration
 **Status:** VERIFIED
 **Last Verified:** March 8, 2026
 **Version:** v11.0.1

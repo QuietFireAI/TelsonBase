@@ -1,4 +1,4 @@
-# TelsonBase -- SOC 2 Type I Report Documentation
+# ClawCoat -- SOC 2 Type I Report Documentation
 
 **Version:** v11.0.1 · **Maintainer:** Quietfire AI · **Classification:** Auditor-Ready Documentation
 
@@ -11,7 +11,7 @@ The management of TelsonBase asserts that the accompanying description of the Te
 This assertion covers TelsonBase as an open-source, self-hosted platform. Management makes no assertion regarding any individual deployment of TelsonBase, which remains entirely under the control of the deploying organization. See `DISCLAIMER.md` for the full limitation of liability applicable to this software.
 
 **Responsible Party:** Jeff Phillips, Architect and Principal
-**Contact:** security@telsonbase.com
+**Contact:** security@clawcoat.com
 **Date of Assertion:** March 6, 2026
 
 ---

@@ -1,4 +1,4 @@
-# TelsonBase - Commercial License (Retired)
+# ClawCoat - Commercial License (Retired)
 
 **Effective:** March 2026
 

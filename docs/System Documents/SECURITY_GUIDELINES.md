@@ -1,5 +1,5 @@
-# TelsonBase - Security Policy
-**Version:** v11.0.1 · **Maintainer:** Quietfire AI - security@telsonbase.com
+# ClawCoat - Security Policy
+**Version:** v11.0.1 · **Maintainer:** Quietfire AI - security@clawcoat.com
 
 TelsonBase is built on zero-trust principles. Every agent message is cryptographically signed, every action requires declared capabilities, and behavioral anomalies trigger automatic quarantine.
 
@@ -23,9 +23,9 @@ TelsonBase is built on zero-trust principles. Every agent message is cryptograph
 
 ### Contact
 
-Email: **security@telsonbase.com**
+Email: **security@clawcoat.com**
 
-> **URGENT:** All security vulnerabilities must be reported exclusively to security@telsonbase.com. Do not open public issues or use general support channels for security disclosures.
+> **URGENT:** All security vulnerabilities must be reported exclusively to security@clawcoat.com. Do not open public issues or use general support channels for security disclosures.
 
 Include:
 1. Description of the vulnerability
@@ -119,7 +119,7 @@ Current verified security status as of March 8, 2026:
 
 We follow responsible disclosure practices:
 
-1. Reporter contacts us privately at security@telsonbase.com
+1. Reporter contacts us privately at security@clawcoat.com
 2. We confirm and assess the vulnerability within 7 days
 3. We develop and test a fix
 4. We release the fix

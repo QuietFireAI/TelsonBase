@@ -1,4 +1,4 @@
-# TelsonBase Troubleshooting Guide
+# ClawCoat Troubleshooting Guide
 
 **Version:** v11.0.1 · **Updated:** March 8, 2026 · **Maintainer:** Quietfire AI
 
@@ -383,7 +383,7 @@ pip install --force-reinstall -r requirements.txt
 
 **Pydantic v1 vs v2 issues:**
 ```bash
-# TelsonBase uses Pydantic v2 with pydantic-settings
+# ClawCoat uses Pydantic v2 with pydantic-settings
 pip install pydantic>=2.0.0 pydantic-settings>=2.0.0
 ```
 
@@ -509,10 +509,10 @@ Ensure `TRAEFIK_ACME_EMAIL` is set in `.env` for automatic certificate provision
 
 ## Getting Help
 
-1. **Check existing issues:** [GitHub Issues](https://github.com/QuietFireAI/TelsonBase/issues)
+1. **Check existing issues:** [GitHub Issues](https://github.com/QuietFireAI/ClawCoat/issues)
 2. **Search documentation:** Check `docs/` folder
 3. **Open new issue:** Use bug report template
-4. **Email:** support@telsonbase.com
+4. **Email:** support@clawcoat.com
 
 When reporting issues, include:
 - TelsonBase version (`curl http://localhost:8000/health`)

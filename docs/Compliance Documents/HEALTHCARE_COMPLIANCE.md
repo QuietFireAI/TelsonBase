@@ -1,4 +1,4 @@
-# TelsonBase - Healthcare Compliance Security Profile (HIPAA/HITECH/HITRUST)
+# ClawCoat - Healthcare Compliance Security Profile (HIPAA/HITECH/HITRUST)
 
 **Version:** v11.0.1 · **Updated:** March 8, 2026 · **Maintainer:** Quietfire AI
 **Platform:** Zero-Trust AI Agent Security Platform
@@ -26,7 +26,7 @@ When and if TelsonBase pursues healthcare as a target market, the transition wil
 - Do sessions automatically terminate after inactivity?
 - Is there an emergency access ("break-the-glass") procedure?
 
-### TelsonBase Implementation
+### ClawCoat Implementation
 
 | Control | Implementation | Files |
 |---------|---------------|-------|
@@ -61,7 +61,7 @@ When and if TelsonBase pursues healthcare as a target market, the transition wil
 - Is data classified by sensitivity level, including a tier for PHI/RESTRICTED data?
 - Are policies configurable per covered entity or business associate?
 
-### TelsonBase Implementation
+### ClawCoat Implementation
 
 | Control | Implementation | Files |
 |---------|---------------|-------|
@@ -93,7 +93,7 @@ When and if TelsonBase pursues healthcare as a target market, the transition wil
 - Is data integrity verified to detect tampering?
 - Does encryption meet the HIPAA Breach Notification Safe Harbor?
 
-### TelsonBase Implementation
+### ClawCoat Implementation
 
 | Control | Implementation | Files |
 |---------|---------------|-------|
@@ -127,7 +127,7 @@ When and if TelsonBase pursues healthcare as a target market, the transition wil
 - Are AI agent actions independently auditable?
 - Can logs be exported for HHS investigation or compliance review?
 
-### TelsonBase Implementation
+### ClawCoat Implementation
 
 | Control | Implementation | Files |
 |---------|---------------|-------|
@@ -162,7 +162,7 @@ When and if TelsonBase pursues healthcare as a target market, the transition wil
 - Is there a breach notification process with regulatory timelines?
 - Are data retention and legal hold policies enforced?
 
-### TelsonBase Implementation
+### ClawCoat Implementation
 
 | Control | Implementation | Files |
 |---------|---------------|-------|
@@ -200,7 +200,7 @@ When and if TelsonBase pursues healthcare as a target market, the transition wil
 - Are security headers and CORS policies hardened?
 - Is the administrative interface secured against unauthorized access?
 
-### TelsonBase Implementation
+### ClawCoat Implementation
 
 | Control | Implementation | Files |
 |---------|---------------|-------|
@@ -236,7 +236,7 @@ When and if TelsonBase pursues healthcare as a target market, the transition wil
 - Can risk assessments be tracked and scored?
 - Is compliance posture reportable on demand?
 
-### TelsonBase Implementation
+### ClawCoat Implementation
 
 | Control | Implementation | Files |
 |---------|---------------|-------|
@@ -274,7 +274,7 @@ When and if TelsonBase pursues healthcare as a target market, the transition wil
 - How is trust established and maintained for AI agents?
 - Are inter-agent messages validated and authenticated?
 
-### TelsonBase Implementation
+### ClawCoat Implementation
 
 | Control | Implementation | Files |
 |---------|---------------|-------|
@@ -306,7 +306,7 @@ When and if TelsonBase pursues healthcare as a target market, the transition wil
 - Is per-tenant data independently manageable (export, deletion, hold)?
 - Does multi-tenancy support varying compliance configurations?
 
-### TelsonBase Implementation
+### ClawCoat Implementation
 
 | Control | Implementation | Files |
 |---------|---------------|-------|
@@ -338,7 +338,7 @@ When and if TelsonBase pursues healthcare as a target market, the transition wil
 - Can threat response be automated for critical incidents?
 - Is the breach risk assessment documented per the four-factor test?
 
-### TelsonBase Implementation
+### ClawCoat Implementation
 
 | Control | Implementation | Files |
 |---------|---------------|-------|
@@ -538,7 +538,7 @@ When and if TelsonBase pursues healthcare as a target market, the transition wil
 - **Security Policy:** `SECURITY.md` in project root
 - **Vulnerability Reporting:** Responsible disclosure process documented
 - **Response Times:** Critical (24h), High (7d), Medium (30d), Low (next release)
-- **Contact:** support@telsonbase.com
+- **Contact:** support@clawcoat.com
 
 ---
 

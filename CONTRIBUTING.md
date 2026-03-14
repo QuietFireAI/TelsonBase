@@ -1,4 +1,4 @@
-# Contributing to TelsonBase
+# Contributing to ClawCoat
 
 **Version:** v11.0.1 · **Maintainer:** Quietfire AI
 
@@ -12,7 +12,7 @@ See also: [Ambassador Program](docs/AMBASSADORS.md) for non-code contributions.
 
 ```bash
 # Clone
-git clone https://github.com/QuietFireAI/TelsonBase.git
+git clone https://github.com/QuietFireAI/ClawCoat.git
 cd TelsonBase
 
 # Copy environment, then generate all secrets (run in Git Bash on Windows)
@@ -267,7 +267,7 @@ See `CODE_OF_CONDUCT.md`. Summary: Be respectful, be constructive, focus on the 
 ## Questions?
 
 - GitHub Discussions (preferred)
-- Email: support@telsonbase.com
+- Email: support@clawcoat.com
 
 ---
 

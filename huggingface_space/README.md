@@ -22,7 +22,7 @@ tags:
 short_description: Manners Score + 5 trust tiers. Trust is earned by agents.
 ---
 
-# TelsonBase - Live Governance Demo
+# ClawCoat - Live Governance Demo
 
 **Five trust tiers. One Manners Score. Trust is earned by agents, granted by humans.**
 
@@ -50,7 +50,7 @@ Demotion is instant. The kill switch is always available to a human admin.
 
 ## Full Repository
 
-**→ [github.com/QuietFireAI/TelsonBase](https://github.com/QuietFireAI/TelsonBase)**
+**→ [github.com/QuietFireAI/ClawCoat](https://github.com/QuietFireAI/ClawCoat)**
 
 Source code, documentation, proof sheets, quick start, and full test suite.
 746 tests passing. 0 high-severity findings. Apache 2.0.

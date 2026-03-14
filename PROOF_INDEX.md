@@ -1,4 +1,4 @@
-# TelsonBase - Proof Index
+# ClawCoat - Proof Index
 
 **Every claim is backed by evidence.**
 

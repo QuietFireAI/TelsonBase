@@ -1,4 +1,4 @@
-# TelsonBase Environment Configuration Reference
+# ClawCoat Environment Configuration Reference
 
 **Version:** v11.0.1 · **Maintainer:** Quietfire AI
 

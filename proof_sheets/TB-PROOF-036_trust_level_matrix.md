@@ -1,7 +1,7 @@
 # TB-PROOF-036: Trust Level Permission Matrix
 
 **Sheet ID:** TB-PROOF-036
-**Claim Source:** telsonbase.com - OpenClaw Integration
+**Claim Source:** clawcoat.com - OpenClaw Integration
 **Status:** VERIFIED
 **Last Verified:** March 8, 2026
 **Version:** v11.0.1

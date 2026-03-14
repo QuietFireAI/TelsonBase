@@ -1,7 +1,7 @@
 # TB-PROOF-041: How to Add an Agent - Developer Deep Dive
 
 **Sheet ID:** TB-PROOF-041
-**Claim Source:** telsonbase.com - Control Your Claw
+**Claim Source:** clawcoat.com - Control Your Claw
 **Status:** VERIFIED
 **Last Verified:** March 8, 2026
 **Version:** v11.0.1
@@ -49,7 +49,7 @@ Both paths arrive at the same place: QUARANTINE, an `instance_id`, and a full au
 ## Prerequisites
 
 ```bash
-# TelsonBase must be running
+# ClawCoat must be running
 curl http://localhost:8000/health
 # → {"status": "healthy", ...}
 
@@ -76,7 +76,7 @@ TELSONBASE_URL = "http://localhost:8000"
 ADMIN_TOKEN = "your-jwt-token-here"
 
 # The agent's own API key - this gets hashed (SHA-256) before storage.
-# TelsonBase never stores the plaintext key.
+# ClawCoat never stores the plaintext key.
 AGENT_API_KEY = "my-secret-agent-key-abc123"
 
 response = httpx.post(

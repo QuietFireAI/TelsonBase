@@ -1,4 +1,4 @@
-# TelsonBase - API Reference
+# ClawCoat - API Reference
 
 **Version:** v11.0.1 · **Maintainer:** Quietfire AI
 
@@ -593,7 +593,7 @@ Goose → list_pending_approvals()
 ← { count: 2, approvals: [ { request_id: "APPR-001", agent: "web_agent", action: "POST /api/external" }, ... ] }
 
 You: Approve APPR-001 - I've reviewed it.
-Goose → approve_tool_request(request_id="APPR-001", approved_by="operator@telsonbase.com")
+Goose → approve_tool_request(request_id="APPR-001", approved_by="operator@clawcoat.com")
 ← { approved: true, qms_status: "Thank_You" }
 
 You: Register me as a Goose agent at probation trust level.

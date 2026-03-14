@@ -1,5 +1,5 @@
-# TelsonBase - Frequently Asked Questions
-**Version:** v11.0.1 · **Maintainer:** Quietfire AI - support@telsonbase.com
+# ClawCoat - Frequently Asked Questions
+**Version:** v11.0.1 · **Maintainer:** Quietfire AI - support@clawcoat.com
 
 TelsonBase is the platform for managing autonomous AI agents through earned trust. Agents start at QUARANTINE and work their way up — QUARANTINE → PROBATION → RESIDENT → CITIZEN → AGENT — through demonstrated behavior and explicit human authorization at every step. The compliance infrastructure underneath (audit trails, kill switches, SOC 2 controls) is the proof, not the pitch.
 
@@ -700,7 +700,7 @@ license required. No AGPL network-service disclosure requirements.
 **Support and consulting:** Quietfire AI offers enterprise support, consulting, and
 compliance guidance for production deployments. Apache 2.0 means you are not obligated
 to pay anything - but if you are deploying TelsonBase in healthcare, legal, or insurance
-and want expert help, that is available. Contact support@telsonbase.com.
+and want expert help, that is available. Contact support@clawcoat.com.
 
 ---
 
@@ -868,7 +868,7 @@ cat proof_sheets/INDEX.md
 ```
 
 **Questions not answered here?**
-Open an issue on GitHub or email support@telsonbase.com
+Open an issue on GitHub or email support@clawcoat.com
 
 ---
 

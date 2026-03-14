@@ -1,7 +1,7 @@
 # TB-PROOF-017: Account Lockout After 5 Failed Attempts
 
 **Sheet ID:** TB-PROOF-017
-**Claim Source:** telsonbase.com - Capabilities Section
+**Claim Source:** clawcoat.com - Capabilities Section
 **Status:** VERIFIED
 **Last Verified:** March 8, 2026
 **Version:** v11.0.1

@@ -1,4 +1,4 @@
-# TelsonBase Deployment Guide
+# ClawCoat Deployment Guide
 
 **Version:** v11.0.1 · **Updated:** March 8, 2026
 **Audience:** IT administrators, managed service providers (MSPs), and systems integrators deploying TelsonBase on customer premises for law firms and professional services organizations.
@@ -914,7 +914,7 @@ docker compose stop open-webui
 
 ### Contact
 
-For deployment assistance, contact your TelsonBase account representative or visit [telsonbase.com](https://telsonbase.com).
+For deployment assistance, contact your TelsonBase account representative or visit [clawcoat.com](https://clawcoat.com).
 
 ---
 

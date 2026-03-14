@@ -1,7 +1,7 @@
 # TB-PROOF-032: 10 Self-Hosted Services
 
 **Sheet ID:** TB-PROOF-032
-**Claim Source:** telsonbase.com - Integrations Section
+**Claim Source:** clawcoat.com - Integrations Section
 **Status:** VERIFIED
 **Last Verified:** March 8, 2026
 **Version:** v11.0.1

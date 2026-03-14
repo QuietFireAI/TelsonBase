@@ -1,7 +1,7 @@
 # TB-PROOF-010: AES-256-GCM Encryption at Rest
 
 **Sheet ID:** TB-PROOF-010
-**Claim Source:** telsonbase.com - Capabilities Section, The Promise Section
+**Claim Source:** clawcoat.com - Capabilities Section, The Promise Section
 **Status:** VERIFIED
 **Last Verified:** March 8, 2026
 **Version:** v11.0.1

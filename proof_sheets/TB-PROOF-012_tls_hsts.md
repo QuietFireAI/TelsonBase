@@ -1,7 +1,7 @@
 # TB-PROOF-012: TLS 1.2+ with HSTS Preload
 
 **Sheet ID:** TB-PROOF-012
-**Claim Source:** telsonbase.com - Capabilities Section
+**Claim Source:** clawcoat.com - Capabilities Section
 **Status:** VERIFIED
 **Last Verified:** March 8, 2026
 **Version:** v11.0.1

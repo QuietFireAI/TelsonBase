@@ -1,7 +1,7 @@
 # TB-PROOF-039: Earned Trust Model
 
 **Sheet ID:** TB-PROOF-039
-**Claim Source:** telsonbase.com - Control Your Claw
+**Claim Source:** clawcoat.com - Control Your Claw
 **Status:** VERIFIED
 **Last Verified:** March 8, 2026
 **Version:** v11.0.1

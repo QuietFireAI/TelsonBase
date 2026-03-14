@@ -1,4 +1,4 @@
-# TelsonBase - Legal & Regulatory Compliance Security Profile
+# ClawCoat - Legal & Regulatory Compliance Security Profile
 
 **Version:** v11.0.1 · **Updated:** March 8, 2026 · **Maintainer:** Quietfire AI
 **Platform:** Zero-Trust AI Agent Security Platform
@@ -24,7 +24,7 @@ This document maps TelsonBase's security architecture to the compliance framewor
 - Can access be scoped and revoked?
 - Are sessions time-limited?
 
-### TelsonBase Implementation
+### ClawCoat Implementation
 
 | Control | Implementation | Files |
 |---------|---------------|-------|
@@ -60,7 +60,7 @@ This document maps TelsonBase's security architecture to the compliance framewor
 - How are encryption keys managed?
 - Is key rotation supported?
 
-### TelsonBase Implementation
+### ClawCoat Implementation
 
 | Control | Implementation | Files |
 |---------|---------------|-------|
@@ -92,7 +92,7 @@ This document maps TelsonBase's security architecture to the compliance framewor
 - How long are logs retained?
 - Can you demonstrate chain of custody?
 
-### TelsonBase Implementation
+### ClawCoat Implementation
 
 | Control | Implementation | Files |
 |---------|---------------|-------|
@@ -125,7 +125,7 @@ This document maps TelsonBase's security architecture to the compliance framewor
 - Is there rate limiting and DDoS protection?
 - Are security headers configured?
 
-### TelsonBase Implementation
+### ClawCoat Implementation
 
 | Control | Implementation | Files |
 |---------|---------------|-------|
@@ -161,7 +161,7 @@ This document maps TelsonBase's security architecture to the compliance framewor
 - Can data be deleted on request?
 - Are retention policies configurable?
 
-### TelsonBase Implementation
+### ClawCoat Implementation
 
 | Control | Implementation | Files |
 |---------|---------------|-------|
@@ -194,7 +194,7 @@ This document maps TelsonBase's security architecture to the compliance framewor
 - Is there per-tenant access control?
 - Can tenant data be independently managed (exported, deleted)?
 
-### TelsonBase Implementation
+### ClawCoat Implementation
 
 | Control | Implementation | Files |
 |---------|---------------|-------|
@@ -225,7 +225,7 @@ This document maps TelsonBase's security architecture to the compliance framewor
 - Is there a custodian notification and acknowledgment workflow?
 - Can holds be released with proper authorization and audit trail?
 
-### TelsonBase Implementation
+### ClawCoat Implementation
 
 | Control | Implementation | Files |
 |---------|---------------|-------|
@@ -258,7 +258,7 @@ This document maps TelsonBase's security architecture to the compliance framewor
 - Are notification activities auditable?
 - What are the recovery time objectives?
 
-### TelsonBase Implementation
+### ClawCoat Implementation
 
 | Control | Implementation | Files |
 |---------|---------------|-------|
@@ -292,7 +292,7 @@ This document maps TelsonBase's security architecture to the compliance framewor
 - Is there human oversight of AI decisions?
 - How is agent trust established?
 
-### TelsonBase Implementation
+### ClawCoat Implementation
 
 | Control | Implementation | Files |
 |---------|---------------|-------|
@@ -322,7 +322,7 @@ This document maps TelsonBase's security architecture to the compliance framewor
 - Is there a framework for SOC 2 evidence?
 - Can reports be exported for auditors?
 
-### TelsonBase Implementation
+### ClawCoat Implementation
 
 | Control | Implementation | Files |
 |---------|---------------|-------|
@@ -395,7 +395,7 @@ This document maps TelsonBase's security architecture to the compliance framewor
 - **Security Policy:** `SECURITY.md` in project root
 - **Vulnerability Reporting:** Responsible disclosure process documented
 - **Response Times:** Critical (24h), High (7d), Medium (30d), Low (next release)
-- **Contact:** support@telsonbase.com
+- **Contact:** support@clawcoat.com
 
 ---
 

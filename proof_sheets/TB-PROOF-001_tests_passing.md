@@ -1,7 +1,7 @@
 # TB-PROOF-001: Test Suite Count
 
 **Sheet ID:** TB-PROOF-001
-**Claim Source:** telsonbase.com - Hero Section
+**Claim Source:** clawcoat.com - Hero Section
 **Status:** VERIFIED
 **Last Verified:** March 8, 2026
 **Version:** v11.0.1

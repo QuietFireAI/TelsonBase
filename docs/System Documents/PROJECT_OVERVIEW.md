@@ -1,4 +1,4 @@
-# TelsonBase - Project Overview
+# ClawCoat - Project Overview
 
 **Earned Autonomy for Autonomous AI Agents**
 **Built for Data Sovereignty. Designed for Local-First Deployment.**

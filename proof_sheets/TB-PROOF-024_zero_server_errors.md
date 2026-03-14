@@ -1,7 +1,7 @@
 # TB-PROOF-024: 0 Server Errors Under Fuzzing
 
 **Sheet ID:** TB-PROOF-024
-**Claim Source:** telsonbase.com - Security Testing Section
+**Claim Source:** clawcoat.com - Security Testing Section
 **Status:** VERIFIED
 **Last Verified:** March 8, 2026
 **Version:** v11.0.1

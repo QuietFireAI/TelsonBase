@@ -1,4 +1,4 @@
-# TelsonBase - What's Next
+# ClawCoat - What's Next
 
 **Version:** v11.0.1 · **Launch:** March 8, 2026 · **Maintainer:** Quietfire AI
 

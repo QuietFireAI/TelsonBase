@@ -1,7 +1,7 @@
 # TB-PROOF-008: HITECH Breach Notification (60-Day Tracking)
 
 **Sheet ID:** TB-PROOF-008
-**Claim Source:** telsonbase.com - Compliance Section
+**Claim Source:** clawcoat.com - Compliance Section
 **Status:** VERIFIED
 **Last Verified:** March 8, 2026
 **Version:** v11.0.1

@@ -1,4 +1,4 @@
-# TelsonBase Ambassador Program
+# ClawCoat Ambassador Program
 
 **Version:** v11.0.1 · **Maintainer:** Quietfire AI
 
@@ -122,7 +122,7 @@ You can help answer questions, write tutorials, or moderate discussions. You don
   - How you'd want to contribute (deploy and report, write code, answer questions, or all of the above)
 3. I'll respond personally. This isn't automated.
 
-Or email directly: **support@telsonbase.com** with subject line "Ambassador Program"
+Or email directly: **support@clawcoat.com** with subject line "Ambassador Program"
 
 ---
 

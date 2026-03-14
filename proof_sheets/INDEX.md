@@ -1,8 +1,8 @@
-# TelsonBase Proof Sheets
+# ClawCoat Proof Sheets
 
 **Every claim is backed by evidence.**
 
-Every claim made on [telsonbase.com](https://telsonbase.com) has a corresponding evidence sheet in this directory. Each sheet documents the exact claim, provides the source code files, test files, and verification commands that prove it. No marketing fluff - just traceable evidence.
+Every claim made on [clawcoat.com](https://clawcoat.com) has a corresponding evidence sheet in this directory. Each sheet documents the exact claim, provides the source code files, test files, and verification commands that prove it. No marketing fluff - just traceable evidence.
 
 **Format:** Each sheet follows a standardized format inspired by Safety Data Sheets (SDS). Grab the sheet number, verify the claim, move on.
 

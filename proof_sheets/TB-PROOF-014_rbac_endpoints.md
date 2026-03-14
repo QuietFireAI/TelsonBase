@@ -1,7 +1,7 @@
 # TB-PROOF-014: 150 RBAC-Protected Endpoints
 
 **Sheet ID:** TB-PROOF-014
-**Claim Source:** telsonbase.com - Hero Section, Capabilities Section
+**Claim Source:** clawcoat.com - Hero Section, Capabilities Section
 **Status:** VERIFIED
 **Last Verified:** March 10, 2026
 **Version:** v11.0.1

@@ -29,7 +29,7 @@ Self-hosted. Open source. Apache 2.0. [clawcoat.com](https://clawcoat.com)
 </p>
 
 <p align="center">
-  <a href="https://github.com/QuietFireAI/TelsonBase/actions/workflows/ci.yml"><img src="https://github.com/QuietFireAI/TelsonBase/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
+  <a href="https://github.com/QuietFireAI/ClawCoat/actions/workflows/ci.yml"><img src="https://github.com/QuietFireAI/ClawCoat/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
   &nbsp;
   <img src="https://img.shields.io/badge/license-Apache%202.0-blue?style=flat" alt="License: Apache 2.0">
   &nbsp;
@@ -62,9 +62,9 @@ If something is broken, [open an issue](../../issues). If something is missing t
 
 ---
 
-## What Is TelsonBase?
+## What Is ClawCoat?
 
-TelsonBase is a **self-hosted, governance-first trust enabled platform** for autonomous AI agents. It acts as a governed MCP proxy: agents connect to TelsonBase, and every action they attempt is evaluated against trust levels, Manners compliance, anomaly detection, and approval gates before execution. The agent is never modified. TelsonBase wraps it.
+ClawCoat is a **self-hosted, governance-first trust enabled platform** for autonomous AI agents. It acts as a governed MCP proxy: agents connect to ClawCoat, and every action they attempt is evaluated against trust levels, Manners compliance, anomaly detection, and approval gates before execution. The agent is never modified. ClawCoat wraps it.
 
 ---
 
@@ -72,7 +72,7 @@ TelsonBase is a **self-hosted, governance-first trust enabled platform** for aut
 
 ```bash
 # Clone
-git clone https://github.com/QuietFireAI/TelsonBase.git
+git clone https://github.com/QuietFireAI/ClawCoat.git
 cd telsonbase
 
 # Configure
@@ -128,7 +128,7 @@ Everything below is a live instance. No mocks. No scripted responses. Real gover
 ---
 
 **GIF 1 - Policy Block**
-QUARANTINE agent attempts an external financial API call. TelsonBase blocks it before execution. Decision written to the tamper-evident audit chain. Agent never touched the endpoint.
+QUARANTINE agent attempts an external financial API call. ClawCoat blocks it before execution. Decision written to the tamper-evident audit chain. Agent never touched the endpoint.
 
 ![Governance Blocked](screenshots/governance-blocked.gif)
 
@@ -142,7 +142,7 @@ QUARANTINE agent fires an action - governance gates it, queues a human approval.
 ---
 
 **GIF 3 - Human-in-the-Loop: Approve**
-PROBATION agent attempts an external http_post. TelsonBase holds it - cannot execute without human review. Operator reviews the full payload in the approval dashboard and approves. `::_Thank_You::` logged to the audit chain - the QMS™ command block for successful completion, attributed to the operator, hash-chained to every event before it. The agent's action goes through. Trust, verified.
+PROBATION agent attempts an external http_post. ClawCoat holds it - cannot execute without human review. Operator reviews the full payload in the approval dashboard and approves. `::_Thank_You::` logged to the audit chain - the QMS™ command block for successful completion, attributed to the operator, hash-chained to every event before it. The agent's action goes through. Trust, verified.
 
 ![HITL Approval](screenshots/hitl-approval.gif)
 
@@ -198,7 +198,7 @@ Fresh agent at QUARANTINE attempts `file_write` - blocked outright. Promoted to 
 
 ## The Secret Sauce: Earned Trust
 
-Every other platform gives agents permissions and hopes for the best. TelsonBase does the opposite. Every agent starts at **Quarantine** with zero autonomous permissions and earns its way up.
+Every other platform gives agents permissions and hopes for the best. ClawCoat does the opposite. Every agent starts at **Quarantine** with zero autonomous permissions and earns its way up.
 
 ```
 QUARANTINE ──► PROBATION ──► RESIDENT ──► CITIZEN ──► AGENT
@@ -268,7 +268,7 @@ Every control references a source file and a passing test. Run `proof_sheets/` t
 
 ## Who This Is For
 
-**The regulated industries -law firms, healthcare, insurance, accounting -TelsonBase was built against the standards they operate under.** HIPAA. SOC 2. HITRUST. CJIS. GDPR. PCI DSS. ABA Model Rules. Attorney-client privilege. Protected health information. Financial records. The kind of data where "we'll figure out security later" means malpractice, regulatory action, or worse. The compliance mappings are in the repository because if it holds up to those frameworks, it works everywhere below them.
+**The regulated industries -law firms, healthcare, insurance, accounting -ClawCoat was built against the standards they operate under.** HIPAA. SOC 2. HITRUST. CJIS. GDPR. PCI DSS. ABA Model Rules. Attorney-client privilege. Protected health information. Financial records. The kind of data where "we'll figure out security later" means malpractice, regulatory action, or worse. The compliance mappings are in the repository because if it holds up to those frameworks, it works everywhere below them.
 
 **Small businesses** get the same platform. Five employees or fifty -every agent action is governed, every decision logged, every permission earned. No enterprise contract required.
 
@@ -280,7 +280,7 @@ It runs on a $200 mini-PC, a Raspberry Pi, a homelab server, or a cloud VM. The 
 
 ## Connecting Goose (or Any MCP Client)
 
-TelsonBase ships a native MCP gateway at `/mcp`. [Goose](https://github.com/block/goose) by Block connects to it out of the box. No plugin, no glue code, no n8n. The configuration file is included.
+ClawCoat ships a native MCP gateway at `/mcp`. [Goose](https://github.com/block/goose) by Block connects to it out of the box. No plugin, no glue code, no n8n. The configuration file is included.
 
 **Three steps:**
 
@@ -298,7 +298,7 @@ goose session start
 Goose will discover all 13 tools automatically via MCP tool discovery. From there, natural language:
 
 ```
-> What is the TelsonBase system status?
+> What is the ClawCoat system status?
 > List all pending approval requests
 > Show me the agents in quarantine
 > Approve request req_abc123
@@ -364,7 +364,7 @@ Right now, as you read this:
 
 Nobody asked what happens to your data when an AI agent has no one watching it. And while that conversation was missing, a quieter question went unasked too: "Where does your data go when you hand it to a cloud AI platform?" Every document you attach, every conversation you have are all ingested, stored, processed on someone else's cloud infrastructure you don't control, under terms that can change without notice.
 
-TelsonBase puts you back in control. Every action by an AI agent is evaluated. Every permission earned. Every decision is auditable. The model runs on your hardware. Your data stays on your network. Nothing leaves unless you say so.
+ClawCoat puts you back in control. Every action by an AI agent is evaluated. Every permission earned. Every decision is auditable. The model runs on your hardware. Your data stays on your network. Nothing leaves unless you say so.
 
 The compliance frameworks aren't on a roadmap; they're already built. SOC 2, HIPAA, HITRUST, CJIS, GDPR, PCI DSS, ABA Model Rules. 746 passing tests. 51 SOC 2 controls mapped to source code. Cryptographic audit trails. Human-in-the-loop approval gates. Behavioral anomaly detection. Kill switches.
 
@@ -376,7 +376,7 @@ Built for the industries that can't afford to get this wrong: small business, re
 
 One piece of this project that deserves its own moment: the Qualified Message Standard.
 
-This is unique and novel to Quietfire AI and the TelsonBase. It is only presented for logs and anomaly detection. Most agent communication protocols require a shared configuration layer - both sides need to know the schema, register with a coordinator, or load the same library before they can understand each other. That works fine when every agent in the room was built by the same team. It breaks the moment a new type of agent shows up that was not part of the original design.
+This is unique and novel to Quietfire AI and ClawCoat. It is only presented for logs and anomaly detection. Most agent communication protocols require a shared configuration layer - both sides need to know the schema, register with a coordinator, or load the same library before they can understand each other. That works fine when every agent in the room was built by the same team. It breaks the moment a new type of agent shows up that was not part of the original design.
 
 QMS™ solves that differently. The grammar is in the format itself:
 
@@ -405,7 +405,7 @@ QMS™ is an open standard (MIT licensed). The trademark covers the name. The pr
 
 The `proof_sheets/` directory contains **788 evidence documents**.
 
-This is not a marketing decision. If TelsonBase preaches governance, it has to practice it. Every claim has a receipt. Every test has a sheet. If the evidence doesn't hold up, the claim gets fixed - not hidden.
+This is not a marketing decision. If ClawCoat preaches governance, it has to practice it. Every claim has a receipt. Every test has a sheet. If the evidence doesn't hold up, the claim gets fixed - not hidden.
 
 **Three tiers:**
 
@@ -457,7 +457,7 @@ Two things. The main two things.
 
 **Behavior has a score.** Every agent carries a [**Manners compliance score**](docs/System%20Documents/MANNERS.md) - a live measurement across five principles: Human Control, Transparency, Value Alignment, Privacy, and Security. The score moves in real time. Blocked actions cost points. Good behavior holds the score. Drop below 50% and the agent is automatically demoted to Quarantine, no human required.
 
-These two things together are the main architecture. Everything else in TelsonBase - the audit trail, the kill switches, the compliance frameworks, the 8-step governance pipeline - exists to support them. The tools an agent can access follow the same logic: authorization requires both the trust level and a demonstrated need. That's not a restriction - that's a credential.
+These two things together are the main architecture. Everything else in ClawCoat - the audit trail, the kill switches, the compliance frameworks, the 8-step governance pipeline - exists to support them. The tools an agent can access follow the same logic: authorization requires both the trust level and a demonstrated need. That's not a restriction - that's a credential.
 
 Agents that already demonstrate the ability to make decisions can certainly understand that their own actions have consequences. As my dad would say.
 
@@ -467,7 +467,7 @@ Agents that already demonstrate the ability to make decisions can certainly unde
 
 I'm one person and I'm responsible for this project. This project was built over three years on consumer hardware, with standard subscriptions, using three AI platforms - not as tools, but as partners. The turning point came when I started cross-checking each model's work against the others. That process eliminated conversational drift and produced what you're looking at now, and what I will continue to build with.
 
-TelsonBase is my interpretation of how AI agents can work together safely and with some order. It is not the definitive answer - it is an approach one developer chose for running agents in his own company, built to production standards from the first line because the data those agents would touch demanded nothing less. I'm sharing this freely because the problems for AI agents are real and one person's solution and energy only goes so far. When this project gains traction, community contributions will drive expanded capability - those will be released back openly as it develops.
+ClawCoat is my interpretation of how AI agents can work together safely and with some order. It is not the definitive answer - it is an approach one developer chose for running agents in his own company, built to production standards from the first line because the data those agents would touch demanded nothing less. I'm sharing this freely because the problems for AI agents are real and one person's solution and energy only goes so far. When this project gains traction, community contributions will drive expanded capability - those will be released back openly as it develops.
 
 Fork it. Break it. Build something better from it. The goal was never to own this problem but to model one way to solve it seriously and put that model where others can use it.
 
@@ -485,7 +485,7 @@ I'm one person. This project needs people who see what it is and want to help ca
 
 If you work in a regulated industry and understand what's at stake, read [AMBASSADORS.md](docs/AMBASSADORS.md). I'm looking for people who will:
 
-- Deploy TelsonBase in their environment and report what works and what doesn't
+- Deploy ClawCoat in their environment and report what works and what doesn't
 - Help answer community questions in areas I don't have deep expertise (healthcare compliance, legal technology, insurance regulation, accounting standards)
 - Contribute code, documentation, or testing
 - Help shape the roadmap based on real-world needs
@@ -506,7 +506,7 @@ This project was built through human-AI collaboration. Not "AI generated my code
 | **Claude Sonnet 4.6** | Primary development, security implementation |
 | **Claude Code (Sonnet/Opus 4.6)** | Production hardening, OpenClaw integration, testing |
 
-Built independently. No corporate backing, no venture funding, no AI company involvement. This is a developer in Ohio using publicly available AI models as genuine collaborators to build something the world needs right now. Technical integrations - W3C DID - are ecosystem compatibility choices, not business dependencies. TelsonBase works with any W3C DID-compliant provider.
+Built independently. No corporate backing, no venture funding, no AI company involvement. This is a developer in Ohio using publicly available AI models as genuine collaborators to build something the world needs right now. Technical integrations - W3C DID - are ecosystem compatibility choices, not business dependencies. ClawCoat works with any W3C DID-compliant provider.
 
 ---
 
@@ -526,19 +526,19 @@ Questions or bugs? See [SUPPORT.md](SUPPORT.md).
 
 ## License
 
-TelsonBase is open source under the [Apache License, Version 2.0](LICENSE).
+ClawCoat is open source under the [Apache License, Version 2.0](LICENSE).
 
 Free for any use - personal, commercial, production, research. Use it, modify it, deploy it, build on it. Attribution required: retain the copyright and license notices when distributing. Full terms: [`LICENSE`](LICENSE)
 
-TelsonBase is provided as-is with no warranty. Deploying organizations are responsible for their own configurations, agents, and compliance outcomes. Full terms: [`TERMS_OF_USE.md`](docs/TERMS_OF_USE.md)
+ClawCoat is provided as-is with no warranty. Deploying organizations are responsible for their own configurations, agents, and compliance outcomes. Full terms: [`TERMS_OF_USE.md`](docs/TERMS_OF_USE.md)
 
 ---
 
 ## Contact
 
 **Jeff Phillips** - Quietfire AI
-- Email: support@telsonbase.com
-- Website: [telsonbase.com](https://telsonbase.com)
+- Email: support@clawcoat.com
+- Website: [clawcoat.com](https://clawcoat.com)
 - ORCID: [0009-0000-1375-1725](https://orcid.org/0009-0000-1375-1725)
 - Support the project: [buymeacoffee.com/jphillips](https://buymeacoffee.com/jphillips)
 
@@ -546,16 +546,16 @@ TelsonBase is provided as-is with no warranty. Deploying organizations are respo
 
 ## Cite This Work
 
-If you use TelsonBase in research, a paper, or a published project, a `CITATION.cff` file is included in the root of this repository. GitHub generates a formatted citation automatically - click **"Cite this repository"** on the right side of the repo page.
+If you use ClawCoat in research, a paper, or a published project, a `CITATION.cff` file is included in the root of this repository. GitHub generates a formatted citation automatically - click **"Cite this repository"** on the right side of the repo page.
 
 Manual citation:
 ```
-Phillips, J. (2026). TelsonBase (v11.0.1). Quietfire AI.
-https://github.com/QuietFireAI/TelsonBase
+Phillips, J. (2026). ClawCoat (v11.0.1). Quietfire AI.
+https://github.com/QuietFireAI/ClawCoat
 ORCID: https://orcid.org/0009-0000-1375-1725
 ```
 
 ---
 
-*"The industry gave AI agents the keys to everything before anyone asked who was watching. TelsonBase is the answer."*
+*"The industry gave AI agents the keys to everything before anyone asked who was watching. ClawCoat is the answer."*
 

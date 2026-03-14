@@ -1,7 +1,7 @@
 # TB-PROOF-029: Local LLM Inference via Ollama
 
 **Sheet ID:** TB-PROOF-029
-**Claim Source:** telsonbase.com - The Promise Section
+**Claim Source:** clawcoat.com - The Promise Section
 **Status:** VERIFIED
 **Last Verified:** March 8, 2026
 **Version:** v11.0.1

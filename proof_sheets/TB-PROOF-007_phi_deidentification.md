@@ -1,7 +1,7 @@
 # TB-PROOF-007: PHI De-identification (18 Safe Harbor Identifiers)
 
 **Sheet ID:** TB-PROOF-007
-**Claim Source:** telsonbase.com - The Promise Section
+**Claim Source:** clawcoat.com - The Promise Section
 **Status:** VERIFIED
 **Last Verified:** March 8, 2026
 **Version:** v11.0.1

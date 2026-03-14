@@ -1,4 +1,4 @@
-# TelsonBase Incident Response Plan
+# ClawCoat Incident Response Plan
 
 **Version:** v11.0.1 · **Maintainer:** Quietfire AI
 

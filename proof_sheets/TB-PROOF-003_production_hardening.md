@@ -1,7 +1,7 @@
 # TB-PROOF-003: 22 Production Hardening Items
 
 **Sheet ID:** TB-PROOF-003
-**Claim Source:** telsonbase.com - Capabilities Section
+**Claim Source:** clawcoat.com - Capabilities Section
 **Status:** VERIFIED
 **Last Verified:** March 8, 2026
 **Version:** v11.0.1

@@ -1,4 +1,4 @@
-# Project Governance - TelsonBase
+# Project Governance - ClawCoat
 
 **Version:** v11.0.1 · **Maintainer:** Quietfire AI
 
@@ -14,7 +14,7 @@ TelsonBase is a self-hosted, source-available platform for managing autonomous A
 
 **Jeff Phillips** - Founder, Quietfire AI
 - GitHub: [@QuietFireAI](https://github.com/QuietFireAI)
-- Email: support@telsonbase.com
+- Email: support@clawcoat.com
 - ORCID: [0009-0000-1375-1725](https://orcid.org/0009-0000-1375-1725)
 
 The maintainer holds final authority over the direction, architecture, and release schedule of TelsonBase. This is a single-maintainer project at present. Governance will expand as the contributor base grows.

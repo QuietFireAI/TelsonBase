@@ -1,6 +1,6 @@
 # OpenClaw Operations Guide
 
-## TelsonBase v11.0.1 - "Control Your Claw"
+## ClawCoat v11.0.1 - "Control Your Claw"
 
 **Architecture:** TelsonBase acts as a governed MCP proxy. OpenClaw is never modified - TelsonBase wraps it. Every action the claw wants to take is evaluated through an 8-step governance pipeline before execution.
 

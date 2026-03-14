@@ -1,4 +1,4 @@
-# TelsonBase - Security Architecture
+# ClawCoat - Security Architecture
 
 **Version:** v11.0.1 · **Maintainer:** Quietfire AI
 

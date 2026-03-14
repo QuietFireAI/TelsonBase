@@ -1,4 +1,4 @@
-# TelsonBase - Restore and Recovery Guide
+# ClawCoat - Restore and Recovery Guide
 
 **Version:** v11.0.1 · **Maintainer:** Quietfire AI
 

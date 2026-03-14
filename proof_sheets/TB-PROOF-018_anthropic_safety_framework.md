@@ -1,7 +1,7 @@
 # TB-PROOF-018: Built on Anthropic's Agent Safety Framework (Manners)
 
 **Sheet ID:** TB-PROOF-018
-**Claim Source:** telsonbase.com - AI Safety Section
+**Claim Source:** clawcoat.com - AI Safety Section
 **Status:** VERIFIED
 **Last Verified:** March 8, 2026
 **Version:** v11.0.1

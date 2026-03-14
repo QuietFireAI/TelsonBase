@@ -1,6 +1,6 @@
-# TelsonBase - Security Policy
+# ClawCoat - Security Policy
 
-**Version:** v11.0.1 · **Maintainer:** Quietfire AI - security@telsonbase.com
+**Version:** v11.0.1 · **Maintainer:** Quietfire AI - security@clawcoat.com
 
 ## Supported Versions
 
@@ -20,9 +20,9 @@ Only the latest minor release receives security patches. Upgrade to the current 
 
 ### Disclosure Process
 
-1. **Email:** Send details to **security@telsonbase.com** with subject line `[SECURITY] TelsonBase - <brief description>`
+1. **Email:** Send details to **security@clawcoat.com** with subject line `[SECURITY] TelsonBase - <brief description>`
 
-   > **URGENT:** Security vulnerabilities must be reported to security@telsonbase.com only. Do not use general support channels for security disclosures.
+   > **URGENT:** Security vulnerabilities must be reported to security@clawcoat.com only. Do not use general support channels for security disclosures.
 2. **Include:**
   - Description of the vulnerability
   - Steps to reproduce (or proof of concept)

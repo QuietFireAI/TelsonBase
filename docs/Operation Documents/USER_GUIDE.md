@@ -1,4 +1,4 @@
-# TelsonBase User Guide
+# ClawCoat User Guide
 
 **Version:** v11.0.1 · **Maintainer:** Quietfire AI
 **For:** Solopreneurs, small teams, and anyone running TelsonBase for the first time
@@ -37,7 +37,7 @@ It runs as a set of Docker containers on any machine with Docker installed. Agen
 ### Step 1: Clone and Configure
 
 ```bash
-git clone https://github.com/QuietFireAI/TelsonBase.git
+git clone https://github.com/QuietFireAI/ClawCoat.git
 cd telsonbase
 cp .env.example .env
 ```

@@ -1,7 +1,7 @@
 # TB-PROOF-038: Manners Auto-Demotion
 
 **Sheet ID:** TB-PROOF-038
-**Claim Source:** telsonbase.com - Control Your Claw
+**Claim Source:** clawcoat.com - Control Your Claw
 **Status:** VERIFIED
 **Last Verified:** March 8, 2026
 **Version:** v11.0.1

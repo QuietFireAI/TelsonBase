@@ -1,4 +1,4 @@
-# TelsonBase Project Structure
+# ClawCoat Project Structure
 
 **Version:** v11.0.1 | **Updated:** March 8, 2026
 

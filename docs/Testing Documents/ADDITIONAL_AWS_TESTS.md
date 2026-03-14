@@ -1,4 +1,4 @@
-# TelsonBase - Additional AWS Tests & Pre-Handoff Strategy
+# ClawCoat - Additional AWS Tests & Pre-Handoff Strategy
 
 **Date:** March 1, 2026
 **Context:** Supplemental tests beyond the 10-phase AWS Testing Guide

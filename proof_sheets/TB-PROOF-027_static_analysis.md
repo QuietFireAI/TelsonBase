@@ -1,7 +1,7 @@
 # TB-PROOF-027: 0 High-Severity Findings (Static Analysis)
 
 **Sheet ID:** TB-PROOF-027
-**Claim Source:** telsonbase.com - Security Testing Section
+**Claim Source:** clawcoat.com - Security Testing Section
 **Status:** VERIFIED
 **Last Verified:** March 8, 2026
 **Version:** v11.0.1

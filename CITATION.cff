@@ -1,5 +1,5 @@
 cff-version: 1.2.0
-message: "If you use TelsonBase in your research or work, please cite it using this metadata."
+message: "If you use ClawCoat in your research or work, please cite it using this metadata."
 title: "TelsonBase"
 version: 11.0.1
 date-released: 2026-03-08
@@ -15,8 +15,8 @@ authors:
     alias: "Jeff Phillips"
     affiliation: "Quietfire AI"
     orcid: "https://orcid.org/0009-0000-1375-1725"
-repository-code: "https://github.com/QuietFireAI/TelsonBase"
-url: "https://telsonbase.com"
+repository-code: "https://github.com/QuietFireAI/ClawCoat"
+url: "https://clawcoat.com"
 keywords:
   - ai-governance
   - ai-agents

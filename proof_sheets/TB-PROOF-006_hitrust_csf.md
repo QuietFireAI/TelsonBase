@@ -1,7 +1,7 @@
 # TB-PROOF-006: HITRUST CSF 12 Domains
 
 **Sheet ID:** TB-PROOF-006
-**Claim Source:** telsonbase.com - Compliance Section
+**Claim Source:** clawcoat.com - Compliance Section
 **Status:** VERIFIED
 **Last Verified:** March 8, 2026
 **Version:** v11.0.1

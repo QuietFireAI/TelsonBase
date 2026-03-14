@@ -1,7 +1,7 @@
 # TB-PROOF-030: No Third-Party Data Dependencies
 
 **Sheet ID:** TB-PROOF-030
-**Claim Source:** telsonbase.com - Hero Section, FAQ
+**Claim Source:** clawcoat.com - Hero Section, FAQ
 **Status:** VERIFIED
 **Last Verified:** March 8, 2026
 **Version:** v11.0.1

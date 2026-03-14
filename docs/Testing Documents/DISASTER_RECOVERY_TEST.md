@@ -1,4 +1,4 @@
-# TelsonBase Disaster Recovery Test Procedure
+# ClawCoat Disaster Recovery Test Procedure
 
 **Version:** v11.0.1 · **Maintainer:** Quietfire AI
 **Last Updated:** March 8, 2026

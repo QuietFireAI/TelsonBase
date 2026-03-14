@@ -1,4 +1,4 @@
-# TelsonBase Disaster Recovery Plan
+# ClawCoat Disaster Recovery Plan
 
 **Version:** v11.0.1 · **Updated:** March 8, 2026 · **Maintainer:** Quietfire AI
 
@@ -158,7 +158,7 @@ curl -H "X-API-Key: $API_KEY" http://localhost:8000/v1/agents/
 **Step 1: Infrastructure Recovery**
 ```bash
 # Clone repository
-git clone https://github.com/QuietFireAI/TelsonBase.git
+git clone https://github.com/QuietFireAI/ClawCoat.git
 cd telsonbase
 
 # Restore environment

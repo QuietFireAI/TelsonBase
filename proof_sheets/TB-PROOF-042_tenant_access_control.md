@@ -1,7 +1,7 @@
 # TB-PROOF-042: Tenant Access Control - allowed_actors Enforcement
 
 **Sheet ID:** TB-PROOF-042
-**Claim Source:** TelsonBase architecture - multi-tenancy security model
+**Claim Source:** ClawCoat architecture - multi-tenancy security model
 **Status:** VERIFIED
 **Last Verified:** March 8, 2026
 **Version:** v11.0.1

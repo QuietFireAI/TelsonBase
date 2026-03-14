@@ -1,4 +1,4 @@
-# Third-Party Notices - TelsonBase v11.0.1
+# Third-Party Notices - ClawCoat v11.0.1
 
 TelsonBase incorporates and depends on open-source software. This document
 lists all third-party dependencies, their licenses, and the corresponding

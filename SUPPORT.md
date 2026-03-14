@@ -1,4 +1,4 @@
-# Getting Support - TelsonBase
+# Getting Support - ClawCoat
 
 **Version:** v11.0.1 · **Maintainer:** Quietfire AI
 
@@ -13,7 +13,7 @@ Check these first - most common issues are already documented:
 - **[Troubleshooting Guide](docs/Operation%20Documents/TROUBLESHOOTING.md)** - Docker issues, auth failures, Redis errors, port conflicts, SSL problems
 - **[FAQ](docs/FAQ.md)** - Common questions about architecture, security, and integrations
 - **[Installation Guide - Windows](docs/Operation%20Documents/INSTALLATION_GUIDE_WINDOWS.md)** - Fresh install walkthrough
-- **[GitHub Issues](https://github.com/QuietFireAI/TelsonBase/issues)** - Search open and closed issues before opening a new one
+- **[GitHub Issues](https://github.com/QuietFireAI/ClawCoat/issues)** - Search open and closed issues before opening a new one
 
 ---
 
@@ -21,7 +21,7 @@ Check these first - most common issues are already documented:
 
 ### Bugs and Errors
 
-Open a **[GitHub Issue](https://github.com/QuietFireAI/TelsonBase/issues/new/choose)** using the Bug Report template.
+Open a **[GitHub Issue](https://github.com/QuietFireAI/ClawCoat/issues/new/choose)** using the Bug Report template.
 
 Include:
 - TelsonBase version: `curl http://localhost:8000/health`
@@ -33,7 +33,7 @@ Include:
 
 ### Feature Requests
 
-Open a **[GitHub Issue](https://github.com/QuietFireAI/TelsonBase/issues/new/choose)** using the Feature Request template. Describe the use case, not just the feature - understanding what you are trying to accomplish helps evaluate the request in context.
+Open a **[GitHub Issue](https://github.com/QuietFireAI/ClawCoat/issues/new/choose)** using the Feature Request template. Describe the use case, not just the feature - understanding what you are trying to accomplish helps evaluate the request in context.
 
 ### Security Issues
 
@@ -43,8 +43,8 @@ Report privately following the process in [SECURITY.md](SECURITY.md). Security i
 
 ### General Questions
 
-- **GitHub Discussions:** [github.com/QuietFireAI/TelsonBase/discussions](https://github.com/QuietFireAI/TelsonBase/discussions)
-- **Email:** support@telsonbase.com
+- **GitHub Discussions:** [github.com/QuietFireAI/ClawCoat/discussions](https://github.com/QuietFireAI/ClawCoat/discussions)
+- **Email:** support@clawcoat.com
 
 ---
 

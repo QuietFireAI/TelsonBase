@@ -1,7 +1,7 @@
 # TB-PROOF-004: 51 SOC 2 Controls Mapped to Source Code
 
 **Sheet ID:** TB-PROOF-004
-**Claim Source:** telsonbase.com - Compliance Section, Hero Section
+**Claim Source:** clawcoat.com - Compliance Section, Hero Section
 **Status:** VERIFIED
 **Last Verified:** March 8, 2026
 **Version:** v11.0.1

@@ -1,4 +1,4 @@
-# TelsonBase - Developer Guide
+# ClawCoat - Developer Guide
 
 **Version:** v11.0.1 · **Maintainer:** Quietfire AI
 
@@ -524,7 +524,7 @@ docker run -d -p 6379:6379 --name redis-dev redis:7-alpine
 ### Setup
 
 ```bash
-git clone https://github.com/QuietFireAI/TelsonBase.git
+git clone https://github.com/QuietFireAI/ClawCoat.git
 cd TelsonBase
 
 python -m venv venv
@@ -588,11 +588,11 @@ pytest --cov=core --cov=agents --cov-report=html tests/
 4. Read [OPENCLAW_INTEGRATION_GUIDE.md](OPENCLAW_INTEGRATION_GUIDE.md) if you need external agents (Goose, Claude Desktop, HTTP clients)
 5. See [TROUBLESHOOTING.md](TROUBLESHOOTING.md) for common issues
 
-For questions: support@telsonbase.com
+For questions: support@clawcoat.com
 
 ---
 
-> **On AI collaboration:** TelsonBase was built with Claude Code (Anthropic) as engineering co-author. 80+ commits carry a `Co-Authored-By: Claude Sonnet 4.6` trailer. That is an accurate record of how this was built, not a liability disclaimer. The README contains a full verification note from Claude Code covering what was checked against the live codebase before launch. If you have questions about methodology, `support@telsonbase.com` reaches the human.
+> **On AI collaboration:** TelsonBase was built with Claude Code (Anthropic) as engineering co-author. 80+ commits carry a `Co-Authored-By: Claude Sonnet 4.6` trailer. That is an accurate record of how this was built, not a liability disclaimer. The README contains a full verification note from Claude Code covering what was checked against the live codebase before launch. If you have questions about methodology, `support@clawcoat.com` reaches the human.
 
 ---
 
