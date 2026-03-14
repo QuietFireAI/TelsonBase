@@ -9,21 +9,21 @@ app_file: app.py
 pinned: true
 license: apache-2.0
 tags:
- - ai-governance
- - ai-agents
- - mcp-gateway
- - agent-security
- - trust-tiers
- - active-decision-making
- - human-in-the-loop
- - audit-trail
- - zero-trust
- - self-hosted
- - mcp
- - goose
- - kill-switch
- - agentic-ai
-short_description: Every agent tool call: allow, gate, or block. Before execution. Five trust tiers.
+  - ai-governance
+  - ai-agents
+  - mcp-gateway
+  - agent-security
+  - trust-tiers
+  - active-decision-making
+  - human-in-the-loop
+  - audit-trail
+  - zero-trust
+  - self-hosted
+  - mcp
+  - goose
+  - kill-switch
+  - agentic-ai
+short_description: "Every agent call: allow, gate, or block. Five tiers."
 ---
 
 # ClawCoat — Active Decision Making for AI Agents
