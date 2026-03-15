@@ -1,24 +1,12 @@
 Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
-Upstream-Name: ClawCoat (TelsonBase)
+Upstream-Name: ClawCoat
 Upstream-Contact: Jeff Phillips <jeff@quietfireai.com>
-Source: https://github.com/QuietFireAI/TelsonBase
+Source: https://github.com/QuietFireAI/ClawCoat
 
-Files: *.md *.txt *.rst docs/* proof_sheets/* licenses/*
-Copyright: 2026 Quietfire AI / Jeff Phillips
-License: Apache-2.0
-
-Files: *.yml *.yaml .github/* monitoring/* alembic/versions/*
-Copyright: 2026 Quietfire AI / Jeff Phillips
-License: Apache-2.0
-
-Files: Dockerfile* docker-compose* *.sh scripts/* *.cfg *.ini *.toml *.json
+Files: **
 Copyright: 2026 Quietfire AI / Jeff Phillips
 License: Apache-2.0
 
 Files: LICENSES/*
-Copyright: Various — see individual license files
+Copyright: Various -- see individual license files
 License: LicenseRef-scancode-public-domain
-
-Files: .gitignore .gitattributes .dockerignore
-Copyright: 2026 Quietfire AI / Jeff Phillips
-License: Apache-2.0
