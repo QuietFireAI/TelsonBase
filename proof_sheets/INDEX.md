@@ -6,7 +6,7 @@ Every claim made on [clawcoat.com](https://clawcoat.com) has a corresponding evi
 
 **Format:** Each sheet follows a standardized format inspired by Safety Data Sheets (SDS). Grab the sheet number, verify the claim, move on.
 
-**Last Verified:** March 15, 2026 | **Version:** v11.0.1 | **Tests Passing:** 746+ | **Proof Documents:** 67 (52 claim-level + 15 test-suite-level)
+**Last Verified:** March 15, 2026 | **Version:** v11.0.1 | **Tests Passing:** 854 | **Proof Documents:** 67 (52 claim-level + 15 test-suite-level)
 
 ---
 
@@ -22,7 +22,7 @@ Each sheet carries a **Test Coverage** rating — added March 15, 2026. This is 
 | **INFRA** | Verified through infrastructure/deployment checks (Docker, curl); requires running stack |
 | **DOCS** | Documentation-level claim; source code implements it but no automated test verifies the behavior |
 
-The governance pipeline (trust tiers, manners scoring, HITL gates, audit chain) is VERIFIED — those are the 746 tests. The compliance infrastructure modules (HIPAA, HITRUST, breach, sanctions, BAA) are implemented and now have depth tests added March 15, 2026. Some claim sheets use grep-based verification commands — they are honest about what they verify (source structure, not runtime behavior). This is the starting line, not the finish. See [CONTRIBUTING.md](../CONTRIBUTING.md) for how to add behavioral tests.
+The governance pipeline (trust tiers, manners scoring, HITL gates, audit chain) is VERIFIED — those are the 854 tests. The compliance infrastructure modules (HIPAA, HITRUST, breach, sanctions, BAA) are implemented and now have depth tests added March 15, 2026. Some claim sheets use grep-based verification commands — they are honest about what they verify (source structure, not runtime behavior). This is the starting line, not the finish. See [CONTRIBUTING.md](../CONTRIBUTING.md) for how to add behavioral tests.
 
 ---
 
@@ -31,14 +31,14 @@ The governance pipeline (trust tiers, manners scoring, HITL gates, audit chain) 
 ### Test Suite and Code Quality
 | Sheet | Claim | Test Coverage |
 |---|---|---|
-| [TB-PROOF-001](TB-PROOF-001_tests_passing.md) | 746 Tests Passing | VERIFIED |
+| [TB-PROOF-001](TB-PROOF-001_tests_passing.md) | 854 Tests Passing | VERIFIED |
 | [TB-PROOF-002](TB-PROOF-002_security_tests.md) | 96 Dedicated Security Tests | VERIFIED |
 | [TB-PROOF-003](TB-PROOF-003_production_hardening.md) | 22 Production Hardening Items Completed | VERIFIED  |
 
 ### Compliance and Controls
 | Sheet | Claim | Test Coverage |
 |---|---|---|
-| [TB-PROOF-004](TB-PROOF-004_soc2_controls.md) | 51 SOC 2 Controls Mapped to Source Code | VERIFIED  |
+| [TB-PROOF-004](TB-PROOF-004_soc2_controls.md) | 64 SOC 2 Controls Mapped to Source Code | VERIFIED  |
 | [TB-PROOF-005](TB-PROOF-005_hipaa_security_rule.md) | HIPAA Security Rule Full Mapping | VERIFIED  |
 | [TB-PROOF-006](TB-PROOF-006_hitrust_csf.md) | HITRUST CSF 12 Domains | VERIFIED  |
 | [TB-PROOF-007](TB-PROOF-007_phi_deidentification.md) | PHI De-identification (18 Safe Harbor Identifiers) | VERIFIED |
@@ -56,7 +56,7 @@ The governance pipeline (trust tiers, manners scoring, HITL gates, audit chain) 
 ### Authentication and Access Control
 | Sheet | Claim | Test Coverage |
 |---|---|---|
-| [TB-PROOF-014](TB-PROOF-014_rbac_endpoints.md) | 150 RBAC-Protected Endpoints | VERIFIED  |
+| [TB-PROOF-014](TB-PROOF-014_rbac_endpoints.md) | 149 RBAC-Protected Endpoints | VERIFIED  |
 | [TB-PROOF-015](TB-PROOF-015_totp_mfa.md) | RFC 6238 TOTP Multi-Factor Authentication | VERIFIED  |
 | [TB-PROOF-016](TB-PROOF-016_session_management.md) | HIPAA-Compliant Session Management | VERIFIED  |
 | [TB-PROOF-017](TB-PROOF-017_account_lockout.md) | Account Lockout After 5 Failed Attempts | VERIFIED  |
@@ -73,7 +73,7 @@ The governance pipeline (trust tiers, manners scoring, HITL gates, audit chain) 
 ### Security Testing
 | Sheet | Claim | Test Coverage |
 |---|---|---|
-| [TB-PROOF-022](TB-PROOF-022_api_fuzz_testing.md) | 177 API Operations Fuzz-Tested | VERIFIED  |
+| [TB-PROOF-022](TB-PROOF-022_api_fuzz_testing.md) | 151 API Operations Fuzz-Tested | VERIFIED  |
 | [TB-PROOF-023](TB-PROOF-023_generated_test_cases.md) | 107,811 Generated Test Cases | VERIFIED  |
 | [TB-PROOF-024](TB-PROOF-024_zero_server_errors.md) | 0 Server Errors Under Fuzzing | VERIFIED  |
 | [TB-PROOF-025](TB-PROOF-025_security_test_levels.md) | 5 Automated Security Test Levels | VERIFIED  |
@@ -128,7 +128,7 @@ The governance pipeline (trust tiers, manners scoring, HITL gates, audit chain) 
 ### Full Test Suite Manifest
 | Sheet | Claim | Test Coverage |
 |---|---|---|
-| [TB-PROOF-052](TB-PROOF-052_full_test_manifest.md) | Complete 746-Test Suite Manifest - every file, class, and function name | VERIFIED |
+| [TB-PROOF-052](TB-PROOF-052_full_test_manifest.md) | Complete 854-Test Suite Manifest - every file, class, and function name | VERIFIED |
 
 ### Test Suite Class-Level Evidence
 *One proof sheet per test suite. Every test class in each suite is listed with its test count and what it proves.*

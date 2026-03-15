@@ -1,4 +1,4 @@
-# TB-PROOF-004: 51 SOC 2 Controls Mapped to Source Code
+# TB-PROOF-004: 64 SOC 2 Controls Mapped to Source Code
 
 **Sheet ID:** TB-PROOF-004
 **Claim Source:** clawcoat.com - Compliance Section, Hero Section
@@ -11,12 +11,12 @@
 
 ## Exact Claim
 
-> "51 SOC 2 controls. Mapped to source code. Implemented and ready for deployment."
+> "64 SOC 2 controls. Mapped to source code. Implemented and ready for deployment."
 > "Every control references a real source file and a passing test. An auditor can trace any claim to working code."
 
 ## Verdict
 
-VERIFIED - `docs/System Documents/SOC2_TYPE_I.md` contains 51 unique controls across 5 Trust Service Criteria, each mapped to specific source code files with evidence locations.
+VERIFIED - `docs/System Documents/SOC2_TYPE_I.md` contains 64 controls across 5 Trust Service Criteria, each mapped to specific source code files with evidence locations.
 
 ## Evidence
 

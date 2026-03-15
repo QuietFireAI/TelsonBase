@@ -14,8 +14,8 @@ Self-hosted. Open source. Apache 2.0. [clawcoat.com](https://clawcoat.com)
 
 <p align="center">
   <strong>v11.0.1</strong> &nbsp;|&nbsp;
-  <strong>746 tests passing</strong> &nbsp;|&nbsp;
-  <strong>51 SOC 2 controls</strong> &nbsp;|&nbsp;
+  <strong>854 tests passing</strong> &nbsp;|&nbsp;
+  <strong>64 SOC 2 controls</strong> &nbsp;|&nbsp;
   <strong>161 API endpoints</strong> &nbsp;|&nbsp;
   <strong>0 data shared</strong>
 </p>
@@ -46,14 +46,14 @@ Self-hosted. Open source. Apache 2.0. [clawcoat.com](https://clawcoat.com)
 
 ## Status: Live
 
-**746 system level tests all PASS. 0 high-severity findings. Everything described in this README is built and running.**
+**854 system level tests all PASS. 0 high-severity findings. Everything described in this README is built and running.**
 
 **Try the live demo:** [huggingface.co/spaces/QuietFireAI/ClawCoat](https://huggingface.co/spaces/QuietFireAI/ClawCoat)
 
 The governance engine, trust pipeline, compliance infrastructure, and admin dashboard are fully functional. The integration guide covers the full agent flow end-to-end and has been verified across multiple clean-slate deployments.
 
 **What's stable and tested:**
-Trust governance pipeline · Cryptographic audit chain · RBAC (150 endpoints) · Human-in-the-loop approval gates · Kill switch · Manners compliance engine · Multi-tenant isolation · SOC 2 / HIPAA / HITRUST / CJIS compliance frameworks · Admin dashboard · OpenClaw governance proxy
+Trust governance pipeline · Cryptographic audit chain · RBAC (149 endpoints) · Human-in-the-loop approval gates · Kill switch · Manners compliance engine · Multi-tenant isolation · SOC 2 / HIPAA / HITRUST / CJIS compliance frameworks · Admin dashboard · OpenClaw governance proxy
 
 **What's actively being worked on:**
 User management live endpoint · QMS real-time log feed · Audit chain PostgreSQL archival beyond 100K entries · Agent actor attribution in approval decisions · Identiclaw agent testing
@@ -232,7 +232,7 @@ This isn't a roadmap. This is shipped code with tests.
 |---|---|---|
 | **Trust Level Governance** | 5-tier earned trust, sequential promotion, instant demotion | 54 |
 | **Cryptographic Audit Trail** | SHA-256 hash-chained, tamper-evident | 11 |
-| **150 RBAC Endpoints** | 4-tier permissions, deny overrides allow | 13 |
+| **149 RBAC Endpoints** | 4-tier permissions, deny overrides allow | 13 |
 | **AES-256-GCM Encryption** | At-rest encryption, PBKDF2 key derivation | 11 |
 | **TOTP Multi-Factor Auth** | RFC 6238, QR enrollment, backup codes | 8 |
 | **Behavioral Anomaly Detection** | Rate spikes, capability probes, enumeration | 12 |
@@ -247,7 +247,7 @@ This isn't a roadmap. This is shipped code with tests.
 | **Kill Switch** | Instant suspension, Redis-persisted, survives restarts | 7 |
 | **MCP Gateway (Goose)** | 13 tools exposed via MCP, trust-gated sessions, native Goose / Claude Desktop integration | live |
 
-**Total: 746 tests passing. 1 skipped. 0 high-severity findings across 61,278 lines scanned.**
+**Total: 854 tests passing. 1 skipped. 0 high-severity findings across 63,294 lines scanned.**
 
 ---
 
@@ -255,7 +255,7 @@ This isn't a roadmap. This is shipped code with tests.
 
 | Framework | Status | Coverage |
 |---|---|---|
-| **SOC 2 Type I** | 51 controls documented | 5 Trust Service Criteria, evidence mapped to source |
+| **SOC 2 Type I** | 64 controls documented | 5 Trust Service Criteria, evidence mapped to source |
 | **HIPAA Security Rule** | Full mapping | Administrative, Physical, Technical, Organizational |
 | **HITRUST CSF** | 12 domains | Baseline controls, risk scoring, gap analysis |
 | **CJIS** | Mapped | Advanced auth, media protection, audit controls |
@@ -368,7 +368,7 @@ Nobody asked what happens to your data when an AI agent has no one watching it. 
 
 ClawCoat puts you back in control. Every action by an AI agent is evaluated. Every permission earned. Every decision is auditable. The model runs on your hardware. Your data stays on your network. Nothing leaves unless you say so.
 
-The compliance frameworks aren't on a roadmap; they're already built. SOC 2, HIPAA, HITRUST, CJIS, GDPR, PCI DSS, ABA Model Rules. 746 passing tests. 51 SOC 2 controls mapped to source code. Cryptographic audit trails. Human-in-the-loop approval gates. Behavioral anomaly detection. Kill switches.
+The compliance frameworks aren't on a roadmap; they're already built. SOC 2, HIPAA, HITRUST, CJIS, GDPR, PCI DSS, ABA Model Rules. 854 passing tests. 64 SOC 2 controls mapped to source code. Cryptographic audit trails. Human-in-the-loop approval gates. Behavioral anomaly detection. Kill switches.
 
 Built for the industries that can't afford to get this wrong: small business, real estate, medical, legal, insurance, and accounting. Attorney-client privilege. Protected health information. Financial records. The kind of data where "we'll figure out security later" means malpractice, regulatory action, or worse.
 
@@ -405,7 +405,7 @@ QMS™ is an open standard (MIT licensed). The trademark covers the name. The pr
 
 ## Proof Sheets
 
-The `proof_sheets/` directory contains **788 evidence documents**.
+The `proof_sheets/` directory contains **67 evidence documents** (52 claim-level + 15 test-suite-level).
 
 This is not a marketing decision. If ClawCoat preaches governance, it has to practice it. Every claim has a receipt. Every test has a sheet. If the evidence doesn't hold up, the claim gets fixed - not hidden.
 
@@ -451,7 +451,7 @@ Question any claim. Run the command. That's the point.
 
 **Honest test coverage status (March 15, 2026):**
 
-The governance pipeline is comprehensively tested — trust tiers, manners scoring, HITL gates, kill switch, audit chain, and the 96-test security battery. That's where the 746 tests are and where they earn their keep.
+The governance pipeline is comprehensively tested — trust tiers, manners scoring, HITL gates, kill switch, audit chain, and the 96-test security battery. That's where the 854 tests are and where they earn their keep.
 
 The compliance infrastructure modules (HIPAA, HITRUST, breach notification, sanctions, BAA, data retention, legal hold) are fully implemented and now covered by depth tests added March 15. Some claim sheets use grep-based verification commands — those are marked CODE-ONLY in the index and are honest about what they verify: source structure, not runtime behavior.
 
@@ -528,7 +528,7 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for the full process and [GOVERNANCE.md](
 2. Create a feature branch
 3. Write tests (we don't ship untested code)
 4. Submit a PR with a clear description
-5. Every PR runs the full test suite (746 and growing)
+5. Every PR runs the full test suite (854 and growing)
 
 Questions or bugs? See [SUPPORT.md](SUPPORT.md).
 

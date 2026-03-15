@@ -1,4 +1,4 @@
-# TB-PROOF-014: 150 RBAC-Protected Endpoints
+# TB-PROOF-014: 149 RBAC-Protected Endpoints
 
 **Sheet ID:** TB-PROOF-014
 **Claim Source:** clawcoat.com - Hero Section, Capabilities Section
@@ -11,11 +11,11 @@
 
 ## Exact Claim
 
-> "150 API endpoints enforced with role-based access control. Four-tier permission taxonomy: view, manage, admin, security."
+> "149 API endpoints enforced with role-based access control. Four-tier permission taxonomy: view, manage, admin, security."
 
 ## Verdict
 
-VERIFIED - 150 endpoints use `Depends(require_permission(...))` across 7 files. Four-tier permission taxonomy confirmed.
+VERIFIED - 149 endpoints use `Depends(require_permission(...))` across 7 files. Four-tier permission taxonomy confirmed.
 
 ## Evidence
 
@@ -31,7 +31,7 @@ VERIFIED - 150 endpoints use `Depends(require_permission(...))` across 7 files. 
 | `core/tenant_rate_limiting.py` | 3 | Rate limit endpoints |
 | `api/auth_routes.py` | 0 | Auth (pre-authentication) |
 | `api/mcp_gateway.py` | 0 | MCP gateway (mounted sub-app) |
-| **Total** | **150** | |
+| **Total** | **149** | |
 
 ### Permission Taxonomy
 
@@ -66,7 +66,7 @@ docker compose exec mcp_server python -m pytest \
 ```
 2 passed
 ```
-Total: 150
+Total: 149
 
 ---
 
