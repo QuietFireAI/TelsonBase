@@ -6,7 +6,7 @@ Every claim made on [clawcoat.com](https://clawcoat.com) has a corresponding evi
 
 **Format:** Each sheet follows a standardized format inspired by Safety Data Sheets (SDS). Grab the sheet number, verify the claim, move on.
 
-**Last Verified:** March 15, 2026 | **Version:** v11.0.1 | **Tests Passing:** 746+ | **Proof Documents:** 788 (67 class-level + 721 individual)
+**Last Verified:** March 15, 2026 | **Version:** v11.0.1 | **Tests Passing:** 746+ | **Proof Documents:** 67 (52 claim-level + 15 test-suite-level)
 
 ---
 
