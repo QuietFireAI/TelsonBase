@@ -75,7 +75,7 @@ pyotp==2.9.0
 
 # --- Structured JSON Logging ---
 # REM: Provides JSON-formatted log output for audit chain and observability.
-python-json-logger==2.0.7
+python-json-logger==4.0.0
 
 # --- Prometheus Metrics ---
 # REM: Client library for exposing application metrics to Prometheus.
