@@ -160,7 +160,7 @@ jobs:
           echo "digest=$(docker image inspect telsonbase-mcp:ci --format '{{.Id}}')" >> "$GITHUB_OUTPUT"
 
       - name: Generate SLSA Build L2 provenance attestation
-        uses: actions/attest-build-provenance@v2
+        uses: actions/attest-build-provenance@v4
         continue-on-error: true
         # REM: Attestation storage requires a public repository.
         # REM: This step generates provenance on every run but cannot persist
