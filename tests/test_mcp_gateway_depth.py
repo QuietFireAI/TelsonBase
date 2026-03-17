@@ -277,12 +277,13 @@ class TestRegisterAsAgentTool:
         assert isinstance(result, dict)
         assert "qms_status" in result
 
-    def test_register_as_agent_with_capabilities(self):
+    def test_register_as_agent_above_quarantine_requires_reason(self):
         from api.mcp_gateway import register_as_agent
         import uuid
         result = run(register_as_agent(
-            name="mcp-cap-agent",
+            name="mcp-probation-agent",
             api_key=f"test-key-{uuid.uuid4().hex[:8]}",
-            capabilities="filesystem.read,network.http",
+            initial_trust_level="probation",
+            override_reason="Testing above-quarantine registration path",
         ))
         assert isinstance(result, dict)
