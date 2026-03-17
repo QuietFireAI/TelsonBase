@@ -636,9 +636,15 @@ async def captcha_generate(
     try:
         from core.captcha import captcha_manager
 
-        challenge = captcha_manager.generate_challenge(
-            challenge_type=request.challenge_type
-        )
+        from core.captcha import ChallengeType as _CT
+        ct = None
+        if request.challenge_type:
+            try:
+                ct = _CT(request.challenge_type)
+            except ValueError:
+                ct = None
+
+        challenge = captcha_manager.generate_challenge(challenge_type=ct)
 
         return {
             "qms_status": "Thank_You",
