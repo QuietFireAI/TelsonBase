@@ -241,7 +241,7 @@ jobs:
             --ignore=tests/test_e2e_integration.py \
             --cov=core --cov=api --cov=agents --cov=toolroom \
             --cov-report=term-missing --cov-report=xml \
-            --cov-fail-under=58
+            --cov-fail-under=63
         env:
           TELSONBASE_ENV: development
           MCP_API_KEY: ci_test_key_not_real_do_not_use_in_production_000000
