@@ -289,8 +289,8 @@ class MannersEngine:
         # REM: Audit the violation
         audit.log(
             event_type=AuditEventType.SECURITY_ALERT,
-            agent_name=agent_name,
-            action=f"manners_violation:{violation_type.value}",
+            message=f"Manners violation: {agent_name} — {violation_type.value}",
+            actor=agent_name,
             resource=resource or "n/a",
             details={
                 "principle": principle.value,
@@ -298,6 +298,7 @@ class MannersEngine:
                 "details": details,
                 "action": action,
             },
+            qms_status="Thank_You_But_No",
         )
 
         logger.warning(
@@ -537,8 +538,8 @@ class MannersEngine:
             )
             audit.log(
                 event_type=AuditEventType.SECURITY_ALERT,
-                agent_name="manners_engine",
-                action="auto_suspend",
+                message=f"Manners auto-suspend triggered for {agent_name}",
+                actor="manners_engine",
                 resource=agent_name,
                 details={
                     "reason": "Manners violation threshold exceeded",
@@ -546,6 +547,7 @@ class MannersEngine:
                     "threshold": AUTO_SUSPEND_THRESHOLD,
                     "window_hours": AUTO_SUSPEND_WINDOW_HOURS,
                 },
+                qms_status="Thank_You_But_No",
             )
             # REM: Trigger trust level reduction if trust_manager is available
             try:
