@@ -533,5 +533,13 @@
 # REM:         - CITATION.cff: version corrected (was still on 9.0.0B)
 # REM:         - Document review tracking: version string in each doc = reviewed
 # REM: =======================================================================================
+# REM: 11.0.2 - Coverage and test depth (March 17, 2026):
+# REM:         - 650+ new tests: security routes, tenancy routes, auth routes,
+# REM:           delegation manager, MCP gateway tools, user management
+# REM:         - CI coverage gate: 40% → 58% (verified 58.48% on run #260)
+# REM:         - .dockerignore: docs/ restored to container for compliance tests
+# REM:         - README: certification boundary disclosure, RBAC role count corrected
+# REM:         - proof_sheets: HIPAA/HITRUST/SOC2 rating corrections
+# REM: =======================================================================================
 
-__version__ = "11.0.1"
+__version__ = "11.0.2"
