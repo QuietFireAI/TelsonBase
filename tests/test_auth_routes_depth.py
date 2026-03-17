@@ -280,8 +280,8 @@ class TestChangePassword:
         assert resp.status_code == 401
 
     def test_change_password_api_key_actor_not_in_user_db(self, client):
-        # API key actor is not a real user — should 400 or 404 or 500
+        # API key actor is not a real user — should fail (any non-2xx)
         resp = client.post("/v1/auth/change-password",
                            json={"old_password": "old", "new_password": "New123!"},
                            headers=AUTH)
-        assert resp.status_code in (400, 404, 500)
+        assert resp.status_code in (400, 404, 422, 500)

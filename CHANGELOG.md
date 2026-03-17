@@ -7,6 +7,28 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 
 ---
 
+## [11.0.2] - 2026-03-17 (Coverage depth — 650+ new tests, CI gate 40%→58%)
+
+**Status:** 1,295+ passed, 0 failed. CI verified 58.48% coverage on run #260.
+**Contributors:** Jeff Phillips (Quietfire AI), Claude Code (Anthropic)
+
+### Added
+- 470 coverage-boost tests (compliance, semantic matching, auth helpers, rotation dataclasses)
+- 180+ depth tests: security routes (MFA/sessions/email/captcha/emergency), tenancy routes, auth routes, delegation manager, MCP gateway tools
+- AGENT_AUTONOMY_SLA.md — formal 5-tier open-standard SLA spec, cites arXiv:2511.02885
+- REUSE compliance: LICENSES/Apache-2.0.txt, .reuse/DEP5, SPDX headers on 250 Python files
+
+### Changed
+- CI coverage gate: 40% → 58% (calibrated to verified 58.48%)
+- `.dockerignore`: docs/ restored to container for compliance file-existence tests
+- README: certification boundary disclosure, RBAC role count corrected (4-tier → 5-role)
+
+### Fixed
+- Proof sheets: HIPAA/HITRUST/SOC2 rating corrections
+- Stale numbers corrected in README and proof index
+
+---
+
 ## [11.0.1] - 2026-03-08 (Public launch - full documentation sweep and pre-drop polish)
 
 **Status:** 746 passed, 1 skipped, 0 failed. Public GitHub drop. DO server synced.
