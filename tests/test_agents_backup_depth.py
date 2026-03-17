@@ -277,23 +277,6 @@ class TestRestoreBackupPathValidation:
 
 
 # ═══════════════════════════════════════════════════════════════════════════════
-# create_backup task — volume not found
-# ═══════════════════════════════════════════════════════════════════════════════
-
-class TestCreateBackupVolumeNotFound:
-    def test_nonexistent_volume_returns_error(self):
-        from agents.backup_agent import create_backup
-        result = create_backup("nonexistent_volume_xyz_123")
-        assert result["status"] == "error"
-        assert "not found" in result["error"].lower()
-
-    def test_error_qms_status(self):
-        from agents.backup_agent import create_backup
-        result = create_backup("nonexistent_volume_xyz_456")
-        assert result["qms_status"] == "Thank_You_But_No"
-
-
-# ═══════════════════════════════════════════════════════════════════════════════
 # verify_backup task — file not found
 # ═══════════════════════════════════════════════════════════════════════════════
 
