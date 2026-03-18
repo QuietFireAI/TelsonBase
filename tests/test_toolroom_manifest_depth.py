@@ -12,7 +12,9 @@ from unittest.mock import MagicMock
 
 # REM: celery is not installed locally — stub it so toolroom package imports cleanly
 if "celery" not in sys.modules:
-    sys.modules["celery"] = MagicMock()
+    celery_mock = MagicMock()
+    celery_mock.shared_task = lambda *args, **kwargs: (lambda f: f)
+    sys.modules["celery"] = celery_mock
 
 from toolroom.manifest import (
     SandboxLevel,

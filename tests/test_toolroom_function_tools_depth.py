@@ -8,7 +8,9 @@ from unittest.mock import MagicMock
 
 # REM: celery is not installed locally — stub before toolroom import
 if "celery" not in sys.modules:
-    sys.modules["celery"] = MagicMock()
+    celery_mock = MagicMock()
+    celery_mock.shared_task = lambda *args, **kwargs: (lambda f: f)
+    sys.modules["celery"] = celery_mock
 
 import pytest
 

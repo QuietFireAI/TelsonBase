@@ -9,7 +9,9 @@ from datetime import datetime, timezone, timedelta
 
 # REM: celery is not installed locally — stub before any toolroom import
 if "celery" not in sys.modules:
-    sys.modules["celery"] = MagicMock()
+    celery_mock = MagicMock()
+    celery_mock.shared_task = lambda *args, **kwargs: (lambda f: f)
+    sys.modules["celery"] = celery_mock
 
 import pytest
 

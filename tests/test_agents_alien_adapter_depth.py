@@ -7,8 +7,11 @@ import sys
 from unittest.mock import MagicMock, patch
 
 # REM: celery not installed locally — stub before agents package import
+# REM: shared_task must be identity decorator so @shared_task functions remain directly callable
 if "celery" not in sys.modules:
-    sys.modules["celery"] = MagicMock()
+    celery_mock = MagicMock()
+    celery_mock.shared_task = lambda *args, **kwargs: (lambda f: f)
+    sys.modules["celery"] = celery_mock
 
 import pytest
 from datetime import datetime, timezone
