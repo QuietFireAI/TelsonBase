@@ -4,6 +4,15 @@
 # REM: Depth coverage for agents/backup_agent.py
 # REM: Helper functions are pure. Filesystem tasks use tmp_path.
 
+import sys
+from unittest.mock import MagicMock
+
+if "celery" not in sys.modules:
+    # REM: shared_task must be identity decorator so task functions remain callable
+    celery_mock = MagicMock()
+    celery_mock.shared_task = lambda *args, **kwargs: (lambda f: f)
+    sys.modules["celery"] = celery_mock
+
 import tarfile
 import tempfile
 from pathlib import Path

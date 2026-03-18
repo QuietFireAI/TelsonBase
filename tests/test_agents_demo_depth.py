@@ -4,8 +4,15 @@
 # REM: Depth coverage for agents/demo_agent.py
 # REM: Constants and health task are pure. Store-backed tasks use mock _get_stores().
 
-import pytest
+import sys
 from unittest.mock import MagicMock, patch
+
+if "celery" not in sys.modules:
+    celery_mock = MagicMock()
+    celery_mock.shared_task = lambda *args, **kwargs: (lambda f: f)
+    sys.modules["celery"] = celery_mock
+
+import pytest
 
 import agents.demo_agent as demo_mod
 from agents.demo_agent import (

@@ -4,6 +4,14 @@
 # REM: Depth coverage for agents/memory_agent.py
 # REM: Pure Python classes (MemoryStore, Memory, ConversationContext) + Celery task direct calls
 
+import sys
+from unittest.mock import MagicMock
+
+if "celery" not in sys.modules:
+    celery_mock = MagicMock()
+    celery_mock.shared_task = lambda *args, **kwargs: (lambda f: f)
+    sys.modules["celery"] = celery_mock
+
 import pytest
 from datetime import datetime, timedelta, timezone
 
