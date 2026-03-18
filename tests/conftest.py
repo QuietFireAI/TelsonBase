@@ -10,10 +10,34 @@
 
 import os
 import re
+import sys
+import types
 import hashlib
 import pytest
 from datetime import datetime, timezone
 from typing import Generator
+from unittest.mock import MagicMock
+
+# REM: Install celery stub before any test file is imported.
+# REM: Agent depth tests also install stubs but run after conftest; this
+# REM: ensures the stub is a real types.ModuleType (not MagicMock) so that
+# REM: Python's submodule import machinery works (celery.__path__ required).
+if "celery" not in sys.modules:
+    _celery = types.ModuleType("celery")
+    _celery.__path__ = []
+    _celery.__package__ = "celery"
+    _celery.shared_task = lambda *args, **kwargs: (lambda f: f)
+    _celery.Celery = MagicMock()
+    sys.modules["celery"] = _celery
+    _celery_sched = types.ModuleType("celery.schedules")
+    _celery_sched.crontab = MagicMock()
+    sys.modules["celery.schedules"] = _celery_sched
+    _celery_utils = types.ModuleType("celery.utils")
+    sys.modules["celery.utils"] = _celery_utils
+    _celery_utils_log = types.ModuleType("celery.utils.log")
+    _celery_utils_log.get_task_logger = MagicMock(return_value=MagicMock())
+    sys.modules["celery.utils.log"] = _celery_utils_log
+    sys.modules["celery.signals"] = types.ModuleType("celery.signals")
 
 # REM: Set test environment before importing app modules
 os.environ["MCP_API_KEY"] = "test_api_key_12345"

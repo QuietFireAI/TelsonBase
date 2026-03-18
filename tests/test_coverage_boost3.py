@@ -7,12 +7,22 @@ import sys
 from unittest.mock import patch, MagicMock
 
 if "celery" not in sys.modules:
-    celery_mock = MagicMock()
+    import types
+    celery_mock = types.ModuleType("celery")
+    celery_mock.__path__ = []
+    celery_mock.__package__ = "celery"
     celery_mock.shared_task = lambda *args, **kwargs: (lambda f: f)
+    celery_mock.Celery = MagicMock()
     sys.modules["celery"] = celery_mock
-    sys.modules["celery.schedules"] = MagicMock()
-    sys.modules["celery.utils.log"] = MagicMock()
-    sys.modules["celery.signals"] = MagicMock()
+    _sched = types.ModuleType("celery.schedules")
+    _sched.crontab = MagicMock()
+    sys.modules["celery.schedules"] = _sched
+    sys.modules["celery.utils"] = types.ModuleType("celery.utils")
+    sys.modules["celery.utils"].log = MagicMock()
+    _utils_log = types.ModuleType("celery.utils.log")
+    _utils_log.get_task_logger = MagicMock(return_value=MagicMock())
+    sys.modules["celery.utils.log"] = _utils_log
+    sys.modules["celery.signals"] = types.ModuleType("celery.signals")
 
 import pytest
 import tempfile
