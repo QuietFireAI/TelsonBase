@@ -608,12 +608,16 @@ class TestToolroomStore:
 # REM: SECTION 5: CELERY CONFIGURATION TESTS (GAP 3 & 4)
 # REM: =======================================================================================
 
+import sys as _sys
+_real_celery = hasattr(_sys.modules.get("celery"), "__version__")
+
+@pytest.mark.skipif(not _real_celery, reason="Requires real Celery runtime — stubbed in unit test suite")
 class TestCeleryConfiguration:
     """
     REM: GAP 3 & 4 regression — verify foreman is in Celery include
     and beat_schedule has daily update check.
     """
-    
+
     def test_foreman_in_celery_include(self):
         """REM: GAP 3 — toolroom.foreman must be in Celery include list."""
         from celery_app.worker import app
