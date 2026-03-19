@@ -237,6 +237,7 @@ jobs:
       - name: Run full test suite
         run: |
           echo "Backing up source dirs before test run..."
+          mkdir -p /tmp/coverage_src_backup
           cp -r core api agents toolroom /tmp/coverage_src_backup
           echo "Backup complete: $(ls /tmp/coverage_src_backup/)"
           python -m coverage run \
