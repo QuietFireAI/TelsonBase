@@ -1,9 +1,4 @@
 [run]
-source =
-    core
-    api
-    agents
-    toolroom
 omit =
     core/mqtt_bus.py
     core/ollama_service.py
