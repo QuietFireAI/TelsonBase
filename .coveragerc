@@ -11,6 +11,7 @@ omit =
     agents/ollama_agent.py
 
 [report]
+ignore_errors = True
 exclude_lines =
     pragma: no cover
     def __repr__
