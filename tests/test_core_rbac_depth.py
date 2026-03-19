@@ -214,8 +214,10 @@ class TestSessionDataclass:
 # ═══════════════════════════════════════════════════════════════════════════════
 
 @pytest.fixture
-def mgr():
-    """Fresh RBACManager for each test."""
+def mgr(monkeypatch):
+    """Fresh RBACManager for each test — Redis I/O patched out (pure in-memory)."""
+    monkeypatch.setattr(RBACManager, "_load_from_redis", lambda self: None)
+    monkeypatch.setattr(RBACManager, "_save_user", lambda self, user: None)
     return RBACManager()
 
 
