@@ -103,7 +103,7 @@ cryptography==46.0.5
 # REM: psycopg2-binary provides the PostgreSQL driver. Alembic handles schema migrations.
 sqlalchemy==2.0.36
 psycopg2-binary==2.9.10
-alembic==1.13.3
+alembic==1.18.4
 
 # --- Web Automation Library ---
 # REM: Enables the web_agent to control a browser programmatically.
