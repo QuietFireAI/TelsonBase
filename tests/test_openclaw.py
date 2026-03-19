@@ -714,11 +714,15 @@ class TestAgentDemotionHardBlock:
         assert result is True
         assert manager.get_instance(iid).trust_level == "citizen"
 
-    def test_manager_demote_from_agent_sets_review_flag(self, manager, agent_claw):
-        """REM: Demotion from AGENT sets the demotion review flag."""
+    def test_manager_demote_from_agent_records_in_trust_history(self, manager, agent_claw):
+        """REM: Demotion from AGENT is recorded in trust history."""
         iid = agent_claw.instance_id
         manager.demote_trust(iid, "probation", demoted_by="admin", reason="anomaly spike")
-        assert manager._is_review_required(iid) or manager.get_review_status(iid) is not None
+        history = manager._trust_history.get(iid, [])
+        demotion = [r for r in history if r.change_type == "demotion"]
+        assert len(demotion) >= 1
+        assert demotion[-1].new_level == "probation"
+        assert demotion[-1].changed_by == "admin"
 
     def test_manager_demote_agent_to_quarantine(self, manager, agent_claw):
         """REM: AGENT can be demoted all the way to QUARANTINE in one step."""

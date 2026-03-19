@@ -79,11 +79,23 @@ def client() -> Generator:
     # in-memory singleton to prevent chain_break across test runs. Without this,
     # leftover entries from a prior session cause verify_chain to fail because
     # the first new-session entry's previous_hash doesn't match the last old entry.
+    # REM: v11.0.2 — Also flush RBAC Redis state so first-user detection works
+    # correctly in tests that register users. RBAC write-through persistence means
+    # users from prior tests accumulate in Redis and contaminate first-user logic.
     try:
         import redis as redis_lib
         r = redis_lib.from_url(os.environ["REDIS_URL"], decode_responses=True)
         r.delete("audit:chain:state", "audit:chain:entries")
+        r.delete("security:rbac_users", "security:rbac_api_keys", "security:rbac_username_idx")
     except Exception:
+        pass
+    # REM: Reset in-memory RBAC state to match flushed Redis state
+    try:
+        from core.rbac import rbac_manager
+        rbac_manager._users.clear()
+        rbac_manager._sessions.clear()
+        rbac_manager._api_key_to_user.clear()
+    except (ImportError, AttributeError):
         pass
     try:
         from core.audit import audit, ChainState, GENESIS_HASH
