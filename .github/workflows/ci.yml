@@ -236,18 +236,21 @@ jobs:
 
       - name: Run full test suite
         run: |
-          echo "DIAG shell_pwd=$(pwd)"
-          python -c "import os; print('DIAG python_cwd=' + os.getcwd()); print('DIAG realpath=' + os.path.realpath('.')); print('DIAG agents_exists_rel=' + str(os.path.exists('agents/__init__.py'))); print('DIAG agents_abspath=' + os.path.abspath('agents/__init__.py'))"
+          echo "Backing up source dirs before test run..."
+          cp -r core api agents toolroom /tmp/coverage_src_backup
+          echo "Backup complete: $(ls /tmp/coverage_src_backup/)"
           python -m coverage run \
             --include='core/*,api/*,agents/*,toolroom/*' \
             --omit='core/mqtt_bus.py,core/ollama_service.py,agents/ollama_agent.py' \
             -m pytest tests/ -v --tb=short --no-cov \
             --ignore=tests/test_mqtt_stress.py \
             --ignore=tests/test_e2e_integration.py
-          echo "DIAG shell ls agents/__init__.py: $(ls agents/__init__.py 2>&1)"
-          echo "DIAG shell ls agents/ count: $(ls agents/*.py 2>/dev/null | wc -l)"
-          echo "DIAG shell ls core/ count: $(ls core/*.py 2>/dev/null | wc -l)"
-          python -c "import os; print('DIAG post_run_cwd=' + os.getcwd()); print('DIAG post_agents_exists=' + str(os.path.exists('agents/__init__.py'))); print('DIAG post_agents_stat=' + str(os.stat('agents/__init__.py') if os.path.exists('agents/__init__.py') else 'N/A'))"
+          for d in core api agents toolroom; do
+            if [ ! -f "${d}/__init__.py" ]; then
+              echo "WARN: ${d}/ missing after test run — restoring from backup"
+              cp -r /tmp/coverage_src_backup/${d} .
+            fi
+          done
           python -m coverage debug data | head -10 || true
           python -m coverage report --fail-under=80 --ignore-errors
           python -m coverage xml --ignore-errors
