@@ -142,11 +142,15 @@ class TestResolveSecret:
 class TestSettingsDefaults:
     @pytest.fixture
     def settings(self):
-        # Clear lru_cache so we get a fresh Settings with no .env pollution
+        # REM: conftest.py sets LOG_LEVEL=WARNING globally; pop it so default assertion is clean
+        import os as _os
+        _saved_log = _os.environ.pop("LOG_LEVEL", None)
         get_settings.cache_clear()
         with patch("core.config.DOCKER_SECRETS_DIR", Path("/nonexistent_docker_secrets_dir_xyz")):
             s = Settings()
         get_settings.cache_clear()
+        if _saved_log is not None:
+            _os.environ["LOG_LEVEL"] = _saved_log
         return s
 
     def test_jwt_algorithm_default(self, settings):
