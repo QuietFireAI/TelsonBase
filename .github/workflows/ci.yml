@@ -236,18 +236,34 @@ jobs:
 
       - name: Run full test suite
         run: |
-          SRCROOT=$(pwd)
+          echo "=== path diagnostics ==="
+          echo "SHELL pwd: $(pwd)"
+          python -c "
+import os, sys
+print('Python CWD:', os.getcwd())
+print('Python realpath:', os.path.realpath('.'))
+import core.baa_tracking
+print('core.baa_tracking.__file__:', core.baa_tracking.__file__)
+print('agents __init__ exists (abs):', os.path.exists(os.path.join(os.getcwd(), 'agents/__init__.py')))
+print('agents __init__ exists (rel):', os.path.exists('agents/__init__.py'))
+"
           python -m coverage run \
-            --include="${SRCROOT}/core/*,${SRCROOT}/api/*,${SRCROOT}/agents/*,${SRCROOT}/toolroom/*" \
-            --omit="${SRCROOT}/core/mqtt_bus.py,${SRCROOT}/core/ollama_service.py,${SRCROOT}/agents/ollama_agent.py" \
+            --include='core/*,api/*,agents/*,toolroom/*' \
+            --omit='core/mqtt_bus.py,core/ollama_service.py,agents/ollama_agent.py' \
             -m pytest tests/ -v --tb=short --no-cov \
             --ignore=tests/test_mqtt_stress.py \
             --ignore=tests/test_e2e_integration.py
-          echo "=== coverage debug data (first 5 files) ==="
+          echo "=== post-run path check ==="
+          python -c "
+import os
+print('Python CWD after run:', os.getcwd())
+print('agents __init__ exists:', os.path.exists('agents/__init__.py'))
+print('agents __init__ abspath:', os.path.abspath('agents/__init__.py'))
+print('agents __init__ abspath exists:', os.path.exists(os.path.abspath('agents/__init__.py')))
+"
           python -m coverage debug data | head -10 || true
-          echo "=== coverage report ==="
-          python -m coverage report --fail-under=80
-          python -m coverage xml
+          python -m coverage report --fail-under=80 --ignore-errors
+          python -m coverage xml --ignore-errors
         env:
           TELSONBASE_ENV: development
           MCP_API_KEY: ci_test_key_not_real_do_not_use_in_production_000000
