@@ -5,7 +5,7 @@
 **Status:** VERIFIED
 **Test Coverage:** VERIFIED -- TestTenantAccessControl -- allowed_actors data model, enforcement function existence, 403 enforcement, and None return for unknown ID all confirmed
 **Last Verified:** March 8, 2026
-**Version:** v11.0.1
+**Version:** v11.0.2
 
 ---
 
@@ -110,4 +110,4 @@ pytest tests/test_e2e_integration.py::TestTenantIsolation::test_cross_tenant_acc
 
 ---
 
-*Sheet TB-PROOF-042 | TelsonBase v11.0.1 | March 1, 2026*
+*Sheet TB-PROOF-042 | ClawCoat v11.0.2 | March 19, 2026*

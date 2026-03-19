@@ -5,7 +5,7 @@
 **Status:** VERIFIED
 **Test Coverage:** VERIFIED -- test_openclaw.py -- HITL gates tested: quarantine holds READ, probation gates EXTERNAL, resident gates destructive
 **Last Verified:** March 8, 2026
-**Version:** v11.0.1
+**Version:** v11.0.2
 
 ---
 
@@ -62,4 +62,4 @@ docker compose exec mcp_server python -m pytest \
 
 ---
 
-*Sheet TB-PROOF-019 | TelsonBase v11.0.1 | February 23, 2026*
+*Sheet TB-PROOF-019 | ClawCoat v11.0.2 | March 19, 2026*

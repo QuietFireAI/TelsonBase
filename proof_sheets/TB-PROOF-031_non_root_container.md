@@ -5,7 +5,7 @@
 **Status:** VERIFIED
 **Test Coverage:** VERIFIED -- TestNonRootContainer -- Dockerfile confirmed: aiagent user created, USER instruction switches to non-root before CMD
 **Last Verified:** March 8, 2026
-**Version:** v11.0.1
+**Version:** v11.0.2
 
 ---
 
@@ -83,4 +83,4 @@ docker compose exec mcp_server whoami
 
 ---
 
-*Sheet TB-PROOF-031 | TelsonBase v11.0.1 | February 23, 2026*
+*Sheet TB-PROOF-031 | ClawCoat v11.0.2 | March 19, 2026*

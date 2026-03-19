@@ -4,7 +4,7 @@
 **Claim Source:** tests/test_signing.py
 **Status:** VERIFIED
 **Last Verified:** March 8, 2026
-**Version:** v11.0.1
+**Version:** v11.0.2
 
 ---
 
@@ -45,4 +45,4 @@ docker compose exec mcp_server python -m pytest tests/test_signing.py -v --tb=sh
 
 ---
 
-*Sheet TB-PROOF-064 | TelsonBase v11.0.1 | March 8, 2026*
+*Sheet TB-PROOF-064 | ClawCoat v11.0.2 | March 19, 2026*

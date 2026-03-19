@@ -5,7 +5,7 @@
 **Status:** VERIFIED
 **Test Coverage:** VERIFIED -- all 8 governance steps covered by test_openclaw.py (55 tests); timing claim confirmed by recorded live walkthrough March 1, 2026
 **Last Verified:** March 8, 2026
-**Version:** v11.0.1
+**Version:** v11.0.2
 
 ---
 
@@ -163,5 +163,5 @@ that a stranger could follow without asking a question.
 
 ---
 
-*Sheet TB-PROOF-040 | TelsonBase v11.0.1 | Created February 22, 2026 | Updated March 1, 2026*
+*Sheet TB-PROOF-040 | ClawCoat v11.0.2 | March 19, 2026*
 *Status: VERIFIED - first-user walkthrough complete February 23, 2026*

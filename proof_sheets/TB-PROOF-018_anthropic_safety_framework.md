@@ -5,7 +5,7 @@
 **Status:** VERIFIED
 **Test Coverage:** VERIFIED -- pytest -k manners -- behavioral manners tests across OpenClaw suite
 **Last Verified:** March 8, 2026
-**Version:** v11.0.1
+**Version:** v11.0.2
 
 ---
 
@@ -83,4 +83,4 @@ All Manners compliance tests pass.
 
 ---
 
-*Sheet TB-PROOF-018 | TelsonBase v11.0.1 | February 23, 2026*
+*Sheet TB-PROOF-018 | ClawCoat v11.0.2 | March 19, 2026*

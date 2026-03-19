@@ -5,7 +5,7 @@
 **Status:** VERIFIED
 **Test Coverage:** VERIFIED -- TestRBACEndpointCount -- require_permission count >= 140 verified by source introspection test
 **Last Verified:** March 10, 2026
-**Version:** v11.0.1
+**Version:** v11.0.2
 
 ---
 
@@ -70,4 +70,4 @@ Total: 149
 
 ---
 
-*Sheet TB-PROOF-014 | TelsonBase v11.0.1 | March 10, 2026*
+*Sheet TB-PROOF-014 | ClawCoat v11.0.2 | March 19, 2026*

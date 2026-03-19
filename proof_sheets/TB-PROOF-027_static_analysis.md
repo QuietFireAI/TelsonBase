@@ -5,7 +5,7 @@
 **Status:** VERIFIED
 **Test Coverage:** VERIFIED -- TestStaticAnalysis -- bandit confirmed in CI workflow with report artifact; bandit run skipped locally when not installed but clean in CI (0 HIGH, 8 accepted MEDIUMs)
 **Last Verified:** March 8, 2026
-**Version:** v11.0.1
+**Version:** v11.0.2
 
 ---
 
@@ -82,4 +82,4 @@ bandit -r core/ api/ agents/ -ll --format json | python -c \
 
 ---
 
-*Sheet TB-PROOF-027 | TelsonBase v11.0.1 | March 1, 2026*
+*Sheet TB-PROOF-027 | ClawCoat v11.0.2 | March 19, 2026*

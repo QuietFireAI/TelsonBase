@@ -5,7 +5,7 @@
 **Status:** VERIFIED
 **Test Coverage:** VERIFIED -- test_signing.py -- 13 behavioral tests confirm sign, verify, tamper detection, replay prevention
 **Last Verified:** March 8, 2026
-**Version:** v11.0.1
+**Version:** v11.0.2
 
 ---
 
@@ -56,4 +56,4 @@ HMAC-based signing implementation with key management.
 
 ---
 
-*Sheet TB-PROOF-013 | TelsonBase v11.0.1 | February 23, 2026*
+*Sheet TB-PROOF-013 | ClawCoat v11.0.2 | March 19, 2026*

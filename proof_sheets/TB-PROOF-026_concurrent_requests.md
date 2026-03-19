@@ -5,7 +5,7 @@
 **Status:** VERIFIED
 **Test Coverage:** INFRA -- curl concurrent load test; functional but not a unit test
 **Last Verified:** March 8, 2026
-**Version:** v11.0.1
+**Version:** v11.0.2
 
 ---
 
@@ -77,4 +77,4 @@ All 50 requests return HTTP 200.
 
 ---
 
-*Sheet TB-PROOF-026 | TelsonBase v11.0.1 | February 23, 2026*
+*Sheet TB-PROOF-026 | ClawCoat v11.0.2 | March 19, 2026*

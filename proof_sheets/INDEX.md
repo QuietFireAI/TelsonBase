@@ -6,7 +6,7 @@ Every claim made on [clawcoat.com](https://clawcoat.com) has a corresponding evi
 
 **Format:** Each sheet follows a standardized format inspired by Safety Data Sheets (SDS). Grab the sheet number, verify the claim, move on.
 
-**Last Verified:** March 15, 2026 | **Version:** v11.0.1 | **Tests Passing:** 854 | **Proof Documents:** 67 (52 claim-level + 15 test-suite-level)
+**Last Verified:** March 15, 2026 | **Version:** v11.0.2 | **Tests Passing:** 854 | **Proof Documents:** 67 (52 claim-level + 15 test-suite-level)
 
 ---
 
@@ -168,4 +168,4 @@ docker compose exec mcp_server python -m pytest tests/ -v --tb=short --ignore=te
 
 ---
 
-*Generated February 23, 2026 | TelsonBase v11.0.1 | Updated March 8, 2026*
+*Generated February 23, 2026 | ClawCoat v11.0.2 | March 19, 2026*

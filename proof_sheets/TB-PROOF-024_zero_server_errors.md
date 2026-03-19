@@ -5,7 +5,7 @@
 **Status:** VERIFIED
 **Test Coverage:** VERIFIED -- TestFuzzTestingHistoricalRecord -- 0 server errors result documented in version.py; test verifies both the claim text and the API endpoint count baseline
 **Last Verified:** March 8, 2026
-**Version:** v11.0.1
+**Version:** v11.0.2
 
 ---
 
@@ -66,4 +66,4 @@ docker compose exec mcp_server python -m pytest \
 
 ---
 
-*Sheet TB-PROOF-024 | TelsonBase v11.0.1 | February 23, 2026*
+*Sheet TB-PROOF-024 | ClawCoat v11.0.2 | March 19, 2026*

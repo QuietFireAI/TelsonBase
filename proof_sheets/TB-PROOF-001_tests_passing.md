@@ -140,4 +140,4 @@ docker compose exec mcp_server python -m pytest tests/ \
 
 ---
 
-*Sheet TB-PROOF-001 | ClawCoat v11.0.2 | CI Run #309 — March 18, 2026*
+*Sheet TB-PROOF-001 | ClawCoat v11.0.2 | March 19, 2026*

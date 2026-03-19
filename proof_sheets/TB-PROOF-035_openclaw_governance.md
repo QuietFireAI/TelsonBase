@@ -5,7 +5,7 @@
 **Status:** VERIFIED
 **Test Coverage:** VERIFIED -- test_openclaw.py -- 55 behavioral tests confirm full governance pipeline
 **Last Verified:** March 8, 2026
-**Version:** v11.0.1
+**Version:** v11.0.2
 
 ---
 
@@ -62,4 +62,4 @@ References to the governance pipeline, evaluate_action method, and OPENCLAW conf
 
 ---
 
-*Sheet TB-PROOF-035 | TelsonBase v11.0.1 | March 1, 2026*
+*Sheet TB-PROOF-035 | ClawCoat v11.0.2 | March 19, 2026*

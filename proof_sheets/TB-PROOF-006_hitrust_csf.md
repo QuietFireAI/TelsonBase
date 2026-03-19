@@ -5,7 +5,7 @@
 **Status:** VERIFIED
 **Test Coverage:** VERIFIED -- TestHITRUSTDepth -- 8 depth tests cover all 12 domains, all 5 statuses, gap analysis, risk scoring
 **Last Verified:** March 8, 2026
-**Version:** v11.0.1
+**Version:** v11.0.2
 
 ---
 
@@ -62,4 +62,4 @@ All 12 domains confirmed, all 5 control statuses present, posture score calculat
 
 ---
 
-*Sheet TB-PROOF-006 | TelsonBase v11.0.1 | Updated March 16, 2026*
+*Sheet TB-PROOF-006 | ClawCoat v11.0.2 | March 19, 2026*

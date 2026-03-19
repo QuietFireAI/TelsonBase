@@ -5,7 +5,7 @@
 **Status:** VERIFIED
 **Test Coverage:** VERIFIED -- TestNetworkSecurity -- 9 behavioral tests
 **Last Verified:** March 8, 2026
-**Version:** v11.0.1
+**Version:** v11.0.2
 
 ---
 
@@ -56,4 +56,4 @@ docker compose exec mcp_server python -m pytest tests/test_security_battery.py::
 
 ---
 
-*Sheet TB-PROOF-047 | TelsonBase v11.0.1 | March 8, 2026*
+*Sheet TB-PROOF-047 | ClawCoat v11.0.2 | March 19, 2026*

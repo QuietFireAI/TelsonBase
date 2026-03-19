@@ -5,7 +5,7 @@
 **Status:** VERIFIED
 **Test Coverage:** VERIFIED -- test_openclaw.py -- trust level permission matrix exercised across all 5 tiers
 **Last Verified:** March 8, 2026
-**Version:** v11.0.1
+**Version:** v11.0.2
 
 ---
 
@@ -90,4 +90,4 @@ For how trust levels govern tool checkout eligibility, `min_trust_level` designa
 
 ---
 
-*Sheet TB-PROOF-036 | TelsonBase v11.0.1 | Updated March 8, 2026*
+*Sheet TB-PROOF-036 | ClawCoat v11.0.2 | March 19, 2026*

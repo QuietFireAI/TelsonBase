@@ -5,7 +5,7 @@
 **Status:** VERIFIED
 **Test Coverage:** VERIFIED -- test_openclaw.py -- kill switch suspend and reinstate tested as named test functions
 **Last Verified:** March 8, 2026
-**Version:** v11.0.1
+**Version:** v11.0.2
 
 ---
 
@@ -85,4 +85,4 @@ References to suspend_instance, reinstate_instance, kill switch check at Step 2,
 
 ---
 
-*Sheet TB-PROOF-037 | TelsonBase v11.0.1 | February 23, 2026*
+*Sheet TB-PROOF-037 | ClawCoat v11.0.2 | March 19, 2026*

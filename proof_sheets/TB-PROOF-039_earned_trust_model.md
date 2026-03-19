@@ -5,7 +5,7 @@
 **Status:** VERIFIED
 **Test Coverage:** VERIFIED -- test_openclaw.py -- default QUARANTINE, sequential promotion required, demotion instant
 **Last Verified:** March 8, 2026
-**Version:** v11.0.1
+**Version:** v11.0.2
 
 ---
 
@@ -83,4 +83,4 @@ References to VALID_PROMOTIONS dictionary (sequential), VALID_DEMOTIONS dictiona
 
 ---
 
-*Sheet TB-PROOF-039 | TelsonBase v11.0.1 | February 23, 2026*
+*Sheet TB-PROOF-039 | ClawCoat v11.0.2 | March 19, 2026*

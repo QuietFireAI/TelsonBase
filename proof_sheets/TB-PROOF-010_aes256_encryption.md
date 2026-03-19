@@ -5,7 +5,7 @@
 **Status:** VERIFIED
 **Test Coverage:** VERIFIED -- TestEncryptionIntegrity -- 11 behavioral tests confirm AES-256-GCM encrypt/decrypt/tamper
 **Last Verified:** March 8, 2026
-**Version:** v11.0.1
+**Version:** v11.0.2
 
 ---
 
@@ -64,4 +64,4 @@ Lines showing AESGCM import, 32-byte key size, 12-byte nonce, and encrypt/decryp
 
 ---
 
-*Sheet TB-PROOF-010 | TelsonBase v11.0.1 | February 23, 2026*
+*Sheet TB-PROOF-010 | ClawCoat v11.0.2 | March 19, 2026*

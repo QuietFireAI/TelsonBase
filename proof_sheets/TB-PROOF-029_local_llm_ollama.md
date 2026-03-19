@@ -5,7 +5,7 @@
 **Status:** VERIFIED
 **Test Coverage:** VERIFIED -- TestLocalOllamaConfig -- ollama_base_url confirmed local, ollama service confirmed in docker-compose
 **Last Verified:** March 8, 2026
-**Version:** v11.0.1
+**Version:** v11.0.2
 
 ---
 
@@ -76,4 +76,4 @@ All references point to `http://ollama:11434` (Docker internal network address).
 
 ---
 
-*Sheet TB-PROOF-029 | TelsonBase v11.0.1 | February 23, 2026*
+*Sheet TB-PROOF-029 | ClawCoat v11.0.2 | March 19, 2026*

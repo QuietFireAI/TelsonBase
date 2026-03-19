@@ -5,7 +5,7 @@
 **Status:** VERIFIED
 **Test Coverage:** VERIFIED -- TestZeroExternalCalls -- source scan confirms no outbound calls to openai.com/googleapis.com/amazonaws.com in core/api/agents
 **Last Verified:** March 8, 2026
-**Version:** v11.0.1
+**Version:** v11.0.2
 
 ---
 
@@ -77,4 +77,4 @@ Zero references to external inference APIs.
 
 ---
 
-*Sheet TB-PROOF-028 | TelsonBase v11.0.1 | February 23, 2026*
+*Sheet TB-PROOF-028 | ClawCoat v11.0.2 | March 19, 2026*
