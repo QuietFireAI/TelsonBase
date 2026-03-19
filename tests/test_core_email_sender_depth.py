@@ -5,6 +5,8 @@
 # REM: All SMTP calls are mocked. No mail server required.
 
 import asyncio
+import importlib
+import sys
 import smtplib
 from unittest.mock import MagicMock, patch, call
 
@@ -16,6 +18,14 @@ import pytest
 # ═══════════════════════════════════════════════════════════════════════════════
 
 class TestSendSync:
+    @pytest.fixture(autouse=True)
+    def fresh_module(self):
+        """Force a clean import of core.email_sender for each test.
+        Prevents MagicMock contamination from other test files that patch the module."""
+        sys.modules.pop("core.email_sender", None)
+        yield
+        sys.modules.pop("core.email_sender", None)
+
     def test_returns_false_when_smtp_host_empty(self):
         from core.email_sender import _send_sync
         import core.email_sender as es
@@ -262,6 +272,12 @@ class TestSendSync:
 # ═══════════════════════════════════════════════════════════════════════════════
 
 class TestSendVerificationEmail:
+    @pytest.fixture(autouse=True)
+    def fresh_module(self):
+        sys.modules.pop("core.email_sender", None)
+        yield
+        sys.modules.pop("core.email_sender", None)
+
     def test_returns_true_on_success(self):
         from core.email_sender import send_verification_email
 
