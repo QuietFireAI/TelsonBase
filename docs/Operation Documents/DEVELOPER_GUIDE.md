@@ -1,6 +1,6 @@
 # ClawCoat - Developer Guide
 
-**Version:** v11.0.1 · **Maintainer:** Quietfire AI
+**Version:** v11.0.2 · **Maintainer:** Quietfire AI
 
 This guide explains how to build AI agents that run within the ClawCoat zero-trust architecture using the **embedded Python integration path** - agents written in Python that inherit from `SecureBaseAgent` and run inside ClawCoat.
 
@@ -583,7 +583,7 @@ pytest --cov=core --cov=agents --cov-report=html tests/
 ## Next Steps
 
 1. Review the example agents in `/agents/`
-2. Run the full test suite: `docker compose exec mcp_server python -m pytest -v`
+2. Run the full test suite: `docker compose exec mcp_server python -m pytest tests/ --ignore=tests/test_mqtt_stress.py -q` — expect **5416 passed, 3 skipped**
 3. Check live API docs at `http://localhost:8000/docs` when the server is running
 4. Read [OPENCLAW_INTEGRATION_GUIDE.md](OPENCLAW_INTEGRATION_GUIDE.md) if you need external agents (Goose, Claude Desktop, HTTP clients)
 5. See [TROUBLESHOOTING.md](TROUBLESHOOTING.md) for common issues
@@ -592,8 +592,4 @@ For questions: support@clawcoat.com
 
 ---
 
-> **On AI collaboration:** ClawCoat was built with Claude Code (Anthropic) as engineering co-author. 80+ commits carry a `Co-Authored-By: Claude Sonnet 4.6` trailer. That is an accurate record of how this was built, not a liability disclaimer. The README contains a full verification note from Claude Code covering what was checked against the live codebase before launch. If you have questions about methodology, `support@clawcoat.com` reaches the human.
-
----
-
-*ClawCoat v11.0.1 · Quietfire AI · March 8, 2026*
+*ClawCoat v11.0.2 · Quietfire AI · March 19, 2026*

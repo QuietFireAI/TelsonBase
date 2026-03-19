@@ -1,6 +1,6 @@
 # ClawCoat - Installation Guide for Windows
 
-**Version:** v11.0.1 · **Maintainer:** Quietfire AI
+**Version:** v11.0.2 · **Maintainer:** Quietfire AI
 **Target Audience:** Windows users, including those new to Docker
 
 ---
@@ -70,7 +70,7 @@ git clone https://github.com/QuietFireAI/ClawCoat.git
 cd ClawCoat
 ```
 
-> Note the capital T - the directory is `ClawCoat`, not `telsonbase`.
+> Note the capital C - the directory is `ClawCoat`, not `clawcoat`.
 
 ---
 
@@ -220,7 +220,7 @@ Or open a browser to: `http://localhost:8000/health`
 
 Expected response:
 ```json
-{"status": "healthy", "version": "11.0.1"}
+{"status": "healthy", "version": "11.0.2"}
 ```
 
 ### Step 6 - Pull the AI model
@@ -332,36 +332,39 @@ For the full scoring model, violation types, and API reference: `docs/Compliance
 
 ## Running the Test Suite
 
-720 tests covering what actually matters for a governance platform:
+5,416 tests across 88 files covering the full governance platform:
 
-| Domain | Count | What it covers |
+| Domain | Tests | What it covers |
 |---|---|---|
 | Security battery | 96 | Auth, signing, key hashing, injection prevention, encryption, RBAC |
 | QMS protocol | 115 | Message format, nonce replay, chain integrity, signature verification |
-| Tool governance | 129 | Capability enforcement, egress control, approval gates |
-| OpenClaw | 55 | Trust tier transitions, kill switch, Manners score updates |
-| End-to-end | 29 | Full agent lifecycle from registration to suspension |
-| Contracts | 7 | Enum stability - if you add a TenantType or TrustLevel, these fail fast |
-| Core + other | 289 | Multi-tenancy isolation, federation, audit trail, CAPTCHA, HITL |
+| Toolroom | 446 | Supply-chain security, registry, checkout, versioning, rollback |
+| OpenClaw governance | 55 | Trust tier transitions, kill switch, Manners score updates |
+| Core module depth | 2,718 | HIPAA compliance, HITRUST, tenancy, session management, PHI, audit chain |
+| Agents depth | 479 | Transaction, memory, document, backup, demo, base agents |
+| API routes depth | 157 | Security, tenancy, auth, and MCP gateway routes |
+| Infrastructure & E2E | 163 | Full agent lifecycle, federation, audit chain integrity, error sanitization |
+| Coverage boost | 402 | Supplemental coverage across miscellaneous modules |
+| **Total** | **5,416** | |
 
 Run the full suite from inside the Docker container:
 
 ```bash
-docker compose exec mcp_server python -m pytest tests/ -v
+docker compose exec mcp_server python -m pytest tests/ --ignore=tests/test_mqtt_stress.py -q
 ```
 
-Expected result: **720 passed, 1 skipped, 0 failed**
+Expected result: **5416 passed, 3 skipped, 0 failed**
 
-The 1 skip is expected - it is an Alembic idempotency test that requires a live database in a specific state. Everything else should be green.
+The 3 skips are expected - they are Celery-configuration tests that are skipped when Celery runs under the unit-test stub. Everything else should be green.
 
 Run only the security battery:
 ```bash
-docker compose exec mcp_server python -m pytest tests/security/ -v
+docker compose exec mcp_server python -m pytest tests/test_security_battery.py -v
 ```
 
 Run a specific test file:
 ```bash
-docker compose exec mcp_server python -m pytest tests/test_auth.py -v
+docker compose exec mcp_server python -m pytest tests/test_openclaw.py -v
 ```
 
 Every test has a corresponding proof sheet in `proof_sheets/individual/`. Each sheet contains the exact pytest command to run it in isolation.
@@ -486,4 +489,4 @@ This adds MailHog. Access it at `http://localhost:8025` to view emails sent by t
 
 ---
 
-*ClawCoat v11.0.1 · Quietfire AI · March 8, 2026*
+*ClawCoat v11.0.2 · Quietfire AI · March 19, 2026*
