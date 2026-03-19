@@ -196,6 +196,7 @@ class Session:
 class RBACManager:
     """
     REM: Manages role-based access control for operators.
+    REM: Redis write-through persistence — all workers share the same user/session state.
     """
 
     SESSION_DURATION_HOURS = 8
@@ -204,6 +205,172 @@ class RBACManager:
         self._users: Dict[str, User] = {}
         self._sessions: Dict[str, Session] = {}
         self._api_key_to_user: Dict[str, str] = {}
+        self._load_from_redis()
+
+    # ── Redis persistence helpers ──────────────────────────────────────────────
+
+    def _load_from_redis(self) -> None:
+        """REM: Load users and API-key index from Redis on startup."""
+        try:
+            from core.persistence import security_store
+            all_users = security_store.list_records("rbac_users")
+            for user_id, data in all_users.items():
+                user = self._user_from_dict(data)
+                if user:
+                    self._users[user_id] = user
+            all_keys = security_store.list_records("rbac_api_keys")
+            for api_key, data in all_keys.items():
+                uid = data.get("user_id", "") if isinstance(data, dict) else str(data)
+                if uid:
+                    self._api_key_to_user[api_key] = uid
+            if all_users:
+                logger.info(
+                    f"REM: Loaded {len(self._users)} RBAC users from Redis_Thank_You"
+                )
+        except Exception as e:
+            logger.warning(
+                f"REM: Redis unavailable for RBAC load: {e}_Thank_You_But_No"
+            )
+
+    def _user_to_redis_dict(self, user: User) -> Dict[str, Any]:
+        """REM: Full-fidelity serialization for Redis round-trip (includes custom/denied perms)."""
+        return {
+            "user_id": user.user_id,
+            "username": user.username,
+            "email": user.email,
+            "roles": [r.value for r in user.roles],
+            "created_at": user.created_at.isoformat(),
+            "last_login": user.last_login.isoformat() if user.last_login else None,
+            "is_active": user.is_active,
+            "mfa_enabled": user.mfa_enabled,
+            "custom_permissions": [p.value for p in user.custom_permissions],
+            "denied_permissions": [p.value for p in user.denied_permissions],
+        }
+
+    def _user_from_dict(self, data: Dict) -> Optional[User]:
+        """REM: Deserialize a User from a Redis dict."""
+        try:
+            roles = {Role(r) for r in data.get("roles", [])}
+            custom_perms = {Permission(p) for p in data.get("custom_permissions", [])}
+            denied_perms = {Permission(p) for p in data.get("denied_permissions", [])}
+            created_at = datetime.fromisoformat(data["created_at"])
+            last_login = (
+                datetime.fromisoformat(data["last_login"])
+                if data.get("last_login")
+                else None
+            )
+            return User(
+                user_id=data["user_id"],
+                username=data["username"],
+                email=data["email"],
+                roles=roles,
+                created_at=created_at,
+                last_login=last_login,
+                is_active=data.get("is_active", True),
+                mfa_enabled=data.get("mfa_enabled", False),
+                custom_permissions=custom_perms,
+                denied_permissions=denied_perms,
+            )
+        except Exception as e:
+            logger.warning(
+                f"REM: Failed to deserialize RBAC user: {e}_Thank_You_But_No"
+            )
+            return None
+
+    def _save_user(self, user: User) -> None:
+        """REM: Write-through save of a user record and username index to Redis."""
+        try:
+            from core.persistence import security_store
+            security_store.store_record(
+                "rbac_users", user.user_id, self._user_to_redis_dict(user)
+            )
+            security_store.store_record(
+                "rbac_username_idx", user.username, {"user_id": user.user_id}
+            )
+        except Exception as e:
+            logger.warning(
+                f"REM: Failed to save RBAC user to Redis: {e}_Thank_You_But_No"
+            )
+
+    def _load_user_from_redis(self, user_id: str) -> Optional[User]:
+        """REM: Fetch a user from Redis and cache it in-memory."""
+        try:
+            from core.persistence import security_store
+            data = security_store.get_record("rbac_users", user_id)
+            if not data:
+                return None
+            user = self._user_from_dict(data)
+            if user:
+                self._users[user_id] = user
+            return user
+        except Exception as e:
+            logger.warning(
+                f"REM: Failed to load user from Redis: {e}_Thank_You_But_No"
+            )
+            return None
+
+    def _save_session(self, session: Session) -> None:
+        """REM: Persist session to Redis with TTL matching its expiry."""
+        try:
+            from core.persistence import security_store
+            remaining = int(
+                (session.expires_at - datetime.now(timezone.utc)).total_seconds()
+            )
+            if remaining <= 0:
+                return
+            data = {
+                "session_id": session.session_id,
+                "user_id": session.user_id,
+                "created_at": session.created_at.isoformat(),
+                "expires_at": session.expires_at.isoformat(),
+                "ip_address": session.ip_address,
+                "user_agent": session.user_agent,
+            }
+            security_store.store_record(
+                "rbac_sessions", session.session_id, data, ttl=remaining
+            )
+        except Exception as e:
+            logger.warning(
+                f"REM: Failed to save session to Redis: {e}_Thank_You_But_No"
+            )
+
+    def _load_session_from_redis(self, session_id: str) -> Optional[Session]:
+        """REM: Load a session from Redis (another worker may have created it)."""
+        try:
+            from core.persistence import security_store
+            data = security_store.get_record(
+                "rbac_sessions", session_id, use_ttl_key=True
+            )
+            if not data:
+                return None
+            return Session(
+                session_id=data["session_id"],
+                user_id=data["user_id"],
+                created_at=datetime.fromisoformat(data["created_at"]),
+                expires_at=datetime.fromisoformat(data["expires_at"]),
+                ip_address=data.get("ip_address"),
+                user_agent=data.get("user_agent"),
+                is_valid=True,
+            )
+        except Exception as e:
+            logger.warning(
+                f"REM: Failed to load session from Redis: {e}_Thank_You_But_No"
+            )
+            return None
+
+    def _delete_session_from_redis(self, session_id: str) -> None:
+        """REM: Delete a session from Redis on explicit invalidation."""
+        try:
+            from core.persistence import security_store
+            security_store.delete_record(
+                "rbac_sessions", session_id, use_ttl_key=True
+            )
+        except Exception as e:
+            logger.warning(
+                f"REM: Failed to delete session from Redis: {e}_Thank_You_But_No"
+            )
+
+    # ── Core operations ────────────────────────────────────────────────────────
 
     def create_user(
         self,
@@ -235,6 +402,7 @@ class RBACManager:
         )
 
         self._users[user_id] = user
+        self._save_user(user)
 
         logger.info(
             f"REM: User created - ::{username}:: with roles "
@@ -253,14 +421,27 @@ class RBACManager:
         return user
 
     def get_user(self, user_id: str) -> Optional[User]:
-        """REM: Get a user by ID."""
-        return self._users.get(user_id)
+        """REM: Get a user by ID. Falls back to Redis if not in memory cache."""
+        user = self._users.get(user_id)
+        if user is None:
+            user = self._load_user_from_redis(user_id)
+        return user
 
     def get_user_by_username(self, username: str) -> Optional[User]:
-        """REM: Get a user by username."""
+        """REM: Get a user by username. Falls back to Redis username index on cache miss."""
         for user in self._users.values():
             if user.username == username:
                 return user
+        # REM: Not in memory — check Redis username index (another worker may have created it)
+        try:
+            from core.persistence import security_store
+            data = security_store.get_record("rbac_username_idx", username)
+            if data:
+                user_id = data.get("user_id") if isinstance(data, dict) else str(data)
+                if user_id:
+                    return self._load_user_from_redis(user_id)
+        except Exception:
+            pass
         return None
 
     def assign_role(
@@ -280,6 +461,7 @@ class RBACManager:
             return False
 
         user.roles.add(role_enum)
+        self._save_user(user)
 
         logger.info(
             f"REM: Role ::{role}:: assigned to ::{user.username}:: "
@@ -314,6 +496,7 @@ class RBACManager:
 
         if role_enum in user.roles:
             user.roles.remove(role_enum)
+            self._save_user(user)
 
             logger.warning(
                 f"REM: Role ::{role}:: removed from ::{user.username}:: "
@@ -338,11 +521,13 @@ class RBACManager:
             return False
 
         user.is_active = False
+        self._save_user(user)
 
-        # REM: Invalidate all sessions
+        # REM: Invalidate all in-memory sessions; Redis TTL sessions expire naturally
         for session_id, session in list(self._sessions.items()):
             if session.user_id == user_id:
                 session.is_valid = False
+                self._delete_session_from_redis(session_id)
 
         logger.warning(
             f"REM: User ::{user.username}:: deactivated by ::{deactivated_by}::_Thank_You"
@@ -382,6 +567,7 @@ class RBACManager:
         )
 
         self._sessions[session_id] = session
+        self._save_session(session)
         user.last_login = now
 
         logger.info(f"REM: Session created for ::{user.username}::_Thank_You")
@@ -389,26 +575,36 @@ class RBACManager:
         return session
 
     def validate_session(self, session_id: str) -> Optional[User]:
-        """REM: Validate a session and return the user."""
+        """REM: Validate a session and return the user. Falls back to Redis on cache miss."""
         session = self._sessions.get(session_id)
+        if session is None:
+            # REM: Not in memory — another worker may have created it
+            session = self._load_session_from_redis(session_id)
+            if session:
+                self._sessions[session_id] = session
+
         if not session:
             return None
         if not session.is_valid or session.is_expired():
             return None
 
         user = self._users.get(session.user_id)
+        if user is None:
+            user = self._load_user_from_redis(session.user_id)
         if not user or not user.is_active:
             return None
 
         return user
 
     def invalidate_session(self, session_id: str) -> bool:
-        """REM: Invalidate a session."""
+        """REM: Invalidate a session (in-memory and Redis)."""
+        found = False
         session = self._sessions.get(session_id)
         if session:
             session.is_valid = False
-            return True
-        return False
+            found = True
+        self._delete_session_from_redis(session_id)
+        return found
 
     def check_permission(
         self,
@@ -422,17 +618,35 @@ class RBACManager:
         return user.has_permission(permission)
 
     def register_api_key(self, api_key: str, user_id: str) -> bool:
-        """REM: Register an API key for a user."""
+        """REM: Register an API key for a user. Persisted to Redis."""
         if user_id not in self._users:
-            return False
+            if not self._load_user_from_redis(user_id):
+                return False
         self._api_key_to_user[api_key] = user_id
+        try:
+            from core.persistence import security_store
+            security_store.store_record("rbac_api_keys", api_key, {"user_id": user_id})
+        except Exception as e:
+            logger.warning(
+                f"REM: Failed to save API key to Redis: {e}_Thank_You_But_No"
+            )
         return True
 
     def get_user_by_api_key(self, api_key: str) -> Optional[User]:
-        """REM: Get user by API key."""
+        """REM: Get user by API key. Falls back to Redis on cache miss."""
         user_id = self._api_key_to_user.get(api_key)
+        if not user_id:
+            try:
+                from core.persistence import security_store
+                data = security_store.get_record("rbac_api_keys", api_key)
+                if data:
+                    user_id = data.get("user_id") if isinstance(data, dict) else str(data)
+                    if user_id:
+                        self._api_key_to_user[api_key] = user_id
+            except Exception:
+                pass
         if user_id:
-            return self._users.get(user_id)
+            return self.get_user(user_id)
         return None
 
     def check_api_key_permission(
