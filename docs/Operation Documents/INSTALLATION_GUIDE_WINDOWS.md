@@ -220,7 +220,7 @@ Or open a browser to: `http://localhost:8000/health`
 
 Expected response:
 ```json
-{"status": "healthy", "version": "11.0.2"}
+{"status": "healthy", "timestamp": "2026-03-19T17:00:00+00:00", "redis": "healthy", "mqtt": "connected"}
 ```
 
 ### Step 6 - Pull the AI model
@@ -332,7 +332,7 @@ For the full scoring model, violation types, and API reference: `docs/Compliance
 
 ## Running the Test Suite
 
-5,416 tests across 88 files covering the full governance platform:
+5,400+ tests across 92 files covering the full governance platform:
 
 | Domain | Tests | What it covers |
 |---|---|---|
@@ -353,7 +353,7 @@ Run the full suite from inside the Docker container:
 docker compose exec mcp_server python -m pytest tests/ --ignore=tests/test_mqtt_stress.py -q
 ```
 
-Expected result: **5416 passed, 3 skipped, 0 failed**
+Expected result: **5400+ passed, 3 skipped, 0 failed**
 
 The 3 skips are expected - they are Celery-configuration tests that are skipped when Celery runs under the unit-test stub. Everything else should be green.
 

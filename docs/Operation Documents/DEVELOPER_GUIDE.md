@@ -583,7 +583,7 @@ pytest --cov=core --cov=agents --cov-report=html tests/
 ## Next Steps
 
 1. Review the example agents in `/agents/`
-2. Run the full test suite: `docker compose exec mcp_server python -m pytest tests/ --ignore=tests/test_mqtt_stress.py -q` — expect **5416 passed, 3 skipped**
+2. Run the full test suite: `docker compose exec mcp_server python -m pytest tests/ --ignore=tests/test_mqtt_stress.py -q` — expect **5400+ passed, 3 skipped**
 3. Check live API docs at `http://localhost:8000/docs` when the server is running
 4. Read [OPENCLAW_INTEGRATION_GUIDE.md](OPENCLAW_INTEGRATION_GUIDE.md) if you need external agents (Goose, Claude Desktop, HTTP clients)
 5. See [TROUBLESHOOTING.md](TROUBLESHOOTING.md) for common issues
