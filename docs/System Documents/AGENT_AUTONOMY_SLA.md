@@ -265,6 +265,20 @@ ClawCoat is compatible with their DSL and adopts their vocabulary. The formal ma
 
 This file is a valid document in their proposed DSL. It uses their `OversightLevel` metric type to formalize each tier's oversight commitment, `MCP` to assert protocol compliance, `TTFT` for decision latency, and `DerivedQoSMetric` for the rolling behavioral observation window used in promotion evaluation.
 
+### OversightLevel per trust tier
+
+`OversightLevel` is expressed as a value in [0.0, 1.0] where 1.0 = full human oversight and 0.0 = fully autonomous. ClawCoat's five tiers map to the following committed values:
+
+| Tier | OversightLevel | Manners Score Floor | Basis |
+|---|---|---|---|
+| **QUARANTINE** | 1.0 | none | Zero autonomous execution. All calls blocked or gated. |
+| **PROBATION** | 0.75 | ≥ 0.50 (DEGRADED) | Allowlisted calls autonomous; all other calls gated. |
+| **RESIDENT** | 0.50 | ≥ 0.50 (DEGRADED) | Standard calls autonomous; privileged calls gated. |
+| **CITIZEN** | 0.25 | ≥ 0.75 (COMPLIANT) | Most calls autonomous; exceptional categories gated. |
+| **AGENT** | 0.10 | ≥ 0.90 (EXEMPLARY) | All in-scope calls autonomous; anomaly events trigger mandatory HITL. |
+
+Note the inverse relationship: OversightLevel decreases as trust increases, while the Manners score floor required to hold that tier increases. This is the earned-trust model expressed numerically — an agent earns lower oversight by maintaining higher behavioral compliance.
+
 ### Where the approaches align
 
 Both frameworks recognize that traditional SLA infrastructure (uptime, latency, rate limits) cannot govern autonomous agent behavior. Both use a tiered structure for differentiated commitments. `OversightLevel` in their quality model maps directly to ClawCoat's trust tiers.
