@@ -236,38 +236,12 @@ jobs:
 
       - name: Run full test suite
         run: |
-          mkdir -p /tmp/coverage_src_backup
-          cp -r core api agents toolroom /tmp/coverage_src_backup
-          (while true; do
-            if [ ! -f core/__init__.py ]; then
-              echo "DELETION_DETECTED at $(date '+%T.%3N')" > /tmp/deletion_time.txt
-              break
-            fi
-            sleep 0.2
-          done) &
-          WATCHER_PID=$!
           python -m coverage run \
             --include='core/*,api/*,agents/*,toolroom/*' \
             --omit='core/mqtt_bus.py,core/ollama_service.py,agents/ollama_agent.py' \
             -m pytest tests/ -v --tb=short --no-cov \
             --ignore=tests/test_mqtt_stress.py \
             --ignore=tests/test_e2e_integration.py
-          kill $WATCHER_PID 2>/dev/null || true
-          echo "=== DELETION TIMING ==="
-          cat /tmp/deletion_time.txt 2>/dev/null || echo "Files present throughout test run"
-          echo "=== COVERAGE DATABASE ==="
-          python -m coverage debug data 2>&1
-          for d in core api agents toolroom; do
-            if [ ! -f "${d}/__init__.py" ]; then
-              echo "WARN: ${d}/ missing — restoring from backup"
-              cp -r /tmp/coverage_src_backup/${d} .
-            fi
-          done
-          echo "=== POST-RESTORE ==="
-          ls core/*.py 2>&1 | wc -l || echo "core/ missing"
-          echo "=== COVERAGE DATABASE AFTER RESTORE ==="
-          python -m coverage debug data 2>&1 | head -20
-          python -m coverage report --ignore-errors || true
           python -m coverage report --fail-under=80 --ignore-errors
           python -m coverage xml --ignore-errors
         env:

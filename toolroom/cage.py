@@ -348,10 +348,11 @@ class Cage:
         )
         while len(tool_receipts) > MAX_ARCHIVES_PER_TOOL:
             oldest = tool_receipts.pop(0)
-            # REM: Remove from disk
-            archive_path = Path(oldest.archive_path)
-            if archive_path.exists():
-                shutil.rmtree(archive_path, ignore_errors=True)
+            # REM: Remove from disk — guard required: Path("") == Path(".") is CWD
+            if oldest.archive_path:
+                archive_path = Path(oldest.archive_path)
+                if archive_path.exists():
+                    shutil.rmtree(archive_path, ignore_errors=True)
             # REM: Remove from memory
             self._receipts.pop(oldest.receipt_id, None)
             logger.info(
