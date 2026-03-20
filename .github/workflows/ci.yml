@@ -242,7 +242,7 @@ jobs:
             -m pytest tests/ -v --tb=short --no-cov \
             --ignore=tests/test_mqtt_stress.py \
             --ignore=tests/test_e2e_integration.py
-          python -m coverage report --fail-under=75 --ignore-errors
+          python -m coverage report --fail-under=80 --ignore-errors
           python -m coverage xml --ignore-errors
         env:
           TELSONBASE_ENV: development
