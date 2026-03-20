@@ -4,7 +4,7 @@
 
 Every OpenClaw tool call passes through ClawCoat before execution. Allow, gate for human approval, or block. Every time. That is active decision making, and it is what separates governance from logging.
 
-ClawCoat is the working implementation of the Agent Autonomy SLA, a formal per-tier commitment framework defining what an OpenClaw agent may do, under what conditions, and with what audit trail. Jouneaux and Cabot identified this as an open challenge in November 2025 ([arXiv:2511.02885](https://arxiv.org/abs/2511.02885)) — and defined `OversightLevel` as a first-class quality metric for AI agent services. ClawCoat makes it runtime-enforced and behaviorally dynamic. The [formal machine-readable spec](docs/System%20Documents/agent-autonomy-sla-spec.json) is expressed in their DSL.
+ClawCoat is the working implementation of the [Agent Autonomy SLA](docs/System%20Documents/AGENT_AUTONOMY_SLA.md), a formal per-tier commitment framework defining what an OpenClaw agent may do, under what conditions, and with what audit trail. Jouneaux and Cabot identified this as an open challenge in November 2025 ([arXiv:2511.02885](https://arxiv.org/abs/2511.02885)) — and defined `OversightLevel` as a first-class quality metric for AI agent services. ClawCoat makes it runtime-enforced and behaviorally dynamic. The [formal machine-readable spec](docs/System%20Documents/agent-autonomy-sla-spec.json) is expressed in their DSL.
 
 Five trust tiers, earned by behavior. The Manners Engine measures every action continuously - the active measurement device that drives automatic demotion. Human-in-the-loop gates decide promotion. A cryptographic audit chain records every governance decision. Nothing leaves your network.
 
