@@ -122,10 +122,10 @@ class TestRegisterAsAgent:
         if "core.openclaw" in sys.modules:
             mock_inst = MagicMock()
             mock_inst.instance_id = "test-inst-001"
-            orig = sys.modules["core.openclaw"].manager
+            orig = sys.modules["core.openclaw"].openclaw_manager
             mock_mgr = MagicMock()
             mock_mgr.register_instance.return_value = mock_inst
-            sys.modules["core.openclaw"].manager = mock_mgr
+            sys.modules["core.openclaw"].openclaw_manager = mock_mgr
             try:
                 result = asyncio.run(register_as_agent(
                     name="TestGoose", api_key="valid_api_key_123"
@@ -133,7 +133,7 @@ class TestRegisterAsAgent:
                 assert result["qms_status"] == "Thank_You"
                 assert result["instance_id"] == "test-inst-001"
             finally:
-                sys.modules["core.openclaw"].manager = orig
+                sys.modules["core.openclaw"].openclaw_manager = orig
         else:
             result = asyncio.run(register_as_agent(
                 name="TestGoose", api_key="valid_api_key_123"
@@ -146,15 +146,15 @@ class TestRegisterAsAgent:
         if "core.openclaw" in sys.modules:
             broken = MagicMock()
             broken.register_instance.side_effect = RuntimeError("db down")
-            orig = sys.modules["core.openclaw"].manager
-            sys.modules["core.openclaw"].manager = broken
+            orig = sys.modules["core.openclaw"].openclaw_manager
+            sys.modules["core.openclaw"].openclaw_manager = broken
             try:
                 result = asyncio.run(register_as_agent(
                     name="Bot", api_key="key"
                 ))
                 assert result["qms_status"] == "Thank_You_But_No"
             finally:
-                sys.modules["core.openclaw"].manager = orig
+                sys.modules["core.openclaw"].openclaw_manager = orig
 
 
 # ═══════════════════════════════════════════════════════════════════════════════
@@ -230,15 +230,15 @@ class TestListAgentsTool:
         monkeypatch.setattr(get_settings(), "openclaw_enabled", False)
         import sys
         if "core.openclaw" in sys.modules:
-            orig = sys.modules["core.openclaw"].manager
+            orig = sys.modules["core.openclaw"].openclaw_manager
             broken = MagicMock()
             broken.list_instances.side_effect = RuntimeError("db down")
-            sys.modules["core.openclaw"].manager = broken
+            sys.modules["core.openclaw"].openclaw_manager = broken
             try:
                 result = asyncio.run(list_agents())
                 assert result["qms_status"] == "Thank_You_But_No"
             finally:
-                sys.modules["core.openclaw"].manager = orig
+                sys.modules["core.openclaw"].openclaw_manager = orig
 
 
 # ═══════════════════════════════════════════════════════════════════════════════
@@ -252,16 +252,16 @@ class TestGetAgentTool:
         monkeypatch.setattr(get_settings(), "openclaw_enabled", False)
         import sys
         if "core.openclaw" in sys.modules:
-            orig = sys.modules["core.openclaw"].manager
+            orig = sys.modules["core.openclaw"].openclaw_manager
             mock_mgr = MagicMock()
             mock_mgr.get_instance.return_value = None
-            sys.modules["core.openclaw"].manager = mock_mgr
+            sys.modules["core.openclaw"].openclaw_manager = mock_mgr
             try:
                 result = asyncio.run(get_agent("nonexistent-id"))
                 assert result["qms_status"] == "Thank_You_But_No"
                 assert "not found" in result["error"]
             finally:
-                sys.modules["core.openclaw"].manager = orig
+                sys.modules["core.openclaw"].openclaw_manager = orig
 
     def test_success_returns_agent_dict(self, monkeypatch):
         from api.mcp_gateway import get_agent
@@ -269,15 +269,15 @@ class TestGetAgentTool:
         monkeypatch.setattr(get_settings(), "openclaw_enabled", False)
         import sys
         if "core.openclaw" in sys.modules:
-            orig = sys.modules["core.openclaw"].manager
+            orig = sys.modules["core.openclaw"].openclaw_manager
             mock_inst = MagicMock()
             mock_inst.to_dict.return_value = {"instance_id": "inst-001", "name": "TestBot"}
             mock_mgr = MagicMock()
             mock_mgr.get_instance.return_value = mock_inst
-            sys.modules["core.openclaw"].manager = mock_mgr
+            sys.modules["core.openclaw"].openclaw_manager = mock_mgr
             try:
                 result = asyncio.run(get_agent("inst-001"))
                 assert result["qms_status"] == "Thank_You"
                 assert "agent" in result
             finally:
-                sys.modules["core.openclaw"].manager = orig
+                sys.modules["core.openclaw"].openclaw_manager = orig
