@@ -204,7 +204,7 @@ async def system_status() -> dict:
 
         from core.audit import audit
         from core.config import get_settings
-        from core.openclaw import manager as openclaw_manager
+        from core.openclaw import openclaw_manager
 
         r = redis_lib.from_url(get_settings().redis_url, decode_responses=True)
         redis_ok = r.ping()
@@ -267,9 +267,9 @@ async def list_agents(include_suspended: bool = False) -> dict:
     if gate:
         return gate
     try:
-        from core.openclaw import manager
+        from core.openclaw import openclaw_manager
 
-        instances = manager.list_instances()
+        instances = openclaw_manager.list_instances()
         if not include_suspended:
             instances = [i for i in instances if i.trust_level != "suspended"]
 
@@ -304,9 +304,9 @@ async def get_agent(instance_id: str) -> dict:
     if gate:
         return gate
     try:
-        from core.openclaw import manager
+        from core.openclaw import openclaw_manager
 
-        instance = manager.get_instance(instance_id)
+        instance = openclaw_manager.get_instance(instance_id)
         if not instance:
             return {
                 "qms_status": "Thank_You_But_No",
@@ -337,8 +337,6 @@ async def register_as_agent(
         override_reason:      Justification for starting above quarantine (min 10 chars).
     """
     try:
-        from core.openclaw import manager
-
         _TRUST_LADDER = ["quarantine", "probation", "resident", "citizen"]
         level = (initial_trust_level or "quarantine").lower().strip()
         if level not in _TRUST_LADDER:
@@ -353,7 +351,9 @@ async def register_as_agent(
                     "error": "override_reason (min 10 chars) required when starting above quarantine",
                 }
 
-        instance = manager.register_instance(
+        from core.openclaw import openclaw_manager
+
+        instance = openclaw_manager.register_instance(
             name=name,
             api_key=api_key,
             allowed_tools=[],
@@ -365,7 +365,7 @@ async def register_as_agent(
         if level != "quarantine":
             target_idx = _TRUST_LADDER.index(level)
             for step in _TRUST_LADDER[1 : target_idx + 1]:
-                manager.promote_trust(
+                openclaw_manager.promote_trust(
                     instance_id=instance.instance_id,
                     new_level=step,
                     promoted_by="mcp_gateway",
