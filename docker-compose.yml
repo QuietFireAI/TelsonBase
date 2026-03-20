@@ -16,6 +16,8 @@
 # REM:   - Services only join networks they actually need
 # REM: =======================================================================================
 
+name: telsonbase
+
 services:
   # REM: -----------------------------------------------------------------------------------
   # REM: SERVICE 1: TRAEFIK - The Secure Gateway and City Entrance

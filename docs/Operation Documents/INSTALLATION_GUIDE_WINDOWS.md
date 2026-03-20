@@ -228,7 +228,7 @@ Expected response:
 ClawCoat uses Ollama for local LLM inference. Pull the default model after startup:
 
 ```bash
-docker exec telsonbase-ollama-1 ollama pull gemma2:9b
+docker compose exec ollama ollama pull gemma2:9b
 ```
 
 This is a one-time download (~5.4 GB). The model is stored in the `ollama_data` Docker volume and persists across restarts.
@@ -332,7 +332,7 @@ For the full scoring model, violation types, and API reference: `docs/Compliance
 
 ## Running the Test Suite
 
-5,400+ tests across 92 files covering the full governance platform:
+5,700+ tests across 94 files covering the full governance platform:
 
 | Domain | Tests | What it covers |
 |---|---|---|
@@ -344,8 +344,8 @@ For the full scoring model, violation types, and API reference: `docs/Compliance
 | Agents depth | 479 | Transaction, memory, document, backup, demo, base agents |
 | API routes depth | 157 | Security, tenancy, auth, and MCP gateway routes |
 | Infrastructure & E2E | 163 | Full agent lifecycle, federation, audit chain integrity, error sanitization |
-| Coverage boost | 402 | Supplemental coverage across miscellaneous modules |
-| **Total** | **5,416** | |
+| Coverage boost | 549 | Supplemental coverage across miscellaneous modules |
+| **Total** | **5,777** | |
 
 Run the full suite from inside the Docker container:
 
@@ -353,7 +353,7 @@ Run the full suite from inside the Docker container:
 docker compose exec mcp_server python -m pytest tests/ --ignore=tests/test_mqtt_stress.py -q
 ```
 
-Expected result: **5400+ passed, 3 skipped, 0 failed**
+Expected result: **5700+ passed, 3 skipped, 0 failed**
 
 The 3 skips are expected - they are Celery-configuration tests that are skipped when Celery runs under the unit-test stub. Everything else should be green.
 

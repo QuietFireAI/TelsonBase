@@ -1,6 +1,6 @@
 # ClawCoat Deployment Guide
 
-**Version:** v11.0.1 · **Updated:** March 8, 2026
+**Version:** v11.0.2 · **Updated:** March 19, 2026
 **Audience:** IT administrators, managed service providers (MSPs), and systems integrators deploying ClawCoat on customer premises for law firms and professional services organizations.
 
 ---
@@ -100,8 +100,8 @@ For experienced administrators who want ClawCoat running in under 30 minutes.
 
 ```bash
 # 1. Clone the repository
-git clone https://github.com/your-org/telsonbase.git
-cd telsonbase
+git clone https://github.com/QuietFireAI/ClawCoat.git
+cd ClawCoat
 
 # 2. Configure environment
 cp .env.example .env
@@ -138,14 +138,14 @@ After verification, proceed to [Section 3i](#3i-register-first-admin-user) to cr
 ### 3a. Clone the Repository
 
 ```bash
-git clone https://github.com/your-org/telsonbase.git
-cd telsonbase
+git clone https://github.com/QuietFireAI/ClawCoat.git
+cd ClawCoat
 ```
 
 Verify the directory structure includes:
 
 ```
-telsonbase/
+ClawCoat/
   docker-compose.yml
   Dockerfile
   .env.example
@@ -256,22 +256,23 @@ For environments without internet access or using internal CAs:
 docker compose up --build -d
 ```
 
-This starts the following 12 services:
+This starts the following 11 services (MailHog is excluded — dev profile only):
 
 | # | Service | Image | Purpose |
 |---|---------|-------|---------|
-| 1 | traefik | traefik:v2.10 | TLS termination, reverse proxy, security headers |
+| 1 | traefik | traefik:v3 | TLS termination, reverse proxy, security headers |
 | 2 | redis | redis:7-alpine | Session store, cache, audit chain, rate limiting |
 | 3 | postgres | postgres:16-alpine | Durable storage (users, audit, tenants, compliance) |
-| 4 | mailhog | mailhog/mailhog | Dev SMTP catcher - catches all outbound email (UI at port 8025). Remove in production and set real SMTP_* vars. |
-| 5 | open-webui | ghcr.io/open-webui/open-webui | Human-AI interface |
-| 6 | mosquitto | eclipse-mosquitto:2 | MQTT event bus for real-time agent communication |
-| 7 | ollama | ollama/ollama | Local AI inference engine |
-| 8 | mcp_server | (built from Dockerfile) | ClawCoat API server (FastAPI) |
-| 9 | worker | (built from Dockerfile) | Celery background task workers |
-| 10 | beat | (built from Dockerfile) | Celery scheduler (periodic tasks) |
-| 11 | prometheus | prom/prometheus:v2.49.1 | Metrics collection |
-| 12 | grafana | grafana/grafana:10.3.1 | Metrics dashboards and alerting |
+| 4 | open-webui | ghcr.io/open-webui/open-webui | Human-AI interface |
+| 5 | mosquitto | eclipse-mosquitto:2 | MQTT event bus for real-time agent communication |
+| 6 | ollama | ollama/ollama | Local AI inference engine |
+| 7 | mcp_server | (built from Dockerfile) | ClawCoat API server (FastAPI) |
+| 8 | worker | (built from Dockerfile) | Celery background task workers |
+| 9 | beat | (built from Dockerfile) | Celery scheduler (periodic tasks) |
+| 10 | prometheus | prom/prometheus:v2.49.1 | Metrics collection |
+| 11 | grafana | grafana/grafana:10.3.1 | Metrics dashboards and alerting |
+
+> **MailHog** (dev SMTP catcher) is not included above — it only starts when you pass `--profile dev`. For production, set real SMTP values in `.env` and omit the flag.
 
 Monitor startup progress:
 
@@ -343,7 +344,7 @@ docker compose exec mcp_server python -m pytest tests/test_security_battery.py -
 Expected result:
 
 ```
-93 passed in ~30s
+96 passed in ~30s
 ```
 
 If any tests fail, do not proceed. Review the failure output - it will point to the specific control that is misconfigured or broken. Common causes: missing environment variable, wrong secret file permissions, database migration not applied.
@@ -381,7 +382,6 @@ In production with TLS, replace `http://localhost:8000` with `https://your-domai
 
 **Password requirements:**
 - Minimum 12 characters
-- Must contain uppercase, lowercase, numbers, and special characters
 
 Store the returned user ID and authentication token securely.
 
@@ -523,7 +523,7 @@ Add a cron job to run backups daily at 2:00 AM:
 crontab -e
 
 # Add this line:
-0 2 * * * /path/to/telsonbase/scripts/backup.sh >> /var/log/telsonbase-backup.log 2>&1
+0 2 * * * /path/to/ClawCoat/scripts/backup.sh >> /var/log/telsonbase-backup.log 2>&1
 ```
 
 The backup script performs:
@@ -566,7 +566,7 @@ For compliance (HIPAA, CJIS), copy backups to an offsite location:
 
 ```bash
 # Example: rsync to a remote server
-rsync -az --delete /path/to/telsonbase/backups/ user@backup-server:/backups/telsonbase/
+rsync -az --delete /path/to/ClawCoat/backups/ user@backup-server:/backups/telsonbase/
 ```
 
 ---
@@ -576,7 +576,7 @@ rsync -az --delete /path/to/telsonbase/backups/ user@backup-server:/backups/tels
 ### Standard Upgrade Procedure
 
 ```bash
-cd /path/to/telsonbase
+cd /path/to/ClawCoat
 
 # 1. Create a backup before upgrading
 ./scripts/backup.sh
@@ -894,7 +894,7 @@ docker compose stop open-webui
               +--------+--------+
                        |
               +--------+--------+
-              |   MCP Server    |  (FastAPI, 140+ endpoints)
+              |   MCP Server    |  (FastAPI, 162+ endpoints)
               |     :8000       |
               +--------+--------+
               /    |    |    \    \
@@ -922,4 +922,4 @@ For deployment assistance, contact your ClawCoat account representative or visit
 
 ---
 
-*ClawCoat v11.0.1 · Quietfire AI · March 8, 2026*
+*ClawCoat v11.0.2 · Quietfire AI · March 19, 2026*
