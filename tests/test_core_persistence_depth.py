@@ -322,3 +322,230 @@ class TestAnomalyStore:
     def test_get_agent_anomalies_empty(self, redis_available, anomaly_store):
         result = anomaly_store.get_agent_anomalies("agent-with-no-anomalies-xyz")
         assert result == []
+
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# ApprovalStore (Redis-backed)
+# ═══════════════════════════════════════════════════════════════════════════════
+
+class TestApprovalStore:
+    def _make_request(self, request_id, agent_id="test-agent", status="pending", priority="normal"):
+        return {
+            "request_id": request_id,
+            "agent_id": agent_id,
+            "action": "test_action",
+            "status": status,
+            "priority": priority,
+        }
+
+    def test_store_and_get_request(self, redis_available):
+        from core.persistence import ApprovalStore
+        store = ApprovalStore()
+        req = self._make_request("appr-depth-001")
+        stored = store.store_request(req)
+        assert stored is True
+        retrieved = store.get_request("appr-depth-001")
+        assert retrieved is not None
+        assert retrieved["request_id"] == "appr-depth-001"
+
+    def test_get_nonexistent_request_returns_none(self, redis_available):
+        from core.persistence import ApprovalStore
+        store = ApprovalStore()
+        result = store.get_request("appr-not-here-xyz")
+        assert result is None
+
+    def test_store_urgent_priority(self, redis_available):
+        from core.persistence import ApprovalStore
+        store = ApprovalStore()
+        req = self._make_request("appr-urgent-depth-001", priority="urgent")
+        stored = store.store_request(req)
+        assert stored is True
+
+    def test_store_high_priority(self, redis_available):
+        from core.persistence import ApprovalStore
+        store = ApprovalStore()
+        req = self._make_request("appr-high-depth-001", priority="high")
+        stored = store.store_request(req)
+        assert stored is True
+
+    def test_store_low_priority(self, redis_available):
+        from core.persistence import ApprovalStore
+        store = ApprovalStore()
+        req = self._make_request("appr-low-depth-001", priority="low")
+        stored = store.store_request(req)
+        assert stored is True
+
+    def test_get_pending_requests_returns_list(self, redis_available):
+        from core.persistence import ApprovalStore
+        store = ApprovalStore()
+        result = store.get_pending_requests()
+        assert isinstance(result, list)
+
+    def test_get_pending_requests_includes_stored(self, redis_available):
+        from core.persistence import ApprovalStore
+        store = ApprovalStore()
+        req = self._make_request("appr-pending-depth-001", status="pending")
+        store.store_request(req)
+        pending = store.get_pending_requests(limit=100)
+        assert isinstance(pending, list)
+
+    def test_update_request_status(self, redis_available):
+        from core.persistence import ApprovalStore
+        store = ApprovalStore()
+        req_id = "appr-update-depth-001"
+        store.store_request(self._make_request(req_id))
+        updated = store.update_request(req_id, {"status": "approved", "decided_by": "admin"})
+        assert updated is True
+        retrieved = store.get_request(req_id)
+        assert retrieved["status"] == "approved"
+
+    def test_update_removes_from_pending_when_not_pending(self, redis_available):
+        from core.persistence import ApprovalStore
+        store = ApprovalStore()
+        req_id = "appr-remove-pending-depth-001"
+        store.store_request(self._make_request(req_id, status="pending"))
+        store.update_request(req_id, {"status": "rejected"})
+        retrieved = store.get_request(req_id)
+        assert retrieved["status"] == "rejected"
+
+    def test_update_nonexistent_request_returns_false(self, redis_available):
+        from core.persistence import ApprovalStore
+        store = ApprovalStore()
+        result = store.update_request("appr-not-found-xyz", {"status": "approved"})
+        assert result is False
+
+    def test_get_agent_requests(self, redis_available):
+        from core.persistence import ApprovalStore
+        store = ApprovalStore()
+        agent_id = "agent-appr-list-depth-001"
+        store.store_request(self._make_request("appr-agent-depth-001", agent_id=agent_id))
+        results = store.get_agent_requests(agent_id)
+        assert isinstance(results, list)
+
+    def test_get_agent_requests_filters_by_agent(self, redis_available):
+        from core.persistence import ApprovalStore
+        store = ApprovalStore()
+        agent_id = "agent-filter-appr-depth-001"
+        store.store_request(self._make_request("appr-filter-depth-001", agent_id=agent_id))
+        results = store.get_agent_requests(agent_id)
+        for r in results:
+            assert r["agent_id"] == agent_id
+
+    def test_non_pending_request_not_in_priority_queue(self, redis_available):
+        from core.persistence import ApprovalStore
+        store = ApprovalStore()
+        req = self._make_request("appr-non-pending-depth-001", status="approved")
+        stored = store.store_request(req)
+        assert stored is True
+
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# FederationStore (Redis-backed)
+# ═══════════════════════════════════════════════════════════════════════════════
+
+class TestFederationStore:
+    def _make_relationship(self, rel_id, remote_instance_id="remote-001", status="active"):
+        return {
+            "relationship_id": rel_id,
+            "status": status,
+            "remote_identity": {"instance_id": remote_instance_id},
+        }
+
+    def test_store_and_get_identity(self, redis_available):
+        from core.persistence import FederationStore
+        store = FederationStore()
+        identity = {
+            "instance_id": "fed-depth-001",
+            "name": "Test Instance",
+            "endpoint": "https://test.example.com",
+        }
+        stored = store.store_identity(identity)
+        assert stored is True
+        retrieved = store.get_identity()
+        assert retrieved is not None
+        assert isinstance(retrieved, dict)
+
+    def test_store_and_get_relationship(self, redis_available):
+        from core.persistence import FederationStore
+        store = FederationStore()
+        rel = self._make_relationship("rel-depth-001")
+        stored = store.store_relationship(rel)
+        assert stored is True
+        retrieved = store.get_relationship("rel-depth-001")
+        assert retrieved is not None
+        assert retrieved["relationship_id"] == "rel-depth-001"
+
+    def test_get_nonexistent_relationship_returns_none(self, redis_available):
+        from core.persistence import FederationStore
+        store = FederationStore()
+        result = store.get_relationship("rel-not-here-xyz")
+        assert result is None
+
+    def test_get_relationship_by_instance(self, redis_available):
+        from core.persistence import FederationStore
+        store = FederationStore()
+        remote_id = "remote-lookup-depth-001"
+        rel = self._make_relationship("rel-lookup-depth-001", remote_instance_id=remote_id)
+        store.store_relationship(rel)
+        result = store.get_relationship_by_instance(remote_id)
+        assert result is not None
+        assert result["relationship_id"] == "rel-lookup-depth-001"
+
+    def test_get_relationship_by_instance_not_found(self, redis_available):
+        from core.persistence import FederationStore
+        store = FederationStore()
+        result = store.get_relationship_by_instance("remote-not-found-xyz")
+        assert result is None
+
+    def test_list_relationships_returns_list(self, redis_available):
+        from core.persistence import FederationStore
+        store = FederationStore()
+        result = store.list_relationships()
+        assert isinstance(result, list)
+
+    def test_list_relationships_by_status(self, redis_available):
+        from core.persistence import FederationStore
+        store = FederationStore()
+        rel = self._make_relationship("rel-status-depth-001", remote_instance_id="remote-stat-001", status="pending")
+        store.store_relationship(rel)
+        pending = store.list_relationships(status="pending")
+        for r in pending:
+            assert r["status"] == "pending"
+
+    def test_list_relationships_no_status_filter_returns_all(self, redis_available):
+        from core.persistence import FederationStore
+        store = FederationStore()
+        # Store two relationships with different statuses
+        store.store_relationship(self._make_relationship("rel-all-depth-001", remote_instance_id="remote-all-001", status="active"))
+        store.store_relationship(self._make_relationship("rel-all-depth-002", remote_instance_id="remote-all-002", status="pending"))
+        result = store.list_relationships()
+        assert isinstance(result, list)
+
+    def test_update_relationship(self, redis_available):
+        from core.persistence import FederationStore
+        store = FederationStore()
+        rel_id = "rel-update-depth-001"
+        store.store_relationship(self._make_relationship(rel_id, remote_instance_id="remote-upd-001", status="pending"))
+        updated = store.update_relationship(rel_id, {"status": "active"})
+        assert updated is True
+        retrieved = store.get_relationship(rel_id)
+        assert retrieved["status"] == "active"
+
+    def test_update_nonexistent_relationship_returns_false(self, redis_available):
+        from core.persistence import FederationStore
+        store = FederationStore()
+        result = store.update_relationship("rel-not-found-xyz", {"status": "active"})
+        assert result is False
+
+    def test_store_relationship_without_remote_instance_id(self, redis_available):
+        from core.persistence import FederationStore
+        store = FederationStore()
+        rel = {
+            "relationship_id": "rel-no-remote-depth-001",
+            "status": "active",
+            "remote_identity": {},  # No instance_id
+        }
+        stored = store.store_relationship(rel)
+        assert stored is True
+        retrieved = store.get_relationship("rel-no-remote-depth-001")
+        assert retrieved is not None
