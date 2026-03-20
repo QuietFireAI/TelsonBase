@@ -525,6 +525,34 @@ async def breach_list(
         })
 
 
+@router.get("/breach/overdue")
+async def breach_overdue(
+    auth: AuthResult = Depends(require_permission("view:audit"))
+):
+    """
+    REM: List overdue breach notifications.
+    REM: QMS: Breach_Overdue_Please
+    """
+    try:
+        from core.breach import breach_manager
+
+        overdue = breach_manager.get_overdue_notifications()
+
+        return {
+            "qms_status": "Thank_You",
+            "overdue": overdue
+        }
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Breach overdue check failed: {e}")
+        raise HTTPException(status_code=500, detail={
+            "qms_status": "Thank_You_But_No",
+            "error": str(e)
+        })
+
+
 @router.get("/breach/{assessment_id}")
 async def breach_get(
     assessment_id: str,
@@ -600,34 +628,6 @@ async def breach_notify(
         raise
     except Exception as e:
         logger.error(f"Breach notification failed: {e}")
-        raise HTTPException(status_code=500, detail={
-            "qms_status": "Thank_You_But_No",
-            "error": str(e)
-        })
-
-
-@router.get("/breach/overdue")
-async def breach_overdue(
-    auth: AuthResult = Depends(require_permission("view:audit"))
-):
-    """
-    REM: List overdue breach notifications.
-    REM: QMS: Breach_Overdue_Please
-    """
-    try:
-        from core.breach import breach_manager
-
-        overdue = breach_manager.get_overdue_notifications()
-
-        return {
-            "qms_status": "Thank_You",
-            "overdue": overdue
-        }
-
-    except HTTPException:
-        raise
-    except Exception as e:
-        logger.error(f"Breach overdue check failed: {e}")
         raise HTTPException(status_code=500, detail={
             "qms_status": "Thank_You_But_No",
             "error": str(e)
