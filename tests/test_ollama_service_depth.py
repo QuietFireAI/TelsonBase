@@ -613,7 +613,7 @@ class TestAsyncHealthCheck:
         resp = _resp(200)
         ctx = _async_ctx(resp)
         with patch.object(svc, "_async_client", return_value=ctx):
-            r = asyncio.get_event_loop().run_until_complete(svc.ahealth_check())
+            r = asyncio.run(svc.ahealth_check())
         assert r["status"] == "healthy"
 
     def test_unhealthy_non_200(self):
@@ -621,7 +621,7 @@ class TestAsyncHealthCheck:
         resp = _resp(503)
         ctx = _async_ctx(resp)
         with patch.object(svc, "_async_client", return_value=ctx):
-            r = asyncio.get_event_loop().run_until_complete(svc.ahealth_check())
+            r = asyncio.run(svc.ahealth_check())
         assert r["status"] == "unhealthy"
 
     def test_connect_error(self):
@@ -632,7 +632,7 @@ class TestAsyncHealthCheck:
         ctx.__aexit__ = AsyncMock(return_value=False)
         ctx.get = AsyncMock(side_effect=httpx.ConnectError("refused"))
         with patch.object(svc, "_async_client", return_value=ctx):
-            r = asyncio.get_event_loop().run_until_complete(svc.ahealth_check())
+            r = asyncio.run(svc.ahealth_check())
         assert r["status"] == "unreachable"
 
     def test_generic_error(self):
@@ -642,7 +642,7 @@ class TestAsyncHealthCheck:
         ctx.__aexit__ = AsyncMock(return_value=False)
         ctx.get = AsyncMock(side_effect=RuntimeError("broken"))
         with patch.object(svc, "_async_client", return_value=ctx):
-            r = asyncio.get_event_loop().run_until_complete(svc.ahealth_check())
+            r = asyncio.run(svc.ahealth_check())
         assert r["status"] == "error"
 
 
@@ -653,7 +653,7 @@ class TestAsyncListModels:
                                        "modified_at": "2026-01-01", "digest": "abc123"}]})
         ctx = _async_ctx(resp)
         with patch.object(svc, "_async_client", return_value=ctx):
-            r = asyncio.get_event_loop().run_until_complete(svc.alist_models())
+            r = asyncio.run(svc.alist_models())
         assert len(r) == 1
         assert r[0]["name"] == "gemma2:9b"
 
@@ -667,7 +667,7 @@ class TestAsyncListModels:
         ctx.get = AsyncMock(side_effect=httpx.ConnectError("no"))
         with patch.object(svc, "_async_client", return_value=ctx):
             with pytest.raises(OllamaConnectionError):
-                asyncio.get_event_loop().run_until_complete(svc.alist_models())
+                asyncio.run(svc.alist_models())
 
 
 class TestAsyncGenerate:
@@ -678,14 +678,14 @@ class TestAsyncGenerate:
         svc = _make_service()
         ctx = _async_ctx(_resp(200, self._RESP_DATA))
         with patch.object(svc, "_async_client", return_value=ctx):
-            r = asyncio.get_event_loop().run_until_complete(svc.agenerate(prompt="Hello async"))
+            r = asyncio.run(svc.agenerate(prompt="Hello async"))
         assert r["response"] == "async hi"
 
     def test_with_system_and_max_tokens_and_context(self):
         svc = _make_service()
         ctx = _async_ctx(_resp(200, self._RESP_DATA))
         with patch.object(svc, "_async_client", return_value=ctx):
-            r = asyncio.get_event_loop().run_until_complete(
+            r = asyncio.run(
                 svc.agenerate(prompt="test", system="sys", max_tokens=10, context=[1, 2])
             )
         assert r["response"] == "async hi"
@@ -696,7 +696,7 @@ class TestAsyncGenerate:
         ctx = _async_ctx(_resp(404, {}))
         with patch.object(svc, "_async_client", return_value=ctx):
             with pytest.raises(OllamaModelError):
-                asyncio.get_event_loop().run_until_complete(svc.agenerate(prompt="test"))
+                asyncio.run(svc.agenerate(prompt="test"))
 
     def test_connect_error(self):
         import httpx
@@ -708,7 +708,7 @@ class TestAsyncGenerate:
         ctx.post = AsyncMock(side_effect=httpx.ConnectError("no"))
         with patch.object(svc, "_async_client", return_value=ctx):
             with pytest.raises(OllamaConnectionError):
-                asyncio.get_event_loop().run_until_complete(svc.agenerate(prompt="test"))
+                asyncio.run(svc.agenerate(prompt="test"))
 
     def test_timeout_raises_service_error(self):
         import httpx
@@ -720,7 +720,7 @@ class TestAsyncGenerate:
         ctx.post = AsyncMock(side_effect=httpx.ReadTimeout("timeout"))
         with patch.object(svc, "_async_client", return_value=ctx):
             with pytest.raises(OllamaServiceError):
-                asyncio.get_event_loop().run_until_complete(svc.agenerate(prompt="test"))
+                asyncio.run(svc.agenerate(prompt="test"))
 
     def test_generic_error(self):
         from core.ollama_service import OllamaServiceError
@@ -731,7 +731,7 @@ class TestAsyncGenerate:
         ctx.post = AsyncMock(side_effect=RuntimeError("fail"))
         with patch.object(svc, "_async_client", return_value=ctx):
             with pytest.raises(OllamaServiceError):
-                asyncio.get_event_loop().run_until_complete(svc.agenerate(prompt="test"))
+                asyncio.run(svc.agenerate(prompt="test"))
 
 
 class TestAsyncChat:
@@ -743,14 +743,14 @@ class TestAsyncChat:
         svc = _make_service()
         ctx = _async_ctx(_resp(200, self._RESP_DATA))
         with patch.object(svc, "_async_client", return_value=ctx):
-            r = asyncio.get_event_loop().run_until_complete(svc.achat(messages=self._MSGS))
+            r = asyncio.run(svc.achat(messages=self._MSGS))
         assert r["message"]["content"] == "async chat"
 
     def test_with_system_and_max_tokens(self):
         svc = _make_service()
         ctx = _async_ctx(_resp(200, self._RESP_DATA))
         with patch.object(svc, "_async_client", return_value=ctx):
-            r = asyncio.get_event_loop().run_until_complete(
+            r = asyncio.run(
                 svc.achat(messages=self._MSGS, system="helpful", max_tokens=20)
             )
         assert r["message"]["role"] == "assistant"
@@ -761,7 +761,7 @@ class TestAsyncChat:
         ctx = _async_ctx(_resp(404, {}))
         with patch.object(svc, "_async_client", return_value=ctx):
             with pytest.raises(OllamaModelError):
-                asyncio.get_event_loop().run_until_complete(svc.achat(messages=self._MSGS))
+                asyncio.run(svc.achat(messages=self._MSGS))
 
     def test_connect_error(self):
         import httpx
@@ -773,7 +773,7 @@ class TestAsyncChat:
         ctx.post = AsyncMock(side_effect=httpx.ConnectError("no"))
         with patch.object(svc, "_async_client", return_value=ctx):
             with pytest.raises(OllamaConnectionError):
-                asyncio.get_event_loop().run_until_complete(svc.achat(messages=self._MSGS))
+                asyncio.run(svc.achat(messages=self._MSGS))
 
     def test_timeout_raises_service_error(self):
         import httpx
@@ -785,7 +785,7 @@ class TestAsyncChat:
         ctx.post = AsyncMock(side_effect=httpx.ReadTimeout("timeout"))
         with patch.object(svc, "_async_client", return_value=ctx):
             with pytest.raises(OllamaServiceError):
-                asyncio.get_event_loop().run_until_complete(svc.achat(messages=self._MSGS))
+                asyncio.run(svc.achat(messages=self._MSGS))
 
     def test_generic_error(self):
         from core.ollama_service import OllamaServiceError
@@ -796,7 +796,7 @@ class TestAsyncChat:
         ctx.post = AsyncMock(side_effect=RuntimeError("fail"))
         with patch.object(svc, "_async_client", return_value=ctx):
             with pytest.raises(OllamaServiceError):
-                asyncio.get_event_loop().run_until_complete(svc.achat(messages=self._MSGS))
+                asyncio.run(svc.achat(messages=self._MSGS))
 
 
 class TestAsyncPullModel:
@@ -804,7 +804,7 @@ class TestAsyncPullModel:
         svc = _make_service()
         ctx = _async_ctx(_resp(200, {"status": "success"}))
         with patch.object(svc, "_async_client", return_value=ctx):
-            r = asyncio.get_event_loop().run_until_complete(svc.apull_model("llama3.2:3b"))
+            r = asyncio.run(svc.apull_model("llama3.2:3b"))
         assert r["model"] == "llama3.2:3b"
 
     def test_connect_error(self):
@@ -817,7 +817,7 @@ class TestAsyncPullModel:
         ctx.post = AsyncMock(side_effect=httpx.ConnectError("no"))
         with patch.object(svc, "_async_client", return_value=ctx):
             with pytest.raises(OllamaConnectionError):
-                asyncio.get_event_loop().run_until_complete(svc.apull_model("x:y"))
+                asyncio.run(svc.apull_model("x:y"))
 
     def test_generic_error(self):
         from core.ollama_service import OllamaServiceError
@@ -828,7 +828,7 @@ class TestAsyncPullModel:
         ctx.post = AsyncMock(side_effect=RuntimeError("fail"))
         with patch.object(svc, "_async_client", return_value=ctx):
             with pytest.raises(OllamaServiceError):
-                asyncio.get_event_loop().run_until_complete(svc.apull_model("x:y"))
+                asyncio.run(svc.apull_model("x:y"))
 
 
 class TestAsyncDeleteModel:
@@ -836,7 +836,7 @@ class TestAsyncDeleteModel:
         svc = _make_service()
         ctx = _async_ctx(_resp(200, {}))
         with patch.object(svc, "_async_client", return_value=ctx):
-            r = asyncio.get_event_loop().run_until_complete(svc.adelete_model("llama3.2:3b"))
+            r = asyncio.run(svc.adelete_model("llama3.2:3b"))
         assert r["status"] == "deleted"
 
     def test_404_raises_model_error(self):
@@ -850,7 +850,7 @@ class TestAsyncDeleteModel:
         ctx.request = AsyncMock(return_value=not_found)
         with patch.object(svc, "_async_client", return_value=ctx):
             with pytest.raises(OllamaModelError):
-                asyncio.get_event_loop().run_until_complete(svc.adelete_model("gone:model"))
+                asyncio.run(svc.adelete_model("gone:model"))
 
     def test_connect_error(self):
         import httpx
@@ -862,7 +862,7 @@ class TestAsyncDeleteModel:
         ctx.request = AsyncMock(side_effect=httpx.ConnectError("no"))
         with patch.object(svc, "_async_client", return_value=ctx):
             with pytest.raises(OllamaConnectionError):
-                asyncio.get_event_loop().run_until_complete(svc.adelete_model("x:y"))
+                asyncio.run(svc.adelete_model("x:y"))
 
     def test_generic_error(self):
         from core.ollama_service import OllamaServiceError
@@ -873,7 +873,7 @@ class TestAsyncDeleteModel:
         ctx.request = AsyncMock(side_effect=RuntimeError("fail"))
         with patch.object(svc, "_async_client", return_value=ctx):
             with pytest.raises(OllamaServiceError):
-                asyncio.get_event_loop().run_until_complete(svc.adelete_model("x:y"))
+                asyncio.run(svc.adelete_model("x:y"))
 
 
 class TestAsyncGetRecommendedModels:
@@ -881,13 +881,13 @@ class TestAsyncGetRecommendedModels:
         from core.ollama_service import RECOMMENDED_MODELS
         svc = _make_service()
         with patch.object(svc, "alist_models", return_value=[{"name": "gemma2:9b"}]):
-            r = asyncio.get_event_loop().run_until_complete(svc.aget_recommended_models())
+            r = asyncio.run(svc.aget_recommended_models())
         assert len(r) == len(RECOMMENDED_MODELS)
 
     def test_is_downloaded_flag(self):
         svc = _make_service()
         with patch.object(svc, "alist_models", return_value=[{"name": "gemma2:9b"}]):
-            r = asyncio.get_event_loop().run_until_complete(svc.aget_recommended_models())
+            r = asyncio.run(svc.aget_recommended_models())
         by_name = {m["name"]: m for m in r}
         assert by_name["gemma2:9b"]["is_downloaded"] is True
 
@@ -895,7 +895,7 @@ class TestAsyncGetRecommendedModels:
         from core.ollama_service import OllamaServiceError
         svc = _make_service()
         with patch.object(svc, "alist_models", side_effect=OllamaServiceError("down")):
-            r = asyncio.get_event_loop().run_until_complete(svc.aget_recommended_models())
+            r = asyncio.run(svc.aget_recommended_models())
         for m in r:
             assert m["is_downloaded"] is False
 
@@ -909,7 +909,7 @@ class TestAsyncModelInfo:
         svc = _make_service()
         ctx = _async_ctx(_resp(200, self._INFO_DATA))
         with patch.object(svc, "_async_client", return_value=ctx):
-            r = asyncio.get_event_loop().run_until_complete(svc.amodel_info("gemma2:9b"))
+            r = asyncio.run(svc.amodel_info("gemma2:9b"))
         assert r["family"] == "gemma"
         assert r["is_recommended"] is True
 
@@ -919,7 +919,7 @@ class TestAsyncModelInfo:
         ctx = _async_ctx(_resp(404, {}))
         with patch.object(svc, "_async_client", return_value=ctx):
             with pytest.raises(OllamaModelError):
-                asyncio.get_event_loop().run_until_complete(svc.amodel_info("not:here"))
+                asyncio.run(svc.amodel_info("not:here"))
 
     def test_connect_error(self):
         import httpx
@@ -931,7 +931,7 @@ class TestAsyncModelInfo:
         ctx.post = AsyncMock(side_effect=httpx.ConnectError("no"))
         with patch.object(svc, "_async_client", return_value=ctx):
             with pytest.raises(OllamaConnectionError):
-                asyncio.get_event_loop().run_until_complete(svc.amodel_info("x:y"))
+                asyncio.run(svc.amodel_info("x:y"))
 
     def test_generic_error(self):
         from core.ollama_service import OllamaServiceError
@@ -942,4 +942,4 @@ class TestAsyncModelInfo:
         ctx.post = AsyncMock(side_effect=RuntimeError("fail"))
         with patch.object(svc, "_async_client", return_value=ctx):
             with pytest.raises(OllamaServiceError):
-                asyncio.get_event_loop().run_until_complete(svc.amodel_info("x:y"))
+                asyncio.run(svc.amodel_info("x:y"))
