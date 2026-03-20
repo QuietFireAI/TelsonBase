@@ -1,5 +1,5 @@
 # ClawCoat - Frequently Asked Questions
-**Version:** v11.0.1 · **Maintainer:** Quietfire AI - support@clawcoat.com
+**Version:** v11.0.2 · **Maintainer:** Quietfire AI - support@clawcoat.com
 
 ClawCoat is the platform for managing OpenClaw agents through earned trust. Agents start at QUARANTINE and work their way up - QUARANTINE → PROBATION → RESIDENT → CITIZEN → AGENT - through demonstrated behavior and explicit human authorization at every step. The compliance infrastructure underneath (audit trails, kill switches, SOC 2 controls) is the proof, not the pitch.
 
@@ -51,7 +51,7 @@ the 8-step governance pipeline on every action evaluation.
 
 **Source files:**
 - `core/openclaw.py` - `register_instance()` - registration logic
-- `routers/openclaw.py` - `POST /v1/openclaw/register` - API endpoint
+- `api/openclaw_routes.py` - `POST /v1/openclaw/register` - API endpoint
 - `frontend/index.html` - `RegisterAgentModal` component - dashboard UI
 
 **Proof sheet:** `proof_sheets/TB-PROOF-041_agent_registration.md` - full developer deep dive,
@@ -149,7 +149,7 @@ out any standard tool unless an operator explicitly lowers the designation.
 - `toolroom/foreman.py` - `handle_checkout_request()` - checkout enforcement
 - `toolroom/registry.py` - `ToolMetadata` - `min_trust_level`, `requires_api_access`, `allowed_agents` fields
 - `docs/System%20Documents/TOOLROOM_TRUST_MATRIX.md` - full matrix: checkout eligibility by tier, recommended designations by category
-- `routers/toolroom.py` - REST endpoints
+- `main.py` - toolroom REST endpoints
 
 **Proof sheet:** `proof_sheets/tb-proof-054_toolroom_suite.md` - 129 tests across 28 classes
 verifying trust-level enforcement, HITL gate, manifest validation, and full REST coverage.
@@ -199,7 +199,7 @@ work with unaccountable inputs.
 **Source files:**
 - `core/openclaw.py` - `evaluate_action()` - 8-step pipeline
 - `core/openclaw.py` - `_check_manners_compliance()` - auto-demotion logic
-- `routers/openclaw.py` - `POST /v1/openclaw/{id}/suspend` - kill switch
+- `api/openclaw_routes.py` - `POST /v1/openclaw/{id}/suspend` - kill switch
 
 **Proof sheets:**
 - `proof_sheets/TB-PROOF-037_openclaw_kill_switch.md` - kill switch behavior
@@ -265,7 +265,7 @@ transmissions are not processed - silence and malformation are treated the same.
 - `core/auth.py` - authentication layer
 - `core/middleware.py` - rate limiting (token bucket)
 - `core/openclaw.py` - nonce replay protection (Step 3 of pipeline)
-- `routers/openclaw.py` - instance registration check (Step 1)
+- `api/openclaw_routes.py` - instance registration check (Step 1)
 - `toolroom/foreman.py` - QMS validation gate
 
 **Verification:**
@@ -442,13 +442,13 @@ with JWT Bearer token authentication.
 The admin dashboard (`/dashboard`) and user console (`/console`) are web applications
 accessible from any mobile browser without installation.
 
-For native mobile app integration: standard REST calls with JWT auth against the 177
+For native mobile app integration: standard REST calls with JWT auth against the 164
 documented API endpoints. Full API reference at `/docs` when the stack is running.
 
 No native mobile SDK exists currently - that is a post-drop development item.
 
 **Source files:**
-- `main.py` - 177 API endpoints
+- `main.py` - 164 API endpoints
 - `frontend/index.html` - admin dashboard (web, mobile-accessible)
 - `frontend/user-console.html` - user console (web, mobile-accessible)
 
@@ -465,8 +465,8 @@ If you want to use Anthropic, Venice.ai, or any external AI provider as a backen
 you whitelist that domain and ClawCoat mediates, governs, and logs every call to it.
 The call is authorized by the governance pipeline before it leaves the network.
 
-The Manners compliance framework is modeled on Anthropic's safety principles but runs
-entirely locally. It does not connect to Anthropic. It does not phone home. It does not
+The Manners compliance framework is modeled on five behavioral safety principles and runs
+entirely locally. It does not connect to any external service. It does not phone home. It does not
 receive updates automatically. Your governance engine runs under your control.
 
 **Source files:**
@@ -546,7 +546,7 @@ Those controls exist whether or not a certification badge has been issued.
 Static analysis and automated security testing have been run against the full codebase.
 Results are documented and public:
 
-- **Bandit (static analysis):** 0 high-severity findings across 37,921 lines scanned.
+- **Bandit (static analysis):** 0 high-severity findings across 93,893 lines scanned.
   8 medium findings, all non-actionable: 2 are expected `0.0.0.0` bind addresses in
   `if __name__ == "__main__":` dev-only blocks (Gunicorn binds via command line in
   production - these lines never execute in the container). 6 are `requests.get/post`
@@ -555,7 +555,7 @@ Results are documented and public:
 - **pip-audit (dependency CVEs):** 1 known CVE - `ecdsa` CVE-2024-23342. No upstream fix
   exists. Accepted risk - ClawCoat uses HS256 (HMAC), not ECDSA. `ecdsa` is an unused
   transitive dependency that has been removed from the production image.
-- **Schemathesis (API contract testing):** 720 tests passing. Server errors reduced
+- **Schemathesis (API contract testing):** 5,777 tests passing. Server errors reduced
   from 657 → 0 across hardening sessions.
 - **Pen test preparation documentation:** Full attack surface inventory, OWASP Top 10
   mapping, and scoped test plan available in `docs/PENTEST_PREPARATION.md`.
@@ -584,17 +584,17 @@ and carries no corporate backing or venture influence.
 
 The answer to "why trust it" is not credentials - it is evidence:
 
-- **720 passing tests** that you can run yourself in under five minutes
+- **5,777 passing tests** that you can run yourself in under five minutes
 - **788 proof documents** - 67 class-level evidence sheets that map every public claim
   to source code, test classes, and a verification command you can run
-- **0 high-severity findings** in static analysis across 37,921 lines
+- **0 high-severity findings** in static analysis across 93,893 lines
 - **Full source available** - read every line, verify every claim, run every test
 
 The credibility of ClawCoat is not a function of who built it. It is a function of
 whether the claims hold up under inspection. The proof sheets exist precisely so that
 the work speaks for itself.
 
-**Proof sheet:** `proof_sheets/TB-PROOF-001_tests_passing.md` - 720 tests, verification command.
+**Proof sheet:** `proof_sheets/TB-PROOF-001_tests_passing.md` - 5,777 tests, verification command.
 
 **Skeptic follow-up:** *"AI wrote this code - how do you know it's trustworthy?"*
 Every AI model was engaged as a collaborator, not a code generator. The architecture,
@@ -770,8 +770,8 @@ operate in seconds, not milliseconds - governance latency is not the bottleneck.
 ## 22. What Is the Manners Compliance System and How Does Auto-Demotion Work?
 
 **Plain answer:**
-Manners is ClawCoat's behavioral compliance scoring engine, modeled on Anthropic's
-agent safety principles and running entirely locally. Every agent action contributes to
+Manners is ClawCoat's behavioral compliance scoring engine, modeled on five behavioral
+safety principles and running entirely locally. Every agent action contributes to
 a rolling compliance score between 0.0 (no compliance) and 1.0 (full compliance).
 
 The default threshold is 50%. Drop below it and the agent is automatically demoted to
@@ -872,4 +872,4 @@ Open an issue on GitHub or email support@clawcoat.com
 
 ---
 
-*ClawCoat v11.0.1 · Quietfire AI · March 8, 2026*
+*ClawCoat v11.0.2 · Quietfire AI · March 19, 2026*

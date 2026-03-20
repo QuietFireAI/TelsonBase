@@ -1,6 +1,6 @@
 # Adding Your First Agent - Dashboard Walkthrough
 
-**Version:** v11.0.1 · **Maintainer:** Quietfire AI
+**Version:** v11.0.2 · **Maintainer:** Quietfire AI
 **Prerequisite:** ClawCoat is running. Docker Desktop is open. You have your API key.
 
 ---
@@ -61,7 +61,7 @@ After submit, switch to the **OpenClaw** tab.
 Your agent appears on a card showing:
 - **Name:** what you entered
 - **Trust Level:** QUARANTINE
-- **Instance ID:** a unique identifier like `claw_abc123def456` - copy this, you'll need it
+- **Instance ID:** a unique identifier like `a1b2c3d4e5f60789` - copy this, you'll need it
 
 The agent is registered. It is fully locked down at QUARANTINE - no autonomous action is permitted yet. That's the correct starting state.
 
@@ -206,4 +206,4 @@ Same process. Repeat Steps 2-5 with a different name. Each agent gets its own `i
 
 ---
 
-*ClawCoat v11.0.1 · Quietfire AI · March 8, 2026*
+*ClawCoat v11.0.2 · Quietfire AI · March 19, 2026*

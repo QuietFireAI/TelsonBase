@@ -1,6 +1,6 @@
 # ClawCoat - OpenClaw Integration Guide
 
-**Version:** v11.0.1 · **Maintainer:** Quietfire AI
+**Version:** v11.0.2 · **Maintainer:** Quietfire AI
 
 ---
 
@@ -622,8 +622,8 @@ each action. Here is the pattern in pseudocode:
 def governed_action(tool_name, tool_args):
     # Step 1: Ask ClawCoat for a governance decision
     response = requests.post(
-        f"http://telsonbase:8000/v1/openclaw/{CLAW_ID}/action",
-        headers={"X-API-Key": TELSONBASE_API_KEY},
+        f"http://localhost:8000/v1/openclaw/{CLAW_ID}/action",
+        headers={"X-API-Key": API_KEY},
         json={"tool_name": tool_name, "tool_args": tool_args}
     )
     decision = response.json()
@@ -759,5 +759,5 @@ See `CONTRIBUTING.md` for the full contribution process.
 
 ---
 
-*ClawCoat v11.0.1 · Quietfire AI · March 8, 2026*
+*ClawCoat v11.0.2 · Quietfire AI · March 19, 2026*
 *Questions: support@clawcoat.com*

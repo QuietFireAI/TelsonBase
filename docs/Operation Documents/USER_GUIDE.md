@@ -1,6 +1,6 @@
 # ClawCoat User Guide
 
-**Version:** v11.0.1 · **Maintainer:** Quietfire AI
+**Version:** v11.0.2 · **Maintainer:** Quietfire AI
 **For:** Solopreneurs, small teams, and anyone running ClawCoat for the first time
 
 ---
@@ -38,21 +38,18 @@ It runs as a set of Docker containers on any machine with Docker installed. Agen
 
 ```bash
 git clone https://github.com/QuietFireAI/ClawCoat.git
-cd telsonbase
+cd ClawCoat
 cp .env.example .env
 ```
 
 ### Step 2: Generate Secrets
 
 ```bash
-# Linux/Mac:
+# Linux/Mac/WSL:
 bash scripts/generate_secrets.sh
 
-# Windows PowerShell:
-# Generate random keys manually:
-$key = -join ((65..90) + (97..122) + (48..57) | Get-Random -Count 48 | ForEach-Object {[char]$_})
-echo $key
-# Copy the output into your .env file for MCP_API_KEY and JWT_SECRET_KEY
+# Windows: open Git Bash (from the Start menu - not PowerShell) and run:
+bash scripts/generate_secrets.sh
 ```
 
 ### Step 3: Start Everything
@@ -61,7 +58,7 @@ echo $key
 docker compose up -d
 ```
 
-This starts 10 containers:
+This starts 11 containers:
 
 | Container | Purpose | Port |
 |---|---|---|
@@ -69,12 +66,13 @@ This starts 10 containers:
 | **mcp_server** | Main API server (FastAPI) | 8000 |
 | **redis** | State storage, caching, pub/sub | 6379 |
 | **postgres** | Primary database (users, tenants, identities) | 5432 |
+| **open-webui** | Chat interface for local LLM | 3000 |
 | **worker** | Background task processing (Celery) | - |
 | **beat** | Scheduled tasks (daily checks, deadline monitoring) | - |
 | **mosquitto** | Agent-to-agent messaging (MQTT) | 1883 |
 | **ollama** | Local LLM inference | 11434 |
 | **prometheus** | Metrics collection | 9090 |
-| **grafana** | Monitoring dashboards | 3000 |
+| **grafana** | Monitoring dashboards | 3001 |
 
 ### Step 4: Initialize the Database
 
@@ -90,7 +88,7 @@ docker compose exec mcp_server alembic upgrade head
 curl http://localhost:8000/health
 
 # Expected response:
-# {"status": "healthy", "version": "10.0.0Bminus", ...}
+# {"status": "healthy", "timestamp": "...", "redis": "healthy", "mqtt": "connected"}
 ```
 
 ---
@@ -174,11 +172,11 @@ For agent-to-agent authentication using decentralized identifiers. See the [Iden
 Enable TOTP-based MFA for any user account:
 
 ```bash
-# Enable MFA:
+# Enroll MFA:
 curl -X POST -H "Authorization: Bearer YOUR_TOKEN" \
-  http://localhost:8000/v1/auth/mfa/enable
+  http://localhost:8000/v1/security/mfa/enroll
 
-# Returns a QR code / secret for your authenticator app
+# Returns a TOTP secret and QR code URI for your authenticator app
 ```
 
 ### User Roles
@@ -307,7 +305,7 @@ Or approve/reject from the Dashboard (Approvals tab) or User Console (My Approva
 
 ### Manners Compliance
 
-ClawCoat enforces Anthropic's published agent safety principles at runtime:
+ClawCoat enforces five behavioral safety principles at runtime:
 
 | Principle | What It Means |
 |---|---|
@@ -518,7 +516,7 @@ Look for `REM:` prefixed lines - these are ClawCoat's internal logging. QMS mess
 ### Grafana Dashboard
 
 Prometheus and Grafana are included in docker-compose:
-- Open **http://localhost:3000** in your browser
+- Open **http://localhost:3001** in your browser
 - Default login: `admin` / (your `GRAFANA_ADMIN_PASSWORD`)
 - Pre-built dashboard shows: API traffic, auth failures, agent activity, QMS message rates
 
@@ -583,7 +581,7 @@ Your data persists in Docker volumes: PostgreSQL (users, tenants, identities), R
 ## Project Structure
 
 ```
-telsonbase/
+ClawCoat/
 ├── main.py                  # FastAPI application entry point
 ├── core/                    # Core platform modules
 │   ├── config.py            # Centralized configuration (Settings)
@@ -615,7 +613,7 @@ telsonbase/
 ├── gateway/                 # Egress proxy (domain whitelist)
 ├── monitoring/              # Prometheus, Grafana, Mosquitto configs
 ├── alembic/                 # Database migrations
-├── tests/                   # 720 test suite
+├── tests/                   # 5,777 test suite
 ├── docs/                    # Documentation
 ├── licenses/                # Third-party license texts
 ├── MANNERS.md                  # Agent safety principles
@@ -642,4 +640,4 @@ ClawCoat was created by Jeff Phillips (Quietfire AI). The complete attribution a
 
 ---
 
-*ClawCoat v11.0.1 · Quietfire AI · March 8, 2026*
+*ClawCoat v11.0.2 · Quietfire AI · March 19, 2026*

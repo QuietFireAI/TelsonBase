@@ -1,6 +1,6 @@
 # Your First Agent
 
-**Version:** v11.0.1 · **Maintainer:** Quietfire AI
+**Version:** v11.0.2 · **Maintainer:** Quietfire AI
 
 **Who this is for:** You just finished installation. ClawCoat is running. This guide walks you through registering your first agent and watching it governed - blocked, promoted, and unblocked - start to finish.
 
@@ -19,7 +19,7 @@ curl http://localhost:8000/health
 
 Expected:
 ```json
-{"status":"healthy","version":"11.0.1","services":{"redis":"connected","database":"connected"}}
+{"status":"healthy","timestamp":"2026-03-19T17:00:00+00:00","redis":"healthy","mqtt":"connected"}
 ```
 
 If you see `"status":"healthy"` - you are ready. If you get a connection error, the stack is not running. Run `docker compose ps` and confirm all services show `Up`.
@@ -266,4 +266,4 @@ When `X-Agent-Key` is present, ClawCoat verifies the key matches the `instance_i
 
 ---
 
-*ClawCoat v11.0.1 · Quietfire AI · Apache 2.0*
+*ClawCoat v11.0.2 · Quietfire AI · Apache 2.0*
