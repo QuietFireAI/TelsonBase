@@ -37,7 +37,7 @@ pydantic-settings==2.6.1
 # REM: The "workhorse" system. Celery provides the distributed task queue that allows
 # REM: our AI agents to perform long-running, complex jobs in the background without
 # REM: blocking the main server.
-celery==5.3.6
+celery==5.6.2
 
 # --- Broker & In-Memory Cache ---
 # REM: The high-speed "postal service" for Celery. Redis acts as the message broker,
