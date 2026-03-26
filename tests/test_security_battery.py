@@ -117,7 +117,7 @@ class TestAuthSecurity:
 
     def test_jwt_revocation_check(self):
         """REM: A revoked JWT must be rejected even before natural expiration."""
-        from core.auth import create_access_token, decode_token, revoke_token, _revoked_tokens_fallback
+        from core.auth import create_access_token, decode_token, revoke_token
         token = create_access_token(subject="revoke_test", permissions=[])
         data_before = decode_token(token)
         assert data_before is not None, "Token must be valid before revocation"
@@ -125,8 +125,6 @@ class TestAuthSecurity:
         revoke_token(jti, data_before.exp, revoked_by="security_test")
         data_after = decode_token(token)
         assert data_after is None, "Revoked token must be rejected"
-        # Cleanup
-        _revoked_tokens_fallback.discard(jti)
 
     def test_constant_time_comparison_used_in_auth(self):
         """REM: API key validation must use hmac.compare_digest for constant-time comparison."""
