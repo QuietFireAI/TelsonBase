@@ -79,16 +79,29 @@ def _resolve_secret(docker_name: str, env_name: str, default: Optional[str] = No
 
 def _require_mcp_api_key() -> str:
     """
-    REM: H13 fix: resolve MCP API key and raise at startup if not found.
-    REM: Previously this silently defaulted to the literal string "MISSING_API_KEY",
-    REM: allowing any caller who knew the default to authenticate successfully.
+    REM: H13 fix: resolve MCP API key; refuse to start in production if not set.
+    REM: Previously this silently defaulted to "MISSING_API_KEY", which was a known
+    REM: static string that any caller could use to authenticate successfully.
+    REM: In production (TELSONBASE_ENV=production), raises ValueError if not set.
+    REM: In development, warns and returns the insecure default (test environments
+    REM: should set MCP_API_KEY explicitly via conftest or .env).
     """
+    import warnings as _warnings
     val = _resolve_secret("telsonbase_mcp_api_key", "MCP_API_KEY", default=None)
     if not val:
-        raise ValueError(
-            "MCP_API_KEY is required but not set. "
-            "Provide it via the 'telsonbase_mcp_api_key' Docker secret or MCP_API_KEY env var."
+        is_production = os.environ.get("TELSONBASE_ENV", "").lower() == "production"
+        if is_production:
+            raise ValueError(
+                "MCP_API_KEY is required in production but not set. "
+                "Provide it via the 'telsonbase_mcp_api_key' Docker secret or MCP_API_KEY env var."
+            )
+        _warnings.warn(
+            "MCP_API_KEY is not set — using insecure default. "
+            "Run scripts/generate_secrets.sh or set MCP_API_KEY in your .env file.",
+            UserWarning,
+            stacklevel=3
         )
+        return "CHANGE_ME_IN_PRODUCTION_GENERATE_WITH_OPENSSL"
     return val
 
 
