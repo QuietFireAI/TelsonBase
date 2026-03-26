@@ -53,6 +53,24 @@ pytestmark = [pytest.mark.security]
 class TestAuthSecurity:
     """REM: Authentication security tests — API keys, JWT, MFA, sessions."""
 
+    @pytest.fixture(autouse=True)
+    def mock_auth_redis(self, monkeypatch):
+        """REM: Mock auth Redis so is_token_revoked works correctly without a live Redis.
+        REM: Uses a per-test in-memory set so revocation tests still pass correctly."""
+        revoked_keys: set = set()
+
+        class _MockRedis:
+            def exists(self, key):
+                return 1 if key in revoked_keys else 0
+            def setex(self, key, ttl, val="1"):
+                revoked_keys.add(key)
+                return True
+            def set(self, key, val, ex=None):
+                revoked_keys.add(key)
+                return True
+
+        monkeypatch.setattr("core.auth._get_redis_client", lambda: _MockRedis())
+
     def test_api_key_hash_uses_sha256(self):
         """REM: API keys must be hashed with SHA-256 before storage, never stored plaintext."""
         from core.auth import _hash_key
