@@ -90,6 +90,11 @@ def client() -> Generator:
         r = redis_lib.from_url(os.environ["REDIS_URL"], decode_responses=True)
         r.delete("audit:chain:state", "audit:chain:entries")
         r.delete("security:rbac_users", "security:rbac_api_keys", "security:rbac_username_idx")
+        # REM: Flush Redis-backed rate limit bucket so tests don't 429 each other.
+        # The in-memory _buckets.clear() above only covers the fallback path; when
+        # Redis is available the Lua token-bucket key persists across tests.
+        for k in r.keys("ratelimit:*"):
+            r.delete(k)
     except Exception:
         pass
     # REM: Reset in-memory RBAC state to match flushed Redis state
