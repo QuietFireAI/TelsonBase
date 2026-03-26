@@ -27,7 +27,7 @@ from core.config import (
 
 class TestModuleConstants:
     def test_version_string(self):
-        assert VERSION == "11.0.3"
+        assert VERSION == "11.0.4"
 
     def test_docker_secrets_dir(self):
         assert str(DOCKER_SECRETS_DIR) == "/run/secrets"
