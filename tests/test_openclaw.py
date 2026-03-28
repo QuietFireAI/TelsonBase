@@ -569,10 +569,15 @@ class TestPermissionMatrix:
         assert len(TRUST_PERMISSION_MATRIX[TrustLevel.QUARANTINE]["autonomous"]) == 0
 
     def test_citizen_has_all_autonomous(self):
-        """REM: CITIZEN has all action categories as autonomous."""
+        """REM: CITIZEN has all non-COMMUNICATION categories as autonomous.
+        REM: M17 — COMMUNICATION is always gated (never autonomous) at every tier."""
         citizen_auto = TRUST_PERMISSION_MATRIX[TrustLevel.CITIZEN]["autonomous"]
-        all_categories = list(ActionCategory)
-        assert set(citizen_auto) == set(all_categories)
+        expected = {cat for cat in ActionCategory if cat != ActionCategory.COMMUNICATION}
+        assert set(citizen_auto) == expected
+
+    def test_citizen_communication_is_gated(self):
+        """REM: M17 — COMMUNICATION is gated at CITIZEN (outbound messages are irreversible)."""
+        assert ActionCategory.COMMUNICATION in TRUST_PERMISSION_MATRIX[TrustLevel.CITIZEN]["gated"]
 
     def test_citizen_has_no_blocked(self):
         """REM: CITIZEN has nothing blocked."""
