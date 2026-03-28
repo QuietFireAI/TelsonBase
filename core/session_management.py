@@ -118,6 +118,7 @@ class SessionManager:
                 ip_address=data.get("ip_address"),
                 user_agent=data.get("user_agent"),
                 role=data.get("role", "operator"),
+                mfa_verified=data.get("mfa_verified", False),
             )
         except Exception as e:
             logger.warning(
@@ -181,6 +182,7 @@ class SessionManager:
                 "ip_address": session.ip_address,
                 "user_agent": session.user_agent,
                 "role": session.role,
+                "mfa_verified": session.mfa_verified,
             }
             security_store.store_record("sessions", session_id, data)
             # REM: Maintain user session index
@@ -314,6 +316,16 @@ class SessionManager:
             self.terminate_session(session_id, reason="idle_timeout")
             return False
 
+        return True
+
+    def set_mfa_verified(self, session_id: str) -> bool:
+        """REM: Mark a session as MFA-verified and persist to Redis.
+        REM: L11 fix: previously mfa_verified was set in-memory only and never saved."""
+        session = self._sessions.get(session_id)
+        if not session:
+            return False
+        session.mfa_verified = True
+        self._save_record(session_id)
         return True
 
     def terminate_session(self, session_id: str, reason: str = "manual") -> bool:

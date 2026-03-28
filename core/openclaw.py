@@ -99,6 +99,10 @@ class ActionCategory(str, Enum):
     EXTERNAL_REQUEST = "external_request"     # Outbound network call
     FINANCIAL = "financial"                   # Money or value transfer
     SYSTEM_CONFIG = "system_config"           # System configuration change
+    # REM: M17 fix — communication channels (Slack/WhatsApp/Discord/SMS/Teams) have higher
+    # REM: data-sensitivity than generic outbound requests: they reach real humans, can
+    # REM: spread misinformation at scale, and are irreversible. Kept gated at all tiers.
+    COMMUNICATION = "communication"           # Outbound message to humans via comms channel
 
 # REM: Map tool names to action categories
 TOOL_CATEGORY_MAP: Dict[str, ActionCategory] = {
@@ -130,21 +134,21 @@ TOOL_CATEGORY_MAP: Dict[str, ActionCategory] = {
     "http_request": ActionCategory.EXTERNAL_REQUEST,
     "api_call": ActionCategory.EXTERNAL_REQUEST,
     "webhook_send": ActionCategory.EXTERNAL_REQUEST,
-    # Communication channel tools (gated at EXTERNAL_REQUEST level)
-    "slack_send": ActionCategory.EXTERNAL_REQUEST,
-    "slack_post": ActionCategory.EXTERNAL_REQUEST,
-    "slack_dm": ActionCategory.EXTERNAL_REQUEST,
-    "slack_channel_post": ActionCategory.EXTERNAL_REQUEST,
-    "whatsapp_send": ActionCategory.EXTERNAL_REQUEST,
-    "whatsapp_dm": ActionCategory.EXTERNAL_REQUEST,
-    "whatsapp_broadcast": ActionCategory.EXTERNAL_REQUEST,
-    "whatsapp_group_send": ActionCategory.EXTERNAL_REQUEST,
-    "discord_send": ActionCategory.EXTERNAL_REQUEST,
-    "discord_post": ActionCategory.EXTERNAL_REQUEST,
-    "teams_send": ActionCategory.EXTERNAL_REQUEST,
-    "teams_post": ActionCategory.EXTERNAL_REQUEST,
-    "sms_send": ActionCategory.EXTERNAL_REQUEST,
-    "twilio_send": ActionCategory.EXTERNAL_REQUEST,
+    # Communication channel tools — elevated governance, gated at ALL trust tiers
+    "slack_send": ActionCategory.COMMUNICATION,
+    "slack_post": ActionCategory.COMMUNICATION,
+    "slack_dm": ActionCategory.COMMUNICATION,
+    "slack_channel_post": ActionCategory.COMMUNICATION,
+    "whatsapp_send": ActionCategory.COMMUNICATION,
+    "whatsapp_dm": ActionCategory.COMMUNICATION,
+    "whatsapp_broadcast": ActionCategory.COMMUNICATION,
+    "whatsapp_group_send": ActionCategory.COMMUNICATION,
+    "discord_send": ActionCategory.COMMUNICATION,
+    "discord_post": ActionCategory.COMMUNICATION,
+    "teams_send": ActionCategory.COMMUNICATION,
+    "teams_post": ActionCategory.COMMUNICATION,
+    "sms_send": ActionCategory.COMMUNICATION,
+    "twilio_send": ActionCategory.COMMUNICATION,
     # Financial
     "payment_send": ActionCategory.FINANCIAL,
     "invoice_create": ActionCategory.FINANCIAL,
@@ -162,7 +166,7 @@ TRUST_PERMISSION_MATRIX: Dict[TrustLevel, Dict[str, List[ActionCategory]]] = {
         "blocked": [
             ActionCategory.WRITE_INTERNAL, ActionCategory.DELETE,
             ActionCategory.EXTERNAL_REQUEST, ActionCategory.FINANCIAL,
-            ActionCategory.SYSTEM_CONFIG,
+            ActionCategory.SYSTEM_CONFIG, ActionCategory.COMMUNICATION,
         ],
     },
     TrustLevel.PROBATION: {
@@ -170,7 +174,7 @@ TRUST_PERMISSION_MATRIX: Dict[TrustLevel, Dict[str, List[ActionCategory]]] = {
         "gated": [ActionCategory.WRITE_INTERNAL, ActionCategory.EXTERNAL_REQUEST],
         "blocked": [
             ActionCategory.DELETE, ActionCategory.FINANCIAL,
-            ActionCategory.SYSTEM_CONFIG,
+            ActionCategory.SYSTEM_CONFIG, ActionCategory.COMMUNICATION,
         ],
     },
     TrustLevel.RESIDENT: {
@@ -180,6 +184,7 @@ TRUST_PERMISSION_MATRIX: Dict[TrustLevel, Dict[str, List[ActionCategory]]] = {
         "gated": [
             ActionCategory.DELETE, ActionCategory.EXTERNAL_REQUEST,
             ActionCategory.FINANCIAL, ActionCategory.SYSTEM_CONFIG,
+            ActionCategory.COMMUNICATION,
         ],
         "blocked": [],
     },
@@ -189,7 +194,9 @@ TRUST_PERMISSION_MATRIX: Dict[TrustLevel, Dict[str, List[ActionCategory]]] = {
             ActionCategory.DELETE, ActionCategory.EXTERNAL_REQUEST,
             ActionCategory.FINANCIAL, ActionCategory.SYSTEM_CONFIG,
         ],
-        "gated": [],  # Only anomaly-flagged actions get gated
+        # REM: COMMUNICATION stays gated even for CITIZEN — agents must have explicit
+        # REM: approval to send messages to real humans on comms channels at any trust tier.
+        "gated": [ActionCategory.COMMUNICATION],
         "blocked": [],
     },
     TrustLevel.AGENT: {
@@ -198,7 +205,8 @@ TRUST_PERMISSION_MATRIX: Dict[TrustLevel, Dict[str, List[ActionCategory]]] = {
             ActionCategory.DELETE, ActionCategory.EXTERNAL_REQUEST,
             ActionCategory.FINANCIAL, ActionCategory.SYSTEM_CONFIG,
         ],
-        "gated": [],   # Nothing gated — anomalies are advisory/logged only, not blocking
+        # REM: COMMUNICATION stays gated even at apex — human outreach always requires approval.
+        "gated": [ActionCategory.COMMUNICATION],
         "blocked": [],
     },
 }

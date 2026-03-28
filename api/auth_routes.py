@@ -354,7 +354,8 @@ async def login_mfa(request: MFALoginRequest, http_request: Request):
             user_agent=user_agent,
             role=list(user.roles)[0].value if user.roles else "viewer",
         )
-        session.mfa_verified = True
+        # REM: L11 fix: use set_mfa_verified() which persists the flag to Redis
+        session_manager.set_mfa_verified(session.session_id)
 
         logger.info(
             f"REM: User ::{user.username}:: completed MFA login successfully_Thank_You"

@@ -4,23 +4,15 @@
 # REM: Depth tests for core/openclaw.py — constants, enums, data models,
 # REM: and OpenClawManager pure-logic methods (no Redis/external deps)
 
-import pytest
 from datetime import datetime, timezone
 
-from core.openclaw import (
-    TrustLevel,
-    VALID_PROMOTIONS,
-    VALID_DEMOTIONS,
-    ActionCategory,
-    TOOL_CATEGORY_MAP,
-    TRUST_PERMISSION_MATRIX,
-    OpenClawInstance,
-    OpenClawActionRequest,
-    OpenClawActionResult,
-    TrustChangeRecord,
-    OpenClawManager,
-)
+import pytest
 
+from core.openclaw import (TOOL_CATEGORY_MAP, TRUST_PERMISSION_MATRIX,
+                           VALID_DEMOTIONS, VALID_PROMOTIONS, ActionCategory,
+                           OpenClawActionRequest, OpenClawActionResult,
+                           OpenClawInstance, OpenClawManager,
+                           TrustChangeRecord, TrustLevel)
 
 # ═══════════════════════════════════════════════════════════════════════════════
 # TrustLevel enum
@@ -124,8 +116,8 @@ class TestActionCategory:
     def test_system_config_value(self):
         assert ActionCategory.SYSTEM_CONFIG.value == "system_config"
 
-    def test_six_categories(self):
-        assert len(ActionCategory) == 6
+    def test_seven_categories(self):
+        assert len(ActionCategory) == 7
 
     def test_is_str_enum(self):
         assert ActionCategory.READ_INTERNAL == "read_internal"
@@ -157,8 +149,8 @@ class TestToolCategoryMap:
     def test_config_update_is_system_config(self):
         assert TOOL_CATEGORY_MAP["config_update"] == ActionCategory.SYSTEM_CONFIG
 
-    def test_slack_send_is_external(self):
-        assert TOOL_CATEGORY_MAP["slack_send"] == ActionCategory.EXTERNAL_REQUEST
+    def test_slack_send_is_communication(self):
+        assert TOOL_CATEGORY_MAP["slack_send"] == ActionCategory.COMMUNICATION
 
     def test_database_query_is_read_internal(self):
         assert TOOL_CATEGORY_MAP["database_query"] == ActionCategory.READ_INTERNAL
