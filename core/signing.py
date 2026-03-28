@@ -36,16 +36,22 @@ logger = logging.getLogger(__name__)
 _signing_store = None
 
 def _get_store():
-    """REM: Lazy-load the signing store to avoid circular imports."""
+    """REM: Lazy-load the signing store to avoid circular imports.
+    REM: M3 fix: failure is not cached — caller retries on every invocation so the store
+    REM: self-heals once Redis becomes available (prevents permanent in-memory-only mode)."""
     global _signing_store
     if _signing_store is None:
         try:
             from core.persistence import signing_store
             _signing_store = signing_store
         except Exception as e:
-            logger.warning(f"REM: Redis persistence unavailable, using in-memory: {e}")
-            _signing_store = False  # Mark as unavailable
-    return _signing_store if _signing_store else None
+            # REM: Do NOT cache failure — return None so the next call retries
+            logger.warning(
+                f"REM: Signing store (Redis) unavailable — replay protection degraded to "
+                f"in-memory only (single-worker, non-persistent): {e}_Thank_You_But_No"
+            )
+            return None
+    return _signing_store
 
 # REM: Message replay window - reject messages older than this
 REPLAY_WINDOW_SECONDS = 300  # 5 minutes
