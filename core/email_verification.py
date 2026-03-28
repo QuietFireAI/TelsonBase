@@ -456,7 +456,9 @@ class EmailVerificationManager:
         Returns:
             True if the user is within the rate limit
         """
-        # REM: Try Redis first — cross-worker consistent count
+        # REM: Try Redis first — cross-worker consistent count.
+        # REM: If Redis has an entry, it is authoritative. If no entry exists (count is None)
+        # REM: or Redis is unavailable, fall through to in-memory tracking below.
         try:
             from core.config import get_settings
             import redis as redis_lib
@@ -468,7 +470,7 @@ class EmailVerificationManager:
             count = r.get(redis_key)
             if count is not None:
                 return int(count) < self.MAX_RESENDS_PER_HOUR
-            return True  # REM: No key = no resends yet
+            # REM: No Redis entry — fall through to in-memory check
         except Exception:
             pass  # REM: Fall through to in-memory check
 
