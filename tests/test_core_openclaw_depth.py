@@ -198,18 +198,31 @@ class TestTrustPermissionMatrix:
     def test_resident_has_no_blocked(self):
         assert TRUST_PERMISSION_MATRIX[TrustLevel.RESIDENT]["blocked"] == []
 
-    def test_citizen_autonomous_includes_all_categories(self):
+    def test_citizen_autonomous_includes_non_communication_categories(self):
+        # REM: M17 — COMMUNICATION is always gated (never autonomous); all others are autonomous for CITIZEN
         autonomous = TRUST_PERMISSION_MATRIX[TrustLevel.CITIZEN]["autonomous"]
         for cat in ActionCategory:
+            if cat == ActionCategory.COMMUNICATION:
+                continue
             assert cat in autonomous
 
-    def test_citizen_has_no_gated(self):
-        assert TRUST_PERMISSION_MATRIX[TrustLevel.CITIZEN]["gated"] == []
+    def test_citizen_gated_includes_communication(self):
+        # REM: M17 — COMMUNICATION is gated at all tiers (outbound messages to humans are irreversible)
+        gated = TRUST_PERMISSION_MATRIX[TrustLevel.CITIZEN]["gated"]
+        assert ActionCategory.COMMUNICATION in gated
 
-    def test_agent_autonomous_includes_all_categories(self):
+    def test_agent_autonomous_includes_non_communication_categories(self):
+        # REM: M17 — COMMUNICATION is always gated (never autonomous); all others are autonomous for AGENT
         autonomous = TRUST_PERMISSION_MATRIX[TrustLevel.AGENT]["autonomous"]
         for cat in ActionCategory:
+            if cat == ActionCategory.COMMUNICATION:
+                continue
             assert cat in autonomous
+
+    def test_agent_gated_includes_communication(self):
+        # REM: M17 — COMMUNICATION is gated at all tiers (outbound messages to humans are irreversible)
+        gated = TRUST_PERMISSION_MATRIX[TrustLevel.AGENT]["gated"]
+        assert ActionCategory.COMMUNICATION in gated
 
     def test_agent_has_no_blocked(self):
         assert TRUST_PERMISSION_MATRIX[TrustLevel.AGENT]["blocked"] == []
