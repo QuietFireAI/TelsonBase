@@ -1,6 +1,6 @@
 # TelsonBase/gateway/requirements.txt
 # REM: Minimal dependencies for the egress gateway
-fastapi==0.125.0
+fastapi==0.135.2
 uvicorn[standard]==0.27.1
 httpx==0.28.1
 pydantic==2.9.2

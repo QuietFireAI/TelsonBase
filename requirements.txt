@@ -17,7 +17,7 @@
 
 # --- API & Web Server Framework ---
 # REM: Provides the main "front door" for the entire OS.
-fastapi==0.125.0
+fastapi==0.135.2
 uvicorn[standard]==0.27.1
 # REM: Explicit starlette floor — closes Dependabot DoS alerts (#3, #4).
 # REM: fastapi 0.125.0 resolves to starlette 0.50.0 in practice (verified on DO server).
