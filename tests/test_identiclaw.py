@@ -400,7 +400,11 @@ class TestAuthFlow:
     def test_auth_header_valid_signature(self, manager, ed25519_keypair, sample_did_key):
         private_key, _, public_bytes = ed25519_keypair
         did, _ = sample_did_key
-        manager._get_redis = MagicMock(return_value=None)
+        # REM: Nonce check is now fail-closed — provide a mock Redis that accepts the nonce
+        mock_redis = MagicMock()
+        mock_redis.exists.return_value = 0   # Nonce not yet seen
+        mock_redis.setex.return_value = True  # Store nonce as used
+        manager._get_redis = MagicMock(return_value=mock_redis)
 
         # REM: Register the agent first
         record = AgentIdentityRecord(
