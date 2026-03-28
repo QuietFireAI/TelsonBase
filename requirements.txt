@@ -53,7 +53,7 @@ paho-mqtt==1.6.1
 # --- HTTP Communication Library ---
 # REM: The standard tool for making HTTP requests. This gives our agents the ability
 # REM: to communicate with external APIs and retrieve data from across the web.
-requests==2.32.5
+requests==2.33.0
 
 # --- Sovereign AI Core Client ---
 # REM: TelsonBase communicates with Ollama via httpx (async HTTP client) directly.
@@ -96,7 +96,7 @@ mcp>=1.2.0
 # --- Cryptography ---
 # REM: Provides RSA, AES-GCM, x509 certificates for federation mTLS,
 # REM: secure storage encryption at rest, and trust key exchange.
-cryptography==46.0.5
+cryptography==46.0.6
 
 # --- PostgreSQL Database ---
 # REM: SQLAlchemy ORM for durable structured storage (audit, users, tenants, compliance).
