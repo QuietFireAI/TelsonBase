@@ -280,7 +280,7 @@ class TestNonceHelpersDepth:
     def test_nonce_fresh_without_redis(self, manager):
         manager._get_redis = MagicMock(return_value=None)
         result = manager._check_nonce("fresh-nonce-depth-001")
-        assert result is True  # Fail-open
+        assert result is False  # Fail-closed: cannot verify without Redis (replay attack prevention)
 
     def test_nonce_fresh_in_redis(self, manager):
         mock_client = MagicMock()
@@ -311,9 +311,9 @@ class TestNonceHelpersDepth:
         mock_client = MagicMock()
         mock_client.exists.side_effect = Exception("redis error")
         manager._get_redis = MagicMock(return_value=mock_client)
-        # Should fall through to True (fail-open)
+        # Fail-closed: Redis error → reject auth to prevent replay attacks
         result = manager._check_nonce("nonce-exception-depth")
-        assert result is True
+        assert result is False
 
 
 # ═══════════════════════════════════════════════════════════════════════════════

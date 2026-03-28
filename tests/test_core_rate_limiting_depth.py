@@ -148,9 +148,9 @@ class TestGetTierForTrustLevel:
     def test_unknown_defaults_to_minimal(self, limiter):
         assert limiter.get_tier_for_trust_level("unknown") == RateLimitTier.MINIMAL
 
-    def test_apex_defaults_to_minimal(self, limiter):
-        # apex/agent tier not in _trust_to_tier → defaults to MINIMAL
-        assert limiter.get_tier_for_trust_level("agent") == RateLimitTier.MINIMAL
+    def test_agent_maps_to_unlimited(self, limiter):
+        # apex tier "agent" now maps to UNLIMITED (NM14 fix)
+        assert limiter.get_tier_for_trust_level("agent") == RateLimitTier.UNLIMITED
 
 
 # ═══════════════════════════════════════════════════════════════════════════════
