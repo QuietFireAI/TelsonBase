@@ -43,7 +43,8 @@ from typing import Any, Dict, List, Optional
 from pydantic import BaseModel, Field
 
 from core.anomaly import behavior_monitor
-from core.approval import ApprovalStatus, ApprovalRule, ApprovalPriority, approval_gate
+from core.approval import (ApprovalPriority, ApprovalRule, ApprovalStatus,
+                           approval_gate)
 from core.audit import AuditEventType, audit
 from core.capabilities import (CAPABILITY_PROFILES, ActionType,
                                EnforcedExternal, EnforcedFilesystem,

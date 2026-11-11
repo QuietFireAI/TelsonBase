@@ -2403,7 +2403,11 @@ async def verify_tool_integrity(
     """
     from toolroom.cage import cage
     from toolroom.executor import TOOLROOM_TOOLS_PATH
+    from toolroom.manifest import is_path_confined
     live_path = TOOLROOM_TOOLS_PATH / tool_id
+    # REM: SECURITY (2026-11-10): refuse a tool_id that resolves outside the toolroom.
+    if not is_path_confined(TOOLROOM_TOOLS_PATH, live_path):
+        raise HTTPException(status_code=400, detail="Invalid tool_id")
     result = cage.verify_tool(tool_id, live_path)
     return result
 

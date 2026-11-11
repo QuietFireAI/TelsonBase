@@ -90,7 +90,7 @@ TelsonBase is built on a zero-trust model. See [docs/System Documents/SECURITY_A
 
 | Purpose | Algorithm | Library |
 |---|---|---|
-| JWT signing | HMAC-SHA256 | python-jose |
+| JWT signing | HMAC-SHA256 | PyJWT |
 | Password hashing | bcrypt (cost 12) | bcrypt (direct) |
 | Federation trust | RSA-4096 + PSS padding | cryptography |
 | DID verification | Ed25519 | cryptography |

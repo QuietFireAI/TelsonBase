@@ -54,6 +54,7 @@ from core.approval import approval_gate, ApprovalRule, ApprovalPriority, Approva
 # REM: v4.6.0CC — New imports for execution engine, manifests, versioning
 from toolroom.manifest import (
     ToolManifest, load_manifest_from_tool_dir, validate_manifest, MANIFEST_FILENAME,
+    is_path_confined,
 )
 from toolroom.executor import (
     execute_subprocess_tool, execute_function_tool, ExecutionResult, TOOLROOM_TOOLS_PATH,
@@ -1502,6 +1503,14 @@ class ForemanAgent:
         # REM: Reconstruct manifest and execute via subprocess
         manifest = ToolManifest.from_dict(tool.manifest_data)
         tool_dir = TOOLROOM_TOOLS_PATH / tool_id
+
+        # REM: SECURITY (2026-11-10): never execute from a path that resolves outside the toolroom.
+        if not is_path_confined(TOOLROOM_TOOLS_PATH, tool_dir):
+            return {
+                "status": "error",
+                "qms": f"Tool_Execute_Thank_You_But_No ::path_not_confined:: ::{tool_id}::",
+                "message": f"Tool '{tool_id}' resolves outside the toolroom; refusing to execute",
+            }
 
         if not tool_dir.exists():
             return {

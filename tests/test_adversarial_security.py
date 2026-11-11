@@ -119,14 +119,18 @@ class TestAgentIdentityBoundary:
 
     def test_revoked_agent_cannot_reregister(self):
         reg = AgentKeyRegistry()
-        reg.register_agent("doomed_agent")
-        reg.revoke_agent("doomed_agent")
+        # REM: Unique id per run — revocations persist to Redis (H2), so a fixed id made
+        # REM: this test fail on a second run against the same Redis.
+        agent_id = f"doomed_agent_{uuid.uuid4().hex[:8]}"
+        reg.register_agent(agent_id)
+        reg.revoke_agent(agent_id)
         # REM: A revoked agent must not be silently re-admitted.
         with pytest.raises(PermissionError):
-            reg.register_agent("doomed_agent")
+            reg.register_agent(agent_id)
 
     def test_revoked_agent_messages_rejected(self):
-        reg, signer, agent_id, _ = _fresh_registry_with_agent("revoke_me")
+        # REM: Unique id per run (revocations persist to Redis, see above).
+        reg, signer, agent_id, _ = _fresh_registry_with_agent(f"revoke_me_{uuid.uuid4().hex[:8]}")
         msg = signer.sign(action="file_read", payload={})
         reg.revoke_agent(agent_id)
         ok, reason = reg.verify_message(msg)
@@ -202,3 +206,99 @@ class TestToolNameTraversal:
         # REM: Spaces are legitimate; the fix must not break normal names.
         errors = validate_manifest(self._manifest("Test Tool"))
         assert not any("separator" in e or "traversal" in e for e in errors)
+
+
+# REM: =====================================================================================
+# REM: 2026-11-10 — path containment (CodeQL py/path-injection follow-up) and JWT expiry
+# REM: =====================================================================================
+
+class TestPathContainment:
+    """REM: A tool_id joined onto a directory must never resolve outside that directory."""
+
+    def test_child_is_confined(self, tmp_path):
+        from toolroom.manifest import is_path_confined
+        assert is_path_confined(tmp_path, tmp_path / "tool_jq") is True
+
+    @pytest.mark.parametrize("evil", ["..", "../escape", "a/../../escape", "."])
+    def test_traversal_is_not_confined(self, tmp_path, evil):
+        from toolroom.manifest import is_path_confined
+        base = tmp_path / "tools"
+        base.mkdir()
+        assert is_path_confined(base, base / evil) is False
+
+    def test_symlink_out_of_base_is_not_confined(self, tmp_path):
+        from toolroom.manifest import is_path_confined
+        base = tmp_path / "tools"
+        outside = tmp_path / "outside"
+        base.mkdir()
+        outside.mkdir()
+        (base / "tool_link").symlink_to(outside, target_is_directory=True)
+        assert is_path_confined(base, base / "tool_link") is False
+
+    def test_cage_refuses_to_archive_outside_cage(self, tmp_path):
+        from toolroom.cage import Cage
+        cage_dir = tmp_path / "cage"
+        src = tmp_path / "src"
+        src.mkdir()
+        (src / "tool.py").write_text("x = 1\n")
+        cage = Cage(cage_path=cage_dir)
+        before = sorted(p.name for p in tmp_path.iterdir())
+        receipt = cage.archive_tool(
+            tool_id="../escaped",
+            tool_name="escaped",
+            version="1.0.0",
+            source="test",
+            source_path=src,
+        )
+        assert receipt is None
+        assert sorted(p.name for p in tmp_path.iterdir()) == before
+        assert not (tmp_path / "escaped").exists()
+
+
+class TestJWTExpiryRequired:
+    """REM: A signed token that carries no expiry is rejected, not accepted forever."""
+
+    def test_token_without_exp_is_rejected(self):
+        import jwt as pyjwt
+        from core.auth import decode_token
+        from core.config import get_settings
+        s = get_settings()
+        token = pyjwt.encode(
+            {"sub": "attacker", "jti": "jti_no_exp", "permissions": ["*"]},
+            s.jwt_secret_key,
+            algorithm=s.jwt_algorithm,
+        )
+        assert decode_token(token) is None
+
+    def test_expired_token_is_rejected(self):
+        import jwt as pyjwt
+        from core.auth import decode_token
+        from core.config import get_settings
+        s = get_settings()
+        token = pyjwt.encode(
+            {"sub": "u", "jti": "jti_old", "permissions": [],
+             "exp": datetime.now(timezone.utc) - timedelta(minutes=5)},
+            s.jwt_secret_key,
+            algorithm=s.jwt_algorithm,
+        )
+        assert decode_token(token) is None
+
+    def test_wrong_key_is_rejected(self):
+        import jwt as pyjwt
+        from core.auth import decode_token
+        from core.config import get_settings
+        s = get_settings()
+        token = pyjwt.encode(
+            {"sub": "u", "jti": "jti_forged", "permissions": ["*"],
+             "exp": datetime.now(timezone.utc) + timedelta(minutes=5)},
+            "not-the-server-key-not-the-server-key-0000",
+            algorithm=s.jwt_algorithm,
+        )
+        assert decode_token(token) is None
+
+    def test_issued_token_round_trips(self):
+        from core.auth import create_access_token, decode_token
+        data = decode_token(create_access_token("user_roundtrip", ["view:dashboard"]))
+        assert data is not None
+        assert data.sub == "user_roundtrip"
+        assert data.permissions == ["view:dashboard"]

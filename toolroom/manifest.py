@@ -133,6 +133,22 @@ class ManifestValidationError(Exception):
     pass
 
 
+def is_path_confined(base: Path, candidate: Path) -> bool:
+    """
+    REM: SECURITY (2026-11-10, CodeQL py/path-injection follow-up): True only when
+    REM: `candidate`, after resolving '..' segments and symlinks, is strictly INSIDE `base`.
+    REM: The manifest check rejects traversal in tool NAMES; this is the per-path
+    REM: containment check for every place a tool_id is joined onto a directory.
+    REM: Fails closed: any resolution error counts as not confined.
+    """
+    try:
+        base_resolved = Path(base).resolve()
+        candidate_resolved = Path(candidate).resolve()
+    except (OSError, ValueError, RuntimeError):
+        return False
+    return base_resolved in candidate_resolved.parents
+
+
 def validate_manifest(manifest: ToolManifest) -> List[str]:
     """
     REM: Validate a ToolManifest. Returns list of errors (empty = valid).

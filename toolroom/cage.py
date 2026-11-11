@@ -164,6 +164,14 @@ class Cage:
         safe_version = version.replace("/", "_").replace("\\", "_")
         archive_dir = self.cage_path / tool_id / f"{safe_version}_{timestamp}"
 
+        # REM: SECURITY (2026-11-10): a tool_id such as '../x' must never write outside the cage.
+        from toolroom.manifest import is_path_confined
+        if not is_path_confined(self.cage_path, archive_dir):
+            logger.error(
+                f"REM: Cage_Archive_Thank_You_But_No ::path_not_confined:: ::{tool_id!r}::"
+            )
+            return None
+
         try:
             archive_dir.mkdir(parents=True, exist_ok=True)
 

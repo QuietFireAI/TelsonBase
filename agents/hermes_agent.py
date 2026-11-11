@@ -185,7 +185,7 @@ class HermesAgent(SecureBaseAgent):
 
     def submit_dispatch(self, payload: Dict[str, Any], requester: str = "operator") -> Dict[str, Any]:
         """REM: Create the HITL approval for a dispatch and return immediately (non-blocking)."""
-        from core.approval import approval_gate, ApprovalRule, ApprovalPriority
+        from core.approval import ApprovalPriority, ApprovalRule, approval_gate
         target = (payload.get("target_agent") or "").strip()
         target_action = (payload.get("target_action") or "").strip()
         if not target or not target_action:
@@ -227,7 +227,7 @@ class HermesAgent(SecureBaseAgent):
 
     def complete_dispatch(self, approval_request_id: str, payload: Dict[str, Any]) -> Dict[str, Any]:
         """REM: After a human approves, verify and actually send the signed dispatch."""
-        from core.approval import approval_gate, ApprovalStatus
+        from core.approval import ApprovalStatus, approval_gate
         if not approval_request_id:
             return {
                 "status": "error",

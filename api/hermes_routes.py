@@ -26,8 +26,8 @@ from typing import Any, Dict, Optional
 from fastapi import APIRouter, Depends
 from pydantic import BaseModel, Field
 
-from agents.hermes_agent import get_hermes
 from agents.base import AgentRequest
+from agents.hermes_agent import get_hermes
 from core.auth import AuthResult, authenticate_request, require_permission
 
 logger = logging.getLogger(__name__)

@@ -18,10 +18,13 @@ import uuid
 from datetime import datetime, timedelta, timezone
 from typing import Any, Dict, List, Optional
 
+# REM: 2026-11-10 — PyJWT replaces python-jose. python-jose 3.5.0 (PYSEC-2026-4298) and its
+# REM: transitive dependency ecdsa (PYSEC-2026-1325) have open advisories with no fixed release.
+import jwt
 from fastapi import Depends, HTTPException, Security
 from fastapi.security import (APIKeyHeader, HTTPAuthorizationCredentials,
                               HTTPBearer)
-from jose import JWTError, jwt
+from jwt.exceptions import PyJWTError as JWTError
 from pydantic import BaseModel
 
 from core.audit import (  # FIXED v3.0.1: Import AuditEventType directly
@@ -370,7 +373,13 @@ def decode_token(token: str) -> Optional[TokenData]:
         TokenData if valid, None if invalid or expired
     """
     try:
-        payload = jwt.decode(token, settings.jwt_secret_key, algorithms=[settings.jwt_algorithm])
+        # REM: "exp" is required: a token with no expiry is rejected rather than accepted forever.
+        payload = jwt.decode(
+            token,
+            settings.jwt_secret_key,
+            algorithms=[settings.jwt_algorithm],
+            options={"require": ["exp"]},
+        )
         jti = payload.get("jti", "")
         # REM: v5.3.0CC — Check revocation list before accepting token
         if jti and is_token_revoked(jti):
