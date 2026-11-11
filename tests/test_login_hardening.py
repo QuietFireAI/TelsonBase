@@ -4,7 +4,7 @@
 # REM: Regression tests for the 2026-11-11 sign-in changes: role assignment at sign-up,
 # REM: required second factor, step tokens, backup codes, attempt limits, ending existing
 # REM: logins, and sign-in state shared between server processes.
-# REM: Run against commit bb8a86f (the code before these changes): 14 of these tests fail,
+# REM: Run against commit bb8a86f (the code before these changes): 14 of the first 25 tests fail,
 # REM: 9 cannot start because they use functions added by the change, and 2 pass on both
 # REM: (they pin behaviour that must stay: default role viewer, administrator may assign).
 
@@ -393,3 +393,251 @@ class TestSharedSignInState:
             assert user_manager.authenticate_user(name, "NotThePassword999!") is None
         # REM: The correct password is refused on the other process while the lockout holds
         assert other.authenticate_user(name, PW) is None
+
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# Changed-line coverage (2026-11-11): the failure and refusal branches of the
+# sign-in changes that the tests above did not execute.
+# ═══════════════════════════════════════════════════════════════════════════════
+
+class _RaisingRedis:
+    """REM: A Redis client whose every call fails."""
+    def __getattr__(self, name):
+        def _fail(*args, **kwargs):
+            raise ConnectionError("redis unavailable")
+        return _fail
+
+
+class _FixedRedis:
+    """REM: A Redis client that returns one fixed value for get()."""
+    def __init__(self, value):
+        self._value = value
+
+    def get(self, key):
+        return self._value
+
+
+class TestTokenCutoffFailsClosed:
+    def test_invalidation_reports_failure_without_redis(self, monkeypatch):
+        import core.auth as auth_module
+        monkeypatch.setattr(auth_module, "_get_redis_client", lambda: None)
+        assert auth_module.invalidate_user_tokens("user_x") is False
+
+    def test_invalidation_reports_failure_when_write_fails(self, monkeypatch):
+        import core.auth as auth_module
+        monkeypatch.setattr(auth_module, "_get_redis_client", lambda: _RaisingRedis())
+        assert auth_module.invalidate_user_tokens("user_x") is False
+
+    def test_cutoff_check_rejects_without_redis(self, monkeypatch):
+        import core.auth as auth_module
+        monkeypatch.setattr(auth_module, "_get_redis_client", lambda: None)
+        assert auth_module.is_issued_before_cutoff("user_x", 1.0) is True
+
+    def test_cutoff_check_rejects_when_read_fails(self, monkeypatch):
+        import core.auth as auth_module
+        monkeypatch.setattr(auth_module, "_get_redis_client", lambda: _RaisingRedis())
+        assert auth_module.is_issued_before_cutoff("user_x", 1.0) is True
+
+    def test_cutoff_check_rejects_unreadable_cutoff(self, monkeypatch):
+        import core.auth as auth_module
+        monkeypatch.setattr(auth_module, "_get_redis_client", lambda: _FixedRedis("not-a-number"))
+        assert auth_module.is_issued_before_cutoff("user_x", 1.0) is True
+
+    def test_cutoff_check_compares_issue_time(self, monkeypatch):
+        import core.auth as auth_module
+        monkeypatch.setattr(auth_module, "_get_redis_client", lambda: _FixedRedis("100.5"))
+        assert auth_module.is_issued_before_cutoff("user_x", 100.4) is True
+        assert auth_module.is_issued_before_cutoff("user_x", 100.6) is False
+        assert auth_module.is_issued_before_cutoff("user_x", None) is True
+        # REM: A step token is checked against its account's cutoff
+        assert auth_module.is_issued_before_cutoff("pre_mfa:user_x", 100.4) is True
+        monkeypatch.setattr(auth_module, "_get_redis_client", lambda: _FixedRedis(None))
+        assert auth_module.is_issued_before_cutoff("user_x", None) is False
+
+    def test_comparison_refuses_non_strings(self):
+        from core.auth import constant_time_equal
+        assert constant_time_equal(None, "key") is False
+        assert constant_time_equal("key", 123) is False
+        assert constant_time_equal("key", "key") is True
+
+    def test_token_with_malformed_permissions_is_refused(self, token_lookups_open):
+        from core.auth import decode_token
+        token = TestTokenRules()._signed({"sub": "someone", "jti": "jti_x", "permissions": "*"})
+        assert decode_token(token) is None
+
+    def test_account_lookup_failure_is_not_treated_as_deactivated(self, monkeypatch):
+        import core.auth as auth_module
+        from core.rbac import rbac_manager
+
+        def _boom(user_id):
+            raise RuntimeError("lookup failed")
+        monkeypatch.setattr(rbac_manager, "get_user", _boom)
+        assert auth_module._account_is_deactivated("user_x") is False
+
+
+class TestEnforcementDefault:
+    def test_default_follows_the_environment(self, monkeypatch):
+        from api.auth_routes import _mfa_enforced
+        monkeypatch.delenv("TELSONBASE_MFA_ENFORCEMENT", raising=False)
+        monkeypatch.setenv("TELSONBASE_ENV", "production")
+        assert _mfa_enforced() is True
+        monkeypatch.setenv("TELSONBASE_ENV", "")
+        assert _mfa_enforced() is True  # unset or misspelled counts as production
+        monkeypatch.setenv("TELSONBASE_ENV", "development")
+        assert _mfa_enforced() is False
+
+
+class TestSelfEnrolRefusals:
+    def test_garbage_token(self, client):
+        resp = client.post("/v1/auth/mfa/enroll", json={"enrollment_token": "not-a-token"})
+        assert resp.status_code == 401
+
+    def test_access_token_is_not_an_enrolment_token(self, client, token_lookups_open):
+        from core.auth import create_access_token
+        _, user_id = _make_user("admin")
+        resp = client.post("/v1/auth/mfa/enroll", json={
+            "enrollment_token": create_access_token(user_id, ["*"]),
+        })
+        assert resp.status_code == 401
+
+    def test_unknown_account(self, client, token_lookups_open):
+        from core.auth import create_access_token
+        resp = client.post("/v1/auth/mfa/enroll", json={
+            "enrollment_token": create_access_token(f"mfa_enroll:user_{uuid.uuid4().hex[:12]}"),
+        })
+        assert resp.status_code == 401
+
+    def test_internal_error_is_not_leaked(self, client, token_lookups_open, monkeypatch):
+        from core.auth import create_access_token
+        from core.mfa import mfa_manager
+        _, user_id = _make_user("admin")
+
+        def _boom(*args, **kwargs):
+            raise RuntimeError("secret detail")
+        monkeypatch.setattr(mfa_manager, "enroll_mfa", _boom)
+        resp = client.post("/v1/auth/mfa/enroll", json={
+            "enrollment_token": create_access_token(f"mfa_enroll:{user_id}"),
+        })
+        assert resp.status_code == 500
+        assert "secret detail" not in resp.text
+
+
+class TestCheckingAnotherUsersCodes:
+    def test_needs_override(self, client, token_lookups_open):
+        from core.auth import create_access_token
+        officer = f"user_{uuid.uuid4().hex[:12]}"
+        token = create_access_token(officer, ["security:audit"])
+        other = client.post("/v1/security/mfa/verify", headers=_bearer(token),
+                            json={"user_id": "someone_else", "token": "123456"})
+        assert other.status_code == 403
+        own = client.post("/v1/security/mfa/verify", headers=_bearer(token),
+                          json={"user_id": officer, "token": "123456"})
+        assert own.status_code == 200
+        assert own.json()["verified"] is False
+
+    def test_backup_code_route_needs_override(self, client, token_lookups_open):
+        from core.auth import create_access_token
+        token = create_access_token(f"user_{uuid.uuid4().hex[:12]}", ["security:audit"])
+        resp = client.post("/v1/security/mfa/backup-code", headers=_bearer(token),
+                           json={"user_id": "someone_else", "code": "abcdef12"})
+        assert resp.status_code == 403
+
+
+@pytest.mark.usefixtures("no_security_store")
+class TestSecondFactorManagerBranches:
+    def _manager(self):
+        from core.mfa import MFAManager
+        manager = object.__new__(MFAManager)
+        manager._records = {}
+        manager._local_failures = {}
+        return manager
+
+    def test_undecryptable_record_is_skipped(self):
+        from core.mfa import MFAManager
+        assert MFAManager._record_from_data({
+            "_encrypted": True, "user_id": "u", "secret": "garbage", "backup_codes": "garbage",
+            "enrolled_at": "2026-01-01T00:00:00+00:00",
+        }) is None
+
+    def test_startup_loads_stored_records(self, monkeypatch):
+        from core.mfa import MFAManager
+        from core.persistence import security_store
+        stored = {"u1": {"user_id": "u1", "secret": "JBSWY3DPEHPK3PXP", "backup_codes": [],
+                         "enrolled_at": "2026-01-01T00:00:00+00:00", "is_active": True}}
+        monkeypatch.setattr(security_store, "list_records",
+                            lambda record_type: stored if record_type == "mfa" else {})
+        assert MFAManager()._records["u1"].secret == "JBSWY3DPEHPK3PXP"
+
+    def test_store_failure_falls_back_to_memory(self, monkeypatch):
+        from core.persistence import security_store
+        manager = self._manager()
+        manager.enroll_mfa("u1", "u1")
+
+        def _boom(*args, **kwargs):
+            raise RuntimeError("store failed")
+        monkeypatch.setattr(security_store, "get_record", _boom)
+        assert manager.is_enrolled("u1") is True
+
+    def test_lockout_expires(self):
+        from datetime import datetime, timedelta, timezone
+        manager = self._manager()
+        past = datetime.now(timezone.utc) - timedelta(seconds=1)
+        manager._local_failures["u1"] = (manager.MAX_FAILED_CODES, past)
+        assert manager.is_locked("u1") is False
+        assert "u1" not in manager._local_failures
+
+    def test_comparison_refuses_non_strings(self):
+        manager = self._manager()
+        assert manager._same(None, "123456") is False
+
+    def test_locked_account_refuses_correct_codes(self):
+        from datetime import datetime, timedelta, timezone
+        manager = self._manager()
+        enrolment = manager.enroll_mfa("u1", "u1")
+        future = datetime.now(timezone.utc) + timedelta(minutes=10)
+        manager._local_failures["u1"] = (manager.MAX_FAILED_CODES, future)
+        assert manager.verify_mfa("u1", pyotp.TOTP(enrolment["secret"]).now()) is False
+        assert manager.verify_backup_code("u1", enrolment["backup_codes"][0]) is False
+        # REM: The backup code was not used up by the refused attempt
+        assert enrolment["backup_codes"][0] in manager._records["u1"].backup_codes
+
+
+class TestEndingLoginsFailureBranches:
+    def test_role_module_survives_invalidation_failure(self, monkeypatch):
+        import core.auth as auth_module
+        from core.rbac import rbac_manager
+
+        def _boom(*args, **kwargs):
+            raise RuntimeError("redis down")
+        monkeypatch.setattr(auth_module, "invalidate_user_tokens", _boom)
+        rbac_manager._end_tokens("user_x", by="test", reason="test")  # must not raise
+
+    def test_password_change_survives_invalidation_failure(self, monkeypatch):
+        import core.auth as auth_module
+        from core.session_management import session_manager
+        from core.user_management import user_manager
+
+        def _boom(*args, **kwargs):
+            raise RuntimeError("redis down")
+        monkeypatch.setattr(auth_module, "invalidate_user_tokens", _boom)
+        monkeypatch.setattr(session_manager, "terminate_all_user_sessions", _boom)
+        user_manager._end_existing_logins("user_x", reason="test", by="test")  # must not raise
+
+    def test_user_count_survives_store_failure(self, monkeypatch):
+        from core.persistence import security_store
+        from core.user_management import user_manager
+
+        def _boom(*args, **kwargs):
+            raise RuntimeError("store failed")
+        monkeypatch.setattr(security_store, "list_records", _boom)
+        assert user_manager._registered_user_count() >= 0
+
+    def test_profile_survives_verification_lookup_failure(self, client, monkeypatch):
+        from core.email_verification import email_verification
+        from core.user_management import user_manager
+        _, user_id = _make_user()
+
+        def _boom(*args, **kwargs):
+            raise RuntimeError("lookup failed")
+        monkeypatch.setattr(email_verification, "is_verified", _boom)
+        assert user_manager.get_user_profile(user_id)["email_verified"] is False

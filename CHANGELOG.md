@@ -35,8 +35,8 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 - **Tokens:** a token with no subject or no id is refused; key and code comparisons use bytes (non-ASCII input was an unhandled error); `/v1/auth/token` compares in constant time; `iat` is fractional seconds.
 - **Small:** `GET /v1/auth/users` and the MFA enrol route no longer return exception text; profile reports the real `email_verified`; `last_login` is persisted.
 - **Not changed:** the first account still becomes `super_admin` with no proof of ownership (needs a decision on the set-up flow); JWT sessions and idle time-outs are still not enforced on API requests; DID header authentication was not examined.
-- **Tests:** `tests/test_login_hardening.py` (25 tests). Against the previous commit 14 fail, 9 cannot start (they use functions added here), 2 pass on both. Test fixtures now clear stored MFA enrolments and sign-in counters between tests.
-- **Verified locally (Python 3.13, Redis 7 with dev password):** 6,479 passed, 4 skipped, 0 failed, three consecutive full runs against the same Redis; CI's unit command with no Redis: 6,336 passed, 59 skipped, 33 deselected. isort, REUSE lint, bandit (0 high / 0 medium on CI's paths) pass.
+- **Tests:** `tests/test_login_hardening.py` (51 tests). The first 25 are behaviour tests: against the previous commit 14 fail, 9 cannot start (they use functions added here), 2 pass on both. The other 26 were added after measuring which changed lines no test executed (45 of 370); they cover the failure and refusal branches (Redis unavailable, bad tokens, missing permission, locked account). Test fixtures now clear stored MFA enrolments and sign-in counters between tests.
+- **Verified locally (Python 3.13, Redis 7 with dev password):** 6,505 passed, 4 skipped, 0 failed; CI's unit command with no Redis: 6,362 passed, 59 skipped, 33 deselected. isort, REUSE lint, bandit (0 high / 0 medium on CI's paths) pass.
 
 ---
 
