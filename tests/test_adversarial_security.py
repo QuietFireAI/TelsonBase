@@ -296,8 +296,12 @@ class TestJWTExpiryRequired:
         )
         assert decode_token(token) is None
 
-    def test_issued_token_round_trips(self):
+    def test_issued_token_round_trips(self, monkeypatch):
+        import core.auth as auth_module
         from core.auth import create_access_token, decode_token
+        # REM: The revocation list lives in Redis and fails closed without it. This test is
+        # REM: about sign/verify, so the revocation lookup is stubbed (CI unit job has no Redis).
+        monkeypatch.setattr(auth_module, "is_token_revoked", lambda jti: False)
         data = decode_token(create_access_token("user_roundtrip", ["view:dashboard"]))
         assert data is not None
         assert data.sub == "user_roundtrip"
