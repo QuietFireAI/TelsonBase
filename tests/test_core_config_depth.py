@@ -181,7 +181,10 @@ class TestSettingsDefaults:
         assert settings.audit_max_redis_entries == 100000
 
     def test_telsonbase_env_default(self, settings):
-        assert settings.telsonbase_env == "development"
+        # REM: The conftest now sets TELSONBASE_ENV=test (fail-closed suite default),
+        # REM: so assert the declared FIELD default rather than the resolved env value.
+        from core.config import Settings
+        assert Settings.model_fields["telsonbase_env"].default == "development"
 
     def test_openclaw_auto_demote_threshold(self, settings):
         assert settings.openclaw_auto_demote_manners_threshold == 0.50

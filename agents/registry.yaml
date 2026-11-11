@@ -417,3 +417,43 @@ openclaw_agent:
     manners_3_value_alignment: "Manners compliance score evaluated on every action"
     manners_4_privacy: "Egress control prevents unauthorized data exfiltration"
     manners_5_security: "API keys never exposed; claw operates through governed proxy"
+
+# =============================================================================
+# OPERATOR LEVEL — The operator's own agent
+# =============================================================================
+
+hermes_agent:
+  display_name: "Hermes"
+  floor: operator
+  role: "The operator's agent (the messenger)"
+  description: >
+    Hermes is the operator's own TelsonBase-native agent. It reasons with the
+    local sovereign LLM (Ollama) and dispatches work to other agents on the
+    operator's behalf. Native and law-abiding by construction: every action is
+    signed, capability-checked, trust-gated, and anomaly-monitored. Dispatching
+    to another agent reaches outside Hermes and pauses for human approval.
+    Starts at PROBATION and earns trust; the counterpart to the leashed OpenClaw.
+  actions:
+    - ask
+    - dispatch
+    - status
+  requires_approval:
+    - dispatch
+  capabilities:
+    - "ollama.execute:*"
+    - "ollama.manage:list"
+    - "agent.execute:*"
+    - "filesystem.read:/app/hermes/*"
+    - "external.none"
+  trust_level: probation
+  rate_limit: 30/min
+  expected_responses:
+    ask: "Returns local LLM reasoning (Hermes_Ask_Thank_You)"
+    dispatch: "Returns approval_id if gated, signed message id if allowed"
+    status: "Returns Hermes trust level and governance status"
+  manners_compliance:
+    manners_1_human_control: "Cross-agent dispatch always pauses for human approval"
+    manners_2_transparency: "Every action logged to cryptographic audit chain"
+    manners_3_value_alignment: "Manners compliance evaluated on every action"
+    manners_4_privacy: "external.none; no direct network egress"
+    manners_5_security: "Signed inter-agent messages; sovereign local reasoning"

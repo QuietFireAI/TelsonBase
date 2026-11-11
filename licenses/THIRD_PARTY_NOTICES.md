@@ -10,7 +10,7 @@ license files in this directory.
 
 | Package | Version | License | File |
 |---|---|---|---|
-| FastAPI | 0.125.0 | MIT | [MIT.txt](MIT.txt) |
+| FastAPI | 0.162.4 | MIT | [MIT.txt](MIT.txt) |
 | Uvicorn | 0.27.1 | BSD-3-Clause | [BSD-3-Clause.txt](BSD-3-Clause.txt) |
 | Gunicorn | 25.0.3 | MIT | [MIT.txt](MIT.txt) |
 | Pydantic | 2.9.2 | MIT | [MIT.txt](MIT.txt) |
@@ -19,15 +19,15 @@ license files in this directory.
 | redis (Python) | 5.0.1 | MIT | [MIT.txt](MIT.txt) |
 | paho-mqtt | 1.6.1 | EPL-2.0 / EDL-1.0 | [EPL-2.0.txt](EPL-2.0.txt) |
 | requests | 2.32.5 | Apache-2.0 | [Apache-2.0.txt](Apache-2.0.txt) |
-| python-jose | 3.5.0 | MIT | [MIT.txt](MIT.txt) |
+| PyJWT | 2.15.1 | MIT | [MIT.txt](MIT.txt) |
 | passlib | 1.7.4 | BSD-2-Clause | [BSD-2-Clause.txt](BSD-2-Clause.txt) |
 | pyotp | 2.9.0 | MIT | [MIT.txt](MIT.txt) |
 | python-json-logger | 2.0.7 | BSD-2-Clause | [BSD-2-Clause.txt](BSD-2-Clause.txt) |
 | prometheus-client | 0.20.0 | Apache-2.0 | [Apache-2.0.txt](Apache-2.0.txt) |
 | httpx | 0.28.1 | BSD-3-Clause | [BSD-3-Clause.txt](BSD-3-Clause.txt) |
-| starlette | >=0.47.2 | BSD-3-Clause | [BSD-3-Clause.txt](BSD-3-Clause.txt) |
+| starlette | >=1.3.1 | BSD-3-Clause | [BSD-3-Clause.txt](BSD-3-Clause.txt) |
 | mcp | >=1.2.0 | MIT | [MIT.txt](MIT.txt) |
-| cryptography | 46.0.5 | Apache-2.0 / BSD-3 | [Apache-2.0.txt](Apache-2.0.txt) |
+| cryptography | 50.0.2 | Apache-2.0 / BSD-3 | [Apache-2.0.txt](Apache-2.0.txt) |
 | SQLAlchemy | 2.0.36 | MIT | [MIT.txt](MIT.txt) |
 | psycopg2-binary | 2.9.10 | LGPL-3.0 | [LGPL-3.0.txt](LGPL-3.0.txt) |
 | Alembic | 1.13.3 | MIT | [MIT.txt](MIT.txt) |
@@ -73,7 +73,7 @@ license files in this directory.
 
 | File | License Type | Packages Covered |
 |---|---|---|
-| [MIT.txt](MIT.txt) | MIT License | FastAPI, Gunicorn, Pydantic, redis-py, python-jose, pyotp, SQLAlchemy, Alembic, Ollama, Traefik, Open WebUI, React, Tailwind |
+| [MIT.txt](MIT.txt) | MIT License | FastAPI, Gunicorn, Pydantic, redis-py, PyJWT, pyotp, SQLAlchemy, Alembic, Ollama, Traefik, Open WebUI, React, Tailwind |
 | [BSD-3-Clause.txt](BSD-3-Clause.txt) | BSD 3-Clause | Uvicorn, Celery, httpx, Redis (server) |
 | [BSD-2-Clause.txt](BSD-2-Clause.txt) | BSD 2-Clause | passlib, python-json-logger |
 | [Apache-2.0.txt](Apache-2.0.txt) | Apache License 2.0 | requests, prometheus-client, cryptography, Prometheus |

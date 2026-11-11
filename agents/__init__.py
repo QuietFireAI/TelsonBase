@@ -24,6 +24,7 @@ from agents.doc_prep_agent import DocPrepAgent
 # REM: Note: backup_agent and demo_agent are functional modules, not class-based.
 # REM: They're registered via metadata only — no class import needed.
 from agents.document_agent import DocumentAgent
+from agents.hermes_agent import HermesAgent
 from agents.ollama_agent import OllamaAgent
 from agents.transaction_agent import TransactionCoordinatorAgent
 
@@ -38,10 +39,18 @@ _AGENT_REGISTRY: Dict[str, Type[SecureBaseAgent]] = {
     "transaction_agent": TransactionCoordinatorAgent,
     "compliance_check_agent": ComplianceCheckAgent,
     "doc_prep_agent": DocPrepAgent,
+    "hermes_agent": HermesAgent,
 }
 
 # REM: Agent metadata for discovery
 _AGENT_METADATA: Dict[str, Dict[str, Any]] = {
+    "hermes_agent": {
+        "name": "hermes_agent",
+        "description": "The operator's native governed agent. Reasons via the local sovereign LLM (Ollama) and dispatches to other agents under HITL approval.",
+        "actions": ["ask", "dispatch", "status"],
+        "requires_approval": ["dispatch"],
+        "capabilities": ["ollama.execute:*", "agent.execute:*", "filesystem.read:/app/hermes/*"],
+    },
     "backup_agent": {
         "name": "backup_agent",
         "description": "Performs automated backups of TelsonBase data volumes",

@@ -5,11 +5,11 @@ MIT License
 TelsonBase dependencies covered by this license:
 
   Python Packages:
-    - FastAPI 0.125.0          (Web framework)
+    - FastAPI 0.162.4          (Web framework)
     - Gunicorn 25.0.3          (Production WSGI server)
     - Pydantic 2.6.1           (Data validation)
     - redis-py 5.0.1           (Redis client)
-    - python-jose 3.5.0        (JWT authentication)
+    - PyJWT 2.15.1             (JWT authentication)
     - pyotp 2.9.0+             (TOTP multi-factor auth)
     - SQLAlchemy 2.0+          (ORM / database toolkit)
     - Alembic 1.13+            (Database migrations)
@@ -63,9 +63,9 @@ redis-py:
   Copyright (c) 2012-present Redis Inc. and contributors
   https://github.com/redis/redis-py
 
-python-jose:
-  Copyright (c) 2015-present Michael Davis
-  https://github.com/mpdavis/python-jose
+PyJWT:
+  Copyright (c) 2015-2022 José Padilla
+  https://github.com/jpadilla/pyjwt
 
 pyotp:
   Copyright (c) 2011-present Mark Percival and contributors

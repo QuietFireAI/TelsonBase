@@ -11,6 +11,17 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 
 **CI repair (2026-07-19):** Those security bumps left three transitive dependency conflicts that broke `pip install -r requirements.txt` — CI's first step — so no job ran and the badge went red on 2026-06-12. Resolved: `pytest-asyncio` 0.23.4 -> 1.4.0 (pytest 9 support), `pydantic` 2.9.2 -> 2.11.10 (mcp>=1.23.0 requires >=2.11.0), `uvicorn[standard]` 0.27.1 -> 0.34.0 (mcp requires >=0.31.1). This CHANGELOG entry also resolves the version-consistency check that surfaced once CI could run again (version.py/config.py were at 12.0.0 with no matching CHANGELOG heading). Clean-venv verification: both CI install steps pass; suite 6,339 passed / 0 failed excluding service-integration e2e (which requires CI-provisioned Redis/MQTT).
 
+**Completion pass (2026-11-10, not yet released — on branch `claude/complete-open-steps-2026-11-10`):**
+
+- **Merged the unmerged `claude-security-hardening` commit (9cd6c72, 2026-07-10).** `main` did not have these fixes: FOREMAN-01 (tool install proceeded with an empty approval id), FOREMAN-02 (approved-source add executed without a verified approval), FOREMAN-03 (`tool_name` path traversal out of the toolroom), VULN-BASE-01 (`REQUIRES_APPROVAL_FOR` actions ran with no human pause unless a separate rule was registered, and the check was case-sensitive), and fail-closed environment detection (`is_strict_env`). Also brings the Hermes governed agent, its `/v1/agents/hermes/*` routes, quickstart and demo.
+- **Behavior change:** an unset or misspelled `TELSONBASE_ENV` is now treated as production (strict). Only `development`, `dev`, `test`, `testing`, `local` are permissive.
+- **Dependencies (pip-audit reported 11 known vulnerabilities in 4 packages on `main`; 0 after):** `python-jose` 3.5.0 replaced by `PyJWT` 2.15.1 (PYSEC-2026-4298, and transitive `ecdsa` PYSEC-2026-1325, no fixed release for either); `cryptography` 46.0.7 -> 50.0.2 (PYSEC-2026-3552/-3553/-3554, GHSA-537c-gmf6-5ccf); `fastapi` 0.125.0 -> 0.162.4 with `starlette>=1.3.1` (starlette 0.50.0 was affected by PYSEC-2026-161/-248/-249/-2280/-2281 — the June audit had flagged this pin for confirmation).
+- **JWT:** a token with no `exp` claim is now rejected (previously raised an unhandled `TypeError`).
+- **Path containment (CodeQL triage follow-up 3):** `toolroom.manifest.is_path_confined` added and enforced where a `tool_id` is joined to a directory — tool execution, cage archive, and `POST /v1/toolroom/cage/verify/{tool_id}`.
+- **Tests:** two revocation tests in `test_adversarial_security.py` used fixed agent ids; because revocations persist to Redis they failed on a second run against the same Redis. Now unique per run. 11 new regression tests added (path containment, JWT expiry/forgery/round-trip).
+- **Local Redis note:** the e2e file needs Redis started with the dev password (`telsonbase_redis_dev`); with a password-less Redis, 6 e2e tests fail closed on the JWT revocation check.
+- **Verified locally (Python 3.13, Redis 7 with dev password):** 6,454 passed, 4 skipped, 0 failed, two consecutive full runs. isort, REUSE lint, bandit (0 high / 0 medium) and the version-consistency check pass.
+
 ---
 
 ## [11.0.4] - 2026-03-27 (Security hardening H1–H13, branding sweep, zero-tolerance threat response, product rebrand ClawCoat → TelsonBase)

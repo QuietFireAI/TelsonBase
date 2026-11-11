@@ -17,12 +17,12 @@
 
 # --- API & Web Server Framework ---
 # REM: Provides the main "front door" for the entire OS.
-fastapi==0.125.0
+fastapi==0.162.4
 uvicorn[standard]==0.34.0
-# REM: Explicit starlette floor — closes Dependabot DoS alerts (#3, #4).
-# REM: fastapi 0.125.0 resolves to starlette 0.50.0 in practice (verified on DO server).
-# REM: This pin ensures pip never selects a vulnerable version.
-starlette>=0.47.2
+# REM: Explicit starlette floor. 2026-11-10: pip-audit reported starlette 0.50.0 (what
+# REM: fastapi 0.125.0 resolved to) under PYSEC-2026-161/-248/-249/-2280/-2281; the highest
+# REM: fixed version named is 1.3.1. This floor keeps pip from selecting an affected release.
+starlette>=1.3.1
 
 # --- Production WSGI Server ---
 # REM: Gunicorn manages worker processes in production. Uvicorn alone is dev-only.
@@ -62,8 +62,10 @@ requests==2.33.0
 # REM: See: agents/ollama_agent.py, main.py LLM endpoints
 
 # --- JWT Authentication ---
-# REM: python-jose provides JWT token signing and verification.
-python-jose[cryptography]==3.5.0
+# REM: PyJWT provides JWT token signing and verification (HS256).
+# REM: 2026-11-10: replaces python-jose 3.5.0 (PYSEC-2026-4298) and its transitive
+# REM: dependency ecdsa (PYSEC-2026-1325); neither advisory lists a fixed release.
+PyJWT==2.15.1
 
 # --- Password Hashing ---
 # REM: passlib provides secure password hashing utilities.
@@ -96,7 +98,7 @@ mcp>=1.23.0  # REM: GHSA-9h52-p55h-vw2f fix
 # --- Cryptography ---
 # REM: Provides RSA, AES-GCM, x509 certificates for federation mTLS,
 # REM: secure storage encryption at rest, and trust key exchange.
-cryptography==46.0.7  # REM: PYSEC-2026-36 fix
+cryptography==50.0.2  # REM: 2026-11-10: clears PYSEC-2026-3552/-3553/-3554 and GHSA-537c-gmf6-5ccf (46.0.7 affected)
 
 # --- PostgreSQL Database ---
 # REM: SQLAlchemy ORM for durable structured storage (audit, users, tenants, compliance).
