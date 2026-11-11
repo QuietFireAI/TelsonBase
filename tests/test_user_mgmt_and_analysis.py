@@ -8,6 +8,10 @@ These three files were at 0% coverage — all security-critical paths.
 import pytest
 from datetime import datetime, timedelta, timezone
 
+# REM: Hand-built managers with fixed ids — keep them off the shared Redis store
+pytestmark = pytest.mark.usefixtures("no_security_store")
+
+
 
 # ═══════════════════════════════════════════════════════════════════════════════
 # core/sessions.py — alias module

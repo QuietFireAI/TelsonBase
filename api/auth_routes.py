@@ -18,6 +18,7 @@
 # REM:   POST /v1/auth/register       — Register new user
 # REM:   POST /v1/auth/login          — Login with username/password
 # REM:   POST /v1/auth/login/mfa      — Complete MFA step after login
+# REM:   POST /v1/auth/mfa/enroll     — Enrol MFA with the enrolment token from login
 # REM:   POST /v1/auth/change-password — Change own password (authenticated)
 # REM:   GET  /v1/auth/profile        — Get own profile (authenticated)
 # REM:   POST /v1/auth/logout         — Logout (authenticated)
@@ -38,11 +39,40 @@ from pydantic import BaseModel, Field
 
 from core.audit import AuditEventType, audit
 from core.auth import (AuthResult, authenticate_request, create_access_token,
-                       decode_token, require_permission, revoke_token)
+                       decode_token, invalidate_user_tokens, optional_auth,
+                       require_permission, revoke_token)
 
 logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/v1/auth", tags=["User Authentication"])
+
+# REM: Subject prefixes of the two single-purpose step tokens issued by /login
+PRE_MFA_PREFIX = "pre_mfa:"
+MFA_ENROLL_PREFIX = "mfa_enroll:"
+
+
+def _mfa_enforced() -> bool:
+    """
+    REM: Whether roles that require a second factor must have one to receive an access token.
+    REM: On in production-strict environments, off in development/test so local set-up is not
+    REM: blocked. TELSONBASE_MFA_ENFORCEMENT=on|off overrides either way.
+    """
+    import os
+
+    from core.config import is_strict_env
+    override = os.environ.get("TELSONBASE_MFA_ENFORCEMENT", "").strip().lower()
+    if override in ("on", "true", "1", "yes"):
+        return True
+    if override in ("off", "false", "0", "no"):
+        return False
+    return is_strict_env()
+
+
+def _caller_manages_users(auth: Optional[AuthResult]) -> bool:
+    """REM: True if the request carries a credential allowed to manage users."""
+    return auth is not None and (
+        "*" in auth.permissions or "manage:users" in auth.permissions
+    )
 
 
 # REM: =======================================================================================
@@ -73,7 +103,13 @@ class LoginRequest(BaseModel):
 class MFALoginRequest(BaseModel):
     """REM: Request body for MFA completion after login."""
     pre_mfa_token: str = Field(..., description="Temporary pre-MFA token from login response")
-    totp_code: str = Field(..., min_length=6, max_length=6, description="6-digit TOTP code")
+    totp_code: Optional[str] = Field(None, min_length=6, max_length=6, description="6-digit TOTP code")
+    backup_code: Optional[str] = Field(None, min_length=4, max_length=64, description="One-time backup code, used instead of a TOTP code")
+
+
+class MFASelfEnrollRequest(BaseModel):
+    """REM: Request body for enrolling a second factor with the enrolment token from /login."""
+    enrollment_token: str = Field(..., description="Temporary enrolment token from login response")
 
 
 class ChangePasswordRequest(BaseModel):
@@ -87,7 +123,10 @@ class ChangePasswordRequest(BaseModel):
 # REM: =======================================================================================
 
 @router.post("/register")
-async def register_user(request: RegisterRequest):
+async def register_user(
+    request: RegisterRequest,
+    auth: Optional[AuthResult] = Depends(optional_auth),
+):
     """
     REM: Register a new human operator account.
     REM: QMS: User_Register_Please with ::username:: ::email::
@@ -114,7 +153,15 @@ async def register_user(request: RegisterRequest):
                     "captcha_required": True,
                 })
 
-        # REM: Use requested role if provided; first user always gets super_admin regardless
+        # REM: This endpoint is public. A role other than the default is only honoured when
+        # REM: the request also carries a credential that may manage users (master API key
+        # REM: or a user with manage:users). The first user always gets super_admin regardless.
+        if request.role and request.role != "viewer" and not is_first_user \
+                and not _caller_manages_users(auth):
+            raise HTTPException(status_code=403, detail={
+                "qms_status": "Thank_You_But_No",
+                "error": "Assigning a role at registration requires an administrator credential.",
+            })
         roles = [request.role] if request.role else None
         user_profile = user_manager.register_user(
             username=request.username,
@@ -214,11 +261,40 @@ async def login_user(request: LoginRequest, http_request: Request):
                 "user_id": user_id,
             })
 
-        user = rbac_manager.get_user(user_id)
+        # REM: Fresh copy — another worker may have changed this account's roles
+        user = rbac_manager.refresh_user(user_id)
+        if not user or not user.is_active:
+            raise HTTPException(status_code=401, detail={
+                "qms_status": "Thank_You_But_No",
+                "error": "Invalid username or password",
+            })
 
         # REM: Check if MFA is required or enrolled
         mfa_required = mfa_manager.is_mfa_required(user)
         mfa_enrolled = mfa_manager.is_enrolled(user_id)
+
+        if mfa_required and not mfa_enrolled and _mfa_enforced():
+            # REM: This role must have a second factor. No access token is issued until one
+            # REM: is enrolled; the token below is accepted only by POST /v1/auth/mfa/enroll.
+            enrollment_token = create_access_token(
+                subject=f"{MFA_ENROLL_PREFIX}{user_id}",
+                permissions=[],
+                expires_delta=timedelta(minutes=10),
+            )
+            logger.info(
+                f"REM: User ::{request.username}:: authenticated — MFA enrolment required_Thank_You"
+            )
+            return {
+                "qms_status": "Thank_You",
+                "mfa_required": True,
+                "mfa_enrollment_required": True,
+                "enrollment_token": enrollment_token,
+                "user": user_dict,
+                "message": (
+                    "Your role requires multi-factor authentication. Enrol at "
+                    "POST /v1/auth/mfa/enroll with this enrollment_token, then log in again."
+                ),
+            }
 
         if mfa_enrolled:
             # REM: Issue a short-lived pre-MFA token (5 minutes)
@@ -264,6 +340,9 @@ async def login_user(request: LoginRequest, http_request: Request):
         return {
             "qms_status": "Thank_You",
             "mfa_required": False,
+            # REM: True when this role should have a second factor but enforcement is off
+            # REM: in this environment (development/test).
+            "mfa_enrollment_recommended": bool(mfa_required and not mfa_enrolled),
             "access_token": access_token,
             "token_type": "bearer",
             "user": user_dict,
@@ -308,29 +387,46 @@ async def login_mfa(request: MFALoginRequest, http_request: Request):
 
         # REM: Extract user_id from pre-MFA subject
         subject = token_data.sub
-        if not subject.startswith("pre_mfa:"):
+        if not subject.startswith(PRE_MFA_PREFIX):
             raise HTTPException(status_code=401, detail={
                 "qms_status": "Thank_You_But_No",
                 "error": "Invalid pre-MFA token format",
             })
 
-        user_id = subject[len("pre_mfa:"):]
-        user = rbac_manager.get_user(user_id)
-        if not user:
+        user_id = subject[len(PRE_MFA_PREFIX):]
+        user = rbac_manager.refresh_user(user_id)
+        if not user or not user.is_active:
             raise HTTPException(status_code=401, detail={
                 "qms_status": "Thank_You_But_No",
                 "error": "User not found",
             })
 
-        # REM: Verify TOTP code
-        verified = mfa_manager.verify_mfa(user_id, request.totp_code)
+        if bool(request.totp_code) == bool(request.backup_code):
+            raise HTTPException(status_code=400, detail={
+                "qms_status": "Thank_You_But_No",
+                "error": "Provide either totp_code or backup_code",
+            })
+
+        # REM: Too many wrong codes — the step is locked for a while and this token is spent
+        if mfa_manager.is_locked(user_id):
+            revoke_token(token_data.jti, token_data.exp, revoked_by="mfa_lockout")
+            raise HTTPException(status_code=429, detail={
+                "qms_status": "Thank_You_But_No",
+                "error": "Too many incorrect codes. Try again later.",
+            })
+
+        # REM: Verify the TOTP code, or consume a one-time backup code
+        if request.totp_code:
+            verified = mfa_manager.verify_mfa(user_id, request.totp_code)
+        else:
+            verified = mfa_manager.verify_backup_code(user_id, request.backup_code)
         if not verified:
             logger.warning(
                 f"REM: MFA verification failed for user ::{user.username}::_Thank_You_But_No"
             )
             raise HTTPException(status_code=401, detail={
                 "qms_status": "Thank_You_But_No",
-                "error": "Invalid TOTP code",
+                "error": "Invalid code",
             })
 
         # REM: Revoke the pre-MFA token (one-time use)
@@ -366,7 +462,10 @@ async def login_mfa(request: MFALoginRequest, http_request: Request):
             f"MFA login completed for user: {user.username}",
             actor=user.username,
             resource=user_id,
-            details={"method": "password+mfa", "session_id": session.session_id},
+            details={
+                "method": "password+mfa" if request.totp_code else "password+backup_code",
+                "session_id": session.session_id,
+            },
             qms_status="Thank_You"
         )
 
@@ -386,6 +485,70 @@ async def login_mfa(request: MFALoginRequest, http_request: Request):
         raise HTTPException(status_code=500, detail={
             "qms_status": "Thank_You_But_No",
             "error": "MFA login failed due to internal error",
+        })
+
+
+# REM: =======================================================================================
+# REM: MFA SELF-ENROLMENT ENDPOINT
+# REM: =======================================================================================
+
+@router.post("/mfa/enroll")
+async def mfa_self_enroll(request: MFASelfEnrollRequest):
+    """
+    REM: Enrol the second factor for the account that just passed the password step.
+    REM: QMS: User_MFA_Enroll_Please
+    REM:
+    REM: Accepts only the enrolment token issued by /login when the account's role requires
+    REM: MFA and none is enrolled. Returns the TOTP secret, provisioning URI and backup codes
+    REM: once. The caller then logs in again and completes /login/mfa.
+    """
+    try:
+        from core.mfa import mfa_manager
+        from core.rbac import rbac_manager
+
+        token_data = decode_token(request.enrollment_token)
+        if not token_data or not token_data.sub.startswith(MFA_ENROLL_PREFIX):
+            raise HTTPException(status_code=401, detail={
+                "qms_status": "Thank_You_But_No",
+                "error": "Invalid or expired enrolment token",
+            })
+
+        user_id = token_data.sub[len(MFA_ENROLL_PREFIX):]
+        user = rbac_manager.refresh_user(user_id)
+        if not user or not user.is_active:
+            raise HTTPException(status_code=401, detail={
+                "qms_status": "Thank_You_But_No",
+                "error": "User not found",
+            })
+
+        if mfa_manager.is_enrolled(user_id):
+            raise HTTPException(status_code=409, detail={
+                "qms_status": "Thank_You_But_No",
+                "error": "MFA is already enrolled for this account",
+            })
+
+        result = mfa_manager.enroll_mfa(user_id=user_id, username=user.username)
+
+        # REM: One-time use
+        revoke_token(token_data.jti, token_data.exp, revoked_by="mfa_enrollment")
+
+        logger.info(f"REM: User ::{user.username}:: enrolled MFA_Thank_You")
+
+        return {
+            "qms_status": "Thank_You",
+            "secret": result.get("secret"),
+            "provisioning_uri": result.get("provisioning_uri"),
+            "backup_codes": result.get("backup_codes", []),
+            "message": "MFA enrolled. Store the backup codes, then log in again.",
+        }
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"REM: MFA self-enrolment error: {e}_Thank_You_But_No")
+        raise HTTPException(status_code=500, detail={
+            "qms_status": "Thank_You_But_No",
+            "error": "MFA enrolment failed due to internal error",
         })
 
 
@@ -425,7 +588,8 @@ async def change_password(
 
         return {
             "qms_status": "Thank_You",
-            "message": "Password changed successfully",
+            "message": "Password changed successfully. All existing logins were ended; log in again.",
+            "reauthentication_required": True,
         }
 
     except ValueError as e:
@@ -527,7 +691,7 @@ async def list_users(auth: AuthResult = Depends(require_permission("admin:config
         logger.error(f"User list failed: {e}")
         raise HTTPException(status_code=500, detail={
             "qms_status": "Thank_You_But_No",
-            "error": str(e),
+            "error": "Failed to list users",
         })
 
 
@@ -559,6 +723,11 @@ async def logout(
             token_data = decode_token(token_str)
             if token_data and token_data.jti:
                 revoke_token(token_data.jti, token_data.exp, revoked_by=user_id)
+
+        # REM: Logout ends all of this user's logins (the sessions below and every token
+        # REM: issued before now), not only the token that was presented.
+        if auth.method == "jwt":
+            invalidate_user_tokens(user_id, invalidated_by=user_id, reason="user_logout")
 
         # REM: Terminate all sessions for this user
         terminated = session_manager.terminate_all_user_sessions(

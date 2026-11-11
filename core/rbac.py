@@ -432,6 +432,31 @@ class RBACManager:
             user = self._load_user_from_redis(user_id)
         return user
 
+    def refresh_user(self, user_id: str) -> Optional[User]:
+        """
+        REM: The authoritative copy of a user, re-read from Redis. Another worker may have
+        REM: changed roles or deactivated the account since this worker cached it. Falls
+        REM: back to the cached copy when Redis has no record or cannot be reached.
+        """
+        cached = self._users.get(user_id)
+        fresh = self._load_user_from_redis(user_id)
+        if fresh is not None and cached is not None and fresh is not cached:
+            # REM: Update the cached object in place so existing references stay valid
+            cached.__dict__.update(fresh.__dict__)
+            self._users[user_id] = cached
+            return cached
+        return fresh or cached
+
+    def _end_tokens(self, user_id: str, by: str, reason: str) -> None:
+        """REM: Tokens issued before a role removal or deactivation stop being accepted."""
+        try:
+            from core.auth import invalidate_user_tokens
+            invalidate_user_tokens(user_id, invalidated_by=by, reason=reason)
+        except Exception as e:
+            logger.warning(
+                f"REM: Token invalidation failed for ::{user_id}::: {e}_Thank_You_But_No"
+            )
+
     def get_user_by_username(self, username: str) -> Optional[User]:
         """REM: Get a user by username. Falls back to Redis username index on cache miss."""
         for user in self._users.values():
@@ -490,7 +515,7 @@ class RBACManager:
         removed_by: str = "system"
     ) -> bool:
         """REM: Remove a role from a user."""
-        user = self._users.get(user_id)
+        user = self.refresh_user(user_id)
         if not user:
             return False
 
@@ -516,12 +541,15 @@ class RBACManager:
                 qms_status="Thank_You"
             )
 
+            # REM: Tokens carry the permissions held when they were issued
+            self._end_tokens(user_id, by=removed_by, reason="role_removed")
+
             return True
         return False
 
     def deactivate_user(self, user_id: str, deactivated_by: str = "system") -> bool:
         """REM: Deactivate a user account. Kills all sessions across all workers."""
-        user = self._users.get(user_id)
+        user = self.refresh_user(user_id)
         if not user:
             return False
 
@@ -566,6 +594,8 @@ class RBACManager:
             resource=user_id,
             qms_status="Thank_You"
         )
+
+        self._end_tokens(user_id, by=deactivated_by, reason="account_deactivated")
 
         return True
 

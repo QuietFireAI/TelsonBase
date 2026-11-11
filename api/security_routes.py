@@ -131,6 +131,14 @@ async def mfa_enroll(
     try:
         from core.mfa import mfa_manager
 
+        # REM: An existing enrolment is never replaced here. Disable it first
+        # REM: (DELETE /v1/security/mfa/{user_id}, security:override), then enrol again.
+        if mfa_manager.is_enrolled(request.user_id):
+            raise HTTPException(status_code=409, detail={
+                "qms_status": "Thank_You_But_No",
+                "error": "MFA is already enrolled for this user. Disable it before enrolling again."
+            })
+
         result = mfa_manager.enroll_mfa(
             user_id=request.user_id,
             username=request.username
@@ -162,8 +170,22 @@ async def mfa_enroll(
         )
         raise HTTPException(status_code=500, detail={
             "qms_status": "Thank_You_But_No",
-            "error": str(e)
+            "error": "MFA enrollment failed"
         })
+
+
+def _require_self_or_override(auth: AuthResult, user_id: str) -> None:
+    """
+    REM: Checking another user's codes counts against that user's attempt limit and a backup
+    REM: code is consumed when it matches, so these calls are limited to the user themself
+    REM: or a holder of security:override.
+    """
+    if auth.actor == user_id or "*" in auth.permissions or "security:override" in auth.permissions:
+        return
+    raise HTTPException(status_code=403, detail={
+        "qms_status": "Thank_You_But_No",
+        "error": "security:override is required to check another user's codes"
+    })
 
 
 @router.post("/mfa/verify")
@@ -178,6 +200,7 @@ async def mfa_verify(
     try:
         from core.mfa import mfa_manager
 
+        _require_self_or_override(auth, request.user_id)
         verified = mfa_manager.verify_mfa(
             user_id=request.user_id,
             token=request.token
@@ -217,6 +240,7 @@ async def mfa_backup_code(
     try:
         from core.mfa import mfa_manager
 
+        _require_self_or_override(auth, request.user_id)
         verified = mfa_manager.verify_backup_code(
             user_id=request.user_id,
             code=request.code

@@ -66,36 +66,43 @@ class MFAManager:
 
     def __init__(self):
         self._records: Dict[str, MFARecord] = {}
+        self._local_failures: Dict[str, tuple] = {}  # user_id -> (count, window end)
         self._load_from_redis()
 
+    @staticmethod
+    def _record_from_data(record_data: Dict[str, Any]) -> Optional[MFARecord]:
+        """REM: Build an MFARecord from its stored form. None if it cannot be decrypted."""
+        from core.secure_storage import secure_storage
+        record_data = dict(record_data)
+        if record_data.get("_encrypted"):
+            try:
+                record_data["secret"] = secure_storage.decrypt_string(record_data["secret"])
+                record_data["backup_codes"] = json.loads(secure_storage.decrypt_string(record_data["backup_codes"]))
+            except Exception:
+                return None  # Skip records we can't decrypt
+        return MFARecord(
+            user_id=record_data["user_id"],
+            secret=record_data["secret"],
+            backup_codes=record_data.get("backup_codes", []),
+            enrolled_at=datetime.fromisoformat(record_data["enrolled_at"]),
+            last_used_token=record_data.get("last_used_token"),
+            last_verified_at=(
+                datetime.fromisoformat(record_data["last_verified_at"])
+                if record_data.get("last_verified_at") else None
+            ),
+            is_active=record_data.get("is_active", True),
+        )
+
     def _load_from_redis(self) -> None:
-        """REM: Load MFA records from Redis on startup. In-memory dict is primary."""
+        """REM: Load MFA records from Redis on startup."""
         try:
             from core.persistence import security_store
-            from core.secure_storage import secure_storage
             all_records = security_store.list_records("mfa")
             for user_id, record_data in all_records.items():
                 try:
-                    # REM: Decrypt sensitive fields if encrypted
-                    if record_data.get("_encrypted"):
-                        try:
-                            record_data["secret"] = secure_storage.decrypt_string(record_data["secret"])
-                            record_data["backup_codes"] = json.loads(secure_storage.decrypt_string(record_data["backup_codes"]))
-                        except Exception:
-                            continue  # Skip records we can't decrypt
-                    rec = MFARecord(
-                        user_id=record_data["user_id"],
-                        secret=record_data["secret"],
-                        backup_codes=record_data.get("backup_codes", []),
-                        enrolled_at=datetime.fromisoformat(record_data["enrolled_at"]),
-                        last_used_token=record_data.get("last_used_token"),
-                        last_verified_at=(
-                            datetime.fromisoformat(record_data["last_verified_at"])
-                            if record_data.get("last_verified_at") else None
-                        ),
-                        is_active=record_data.get("is_active", True),
-                    )
-                    self._records[user_id] = rec
+                    rec = self._record_from_data(record_data)
+                    if rec is not None:
+                        self._records[user_id] = rec
                 except Exception as e:
                     logger.warning(
                         f"REM: Failed to load MFA record for ::{user_id}:: from Redis: {e}_Thank_You_But_No"
@@ -104,6 +111,95 @@ class MFAManager:
                 logger.info(f"REM: Loaded {len(self._records)} MFA records from Redis_Thank_You")
         except Exception as e:
             logger.warning(f"REM: Redis unavailable for MFA load: {e}_Thank_You_But_No")
+
+    def _get_record(self, user_id: str) -> Optional[MFARecord]:
+        """
+        REM: 2026-11-11 — Current record for a user, Redis first.
+        REM: With more than one worker (the image default is two; docker-compose.yml pins
+        REM: one) an enrolment made on one worker was invisible to the others, which kept
+        REM: answering from the copy they loaded at start-up. The
+        REM: in-memory copy is now only a fallback for when Redis has no record or is down.
+        REM: A disabled enrolment is kept in Redis as an inactive record so that the other
+        REM: worker learns about the disable as well.
+        """
+        try:
+            from core.persistence import security_store
+            data = security_store.get_record("mfa", user_id)
+            if data:
+                rec = self._record_from_data(data)
+                if rec is not None:
+                    self._records[user_id] = rec
+                    return rec
+        except Exception as e:
+            logger.warning(f"REM: MFA record refresh failed for ::{user_id}::: {e}_Thank_You_But_No")
+        return self._records.get(user_id)
+
+    # REM: ---------------------------------------------------------------------------------
+    # REM: Attempt limit for second-factor codes (shared across workers, in-memory fallback)
+    # REM: ---------------------------------------------------------------------------------
+    MAX_FAILED_CODES = 5
+    CODE_LOCKOUT_SECONDS = 15 * 60
+
+    def _fail_key(self, user_id: str) -> str:
+        from core.persistence import security_store
+        return security_store._key("mfa_failures", user_id)
+
+    def is_locked(self, user_id: str) -> bool:
+        """REM: True if too many wrong codes were entered for this user recently."""
+        try:
+            from core.persistence import security_store
+            value = security_store.client.get(self._fail_key(user_id))
+            if value is not None:
+                return int(value) >= self.MAX_FAILED_CODES
+        except Exception:
+            pass
+        count, until = self._local_failures.get(user_id, (0, None))
+        if until and datetime.now(timezone.utc) >= until:
+            self._local_failures.pop(user_id, None)
+            return False
+        return count >= self.MAX_FAILED_CODES
+
+    def _record_failed_code(self, user_id: str) -> None:
+        from datetime import timedelta
+        count, until = self._local_failures.get(user_id, (0, None))
+        now = datetime.now(timezone.utc)
+        if until is None or now >= until:
+            count, until = 0, now + timedelta(seconds=self.CODE_LOCKOUT_SECONDS)
+        self._local_failures[user_id] = (count + 1, until)
+        try:
+            from core.persistence import security_store
+            key = self._fail_key(user_id)
+            shared = security_store.client.incr(key)
+            if shared == 1 or security_store.client.ttl(key) < 0:
+                security_store.client.expire(key, self.CODE_LOCKOUT_SECONDS)
+            count = max(count + 1, int(shared))
+        except Exception:
+            count = count + 1
+        if count == self.MAX_FAILED_CODES:
+            audit.log(
+                AuditEventType.SECURITY_ALERT,
+                f"MFA code entry locked for user: {user_id}",
+                actor=user_id,
+                resource=user_id,
+                details={"action": "mfa_locked", "failed_codes": count,
+                         "lockout_seconds": self.CODE_LOCKOUT_SECONDS},
+                qms_status="Thank_You_But_No"
+            )
+
+    def _clear_failed_codes(self, user_id: str) -> None:
+        self._local_failures.pop(user_id, None)
+        try:
+            from core.persistence import security_store
+            security_store.client.delete(self._fail_key(user_id))
+        except Exception:
+            pass
+
+    @staticmethod
+    def _same(a: str, b: str) -> bool:
+        """REM: Constant-time comparison on bytes (compare_digest rejects non-ASCII str)."""
+        if not isinstance(a, str) or not isinstance(b, str):
+            return False
+        return hmac.compare_digest(a.encode("utf-8"), b.encode("utf-8"))
 
     def _save_record(self, user_id: str) -> None:
         """REM: Write-through save of a single MFA record to Redis."""
@@ -141,7 +237,7 @@ class MFAManager:
         except Exception as e:
             logger.warning(f"REM: Failed to delete MFA record from Redis for ::{user_id}::: {e}_Thank_You_But_No")
 
-    def enroll_mfa(self, user_id: str, username: str) -> Dict[str, Any]:
+    def enroll_mfa(self, user_id: str, username: str, replace: bool = False) -> Dict[str, Any]:
         """
         REM: Enroll a user in TOTP MFA.
         REM: Generates a secret, provisioning URI, and backup codes.
@@ -153,6 +249,12 @@ class MFAManager:
         Returns:
             Dict with secret, provisioning_uri, and backup_codes
         """
+        # REM: An active enrolment is not replaced unless the caller says so explicitly.
+        # REM: Replacing it swaps the user's authenticator secret and backup codes; the
+        # REM: supported path is disable_mfa (which is audited) followed by a new enrolment.
+        if not replace and self.is_enrolled(user_id):
+            raise ValueError("MFA is already enrolled for this user. Disable it before enrolling again.")
+
         # REM: Generate a fresh TOTP secret
         secret = pyotp.random_base32()
 
@@ -195,6 +297,7 @@ class MFAManager:
         )
 
         self._save_record(user_id)
+        self._clear_failed_codes(user_id)
 
         return {
             "secret": secret,
@@ -214,7 +317,7 @@ class MFAManager:
         Returns:
             True if the token is valid and has not been replayed
         """
-        record = self._records.get(user_id)
+        record = self._get_record(user_id)
         if not record or not record.is_active:
             logger.warning(
                 f"REM: MFA verify attempt for unknown/inactive user "
@@ -222,9 +325,13 @@ class MFAManager:
             )
             return False
 
+        if self.is_locked(user_id):
+            logger.warning(f"REM: MFA code entry locked for user ::{user_id}::_Thank_You_But_No")
+            return False
+
         # REM: Replay prevention — reject if this token was already used
         if record.last_used_token is not None:
-            if hmac.compare_digest(token, record.last_used_token):
+            if self._same(token, record.last_used_token):
                 logger.warning(
                     f"REM: MFA replay detected for user ::{user_id}::_Thank_You_But_No"
                 )
@@ -240,9 +347,10 @@ class MFAManager:
 
         # REM: Verify the TOTP token (constant-time internally in pyotp)
         totp = pyotp.TOTP(record.secret)
-        is_valid = totp.verify(token)
+        is_valid = isinstance(token, str) and token.isascii() and totp.verify(token)
 
         if is_valid:
+            self._clear_failed_codes(user_id)
             record.last_used_token = token
             record.last_verified_at = datetime.now(timezone.utc)
 
@@ -273,6 +381,7 @@ class MFAManager:
                 details={"action": "mfa_verify_failed"},
                 qms_status="Thank_You_But_No"
             )
+            self._record_failed_code(user_id)
 
         return is_valid
 
@@ -288,7 +397,7 @@ class MFAManager:
         Returns:
             True if the backup code is valid and was consumed
         """
-        record = self._records.get(user_id)
+        record = self._get_record(user_id)
         if not record or not record.is_active:
             logger.warning(
                 f"REM: Backup code attempt for unknown/inactive user "
@@ -296,13 +405,18 @@ class MFAManager:
             )
             return False
 
+        if self.is_locked(user_id):
+            logger.warning(f"REM: MFA code entry locked for user ::{user_id}::_Thank_You_But_No")
+            return False
+
         # REM: Constant-time search through backup codes
         matched_index = None
         for i, stored_code in enumerate(record.backup_codes):
-            if hmac.compare_digest(code, stored_code):
+            if self._same(code, stored_code):
                 matched_index = i
 
         if matched_index is not None:
+            self._clear_failed_codes(user_id)
             # REM: Consume the backup code (one-time use)
             record.backup_codes.pop(matched_index)
             record.last_verified_at = datetime.now(timezone.utc)
@@ -342,6 +456,7 @@ class MFAManager:
             details={"action": "mfa_backup_code_failed"},
             qms_status="Thank_You_But_No"
         )
+        self._record_failed_code(user_id)
 
         return False
 
@@ -368,7 +483,7 @@ class MFAManager:
         Returns:
             True if the user has an active MFA enrollment
         """
-        record = self._records.get(user_id)
+        record = self._get_record(user_id)
         return record is not None and record.is_active
 
     def disable_mfa(self, user_id: str, disabled_by: str) -> bool:
@@ -383,7 +498,7 @@ class MFAManager:
         Returns:
             True if MFA was successfully disabled
         """
-        record = self._records.get(user_id)
+        record = self._get_record(user_id)
         if not record or not record.is_active:
             logger.warning(
                 f"REM: MFA disable attempt for non-enrolled user "
@@ -408,9 +523,13 @@ class MFAManager:
             qms_status="Thank_You"
         )
 
-        # REM: Remove the record entirely
-        del self._records[user_id]
-        self._delete_record(user_id)
+        # REM: Keep an inactive record (secret blanked, no backup codes) in Redis so that
+        # REM: other workers see the disable instead of answering from their cached copy.
+        record.secret = ""
+        record.last_used_token = None
+        self._save_record(user_id)
+        self._records.pop(user_id, None)
+        self._clear_failed_codes(user_id)
 
         return True
 
@@ -424,8 +543,8 @@ class MFAManager:
         Returns:
             Dict with enrollment status details
         """
-        record = self._records.get(user_id)
-        if not record:
+        record = self._get_record(user_id)
+        if not record or not record.is_active:
             return {
                 "user_id": user_id,
                 "enrolled": False,

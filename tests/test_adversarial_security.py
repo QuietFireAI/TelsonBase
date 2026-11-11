@@ -302,6 +302,7 @@ class TestJWTExpiryRequired:
         # REM: The revocation list lives in Redis and fails closed without it. This test is
         # REM: about sign/verify, so the revocation lookup is stubbed (CI unit job has no Redis).
         monkeypatch.setattr(auth_module, "is_token_revoked", lambda jti: False)
+        monkeypatch.setattr(auth_module, "is_issued_before_cutoff", lambda sub, iat: False)
         data = decode_token(create_access_token("user_roundtrip", ["view:dashboard"]))
         assert data is not None
         assert data.sub == "user_roundtrip"
