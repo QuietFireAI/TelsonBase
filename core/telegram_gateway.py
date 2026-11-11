@@ -95,9 +95,9 @@ class TelegramGateway:
         REM: If a secret is configured, inbound webhooks MUST present it. Fails closed."""
         import hmac
         if not self._webhook_secret:
-            # REM: No secret configured — webhook auth unavailable. Fail closed in production.
-            import os
-            if os.environ.get("TELSONBASE_ENV", "").lower() == "production":
+            # REM: No secret configured — fail CLOSED unless explicitly dev/test.
+            from core.config import is_strict_env
+            if is_strict_env():
                 logger.error("REM: Telegram webhook secret not set in production — rejecting inbound update")
                 return False
             return True

@@ -1,3 +1,5 @@
+# SPDX-FileCopyrightText: 2026 Quietfire AI / Jeff Phillips
+# SPDX-License-Identifier: MIT
 """
 REM: Adversarial security tests — TelsonBase.
 REM: These tests attack the platform the way an adversary would, not the way a

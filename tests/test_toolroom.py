@@ -533,6 +533,37 @@ class TestForemanInstall:
         # REM: Should still work (backward compat) but no formal approval verification
         assert result["status"] == "success"
     
+    def test_execute_install_unapproved_source_rejected_at_execute(self, foreman):
+        """REM: VULN-FOREMAN-01 regression — execute_tool_install must re-check the
+        source allowlist, not only propose_. An unapproved repo is refused before clone."""
+        result = foreman.execute_tool_install(
+            github_repo="attacker/evil-tool",
+            tool_name="evil",
+            description="malware",
+            category="test",
+            approval_request_id="APPR-doesnotexist-but-nonempty",
+            allow_no_manifest=True,
+        )
+        assert result["status"] == "error"
+        # Either approval-not-found or unapproved-source — both are hard blocks, never a clone.
+        assert "git_clone" not in result["qms"]
+        assert result["status"] != "success"
+
+    def test_execute_install_empty_approval_blocked_in_strict_env(self, foreman, monkeypatch):
+        """REM: VULN-FOREMAN-01 regression — empty approval_request_id must FAIL CLOSED
+        in a strict/production environment (was: proceeded to git clone on a warning)."""
+        monkeypatch.setenv("TELSONBASE_ENV", "production")
+        result = foreman.execute_tool_install(
+            github_repo="jqlang/jq",           # approved source
+            tool_name="jq",
+            description="JSON processor",
+            category="utility",
+            approval_request_id="",            # empty — the bypass vector
+            allow_no_manifest=True,
+        )
+        assert result["status"] == "error"
+        assert "no_approval_id" in result["qms"]
+
     def test_execute_install_with_wrong_approval_rejected(self, foreman):
         """REM: GAP 6 regression — fake approval_id is rejected."""
         result = foreman.execute_tool_install(
@@ -544,6 +575,57 @@ class TestForemanInstall:
         )
         assert result["status"] == "error"
         assert "approval_not_found" in result["qms"]
+
+
+class TestForemanSourceAndPathHardening:
+    """REM: VULN-FOREMAN-02 / -03 regression tests."""
+
+    @pytest.fixture
+    def foreman(self, mocker):
+        mocker.patch("toolroom.registry._get_store", return_value=None)
+        from toolroom.foreman import ForemanAgent
+        return ForemanAgent()
+
+    def test_execute_add_source_empty_approval_blocked_in_strict(self, foreman, monkeypatch):
+        """VULN-FOREMAN-02: allowlist add with no approval must fail closed in production."""
+        monkeypatch.setenv("TELSONBASE_ENV", "production")
+        result = foreman.execute_add_approved_source(repo="attacker/backdoor", added_by="agent")
+        assert result["status"] == "error"
+        assert "no_approval_id" in result["qms"]
+        assert "attacker/backdoor" not in foreman.list_approved_sources().get("approved_sources", [])
+
+    def test_execute_add_source_fake_approval_rejected(self, foreman):
+        """VULN-FOREMAN-02: a non-existent approval id is rejected."""
+        result = foreman.execute_add_approved_source(
+            repo="attacker/backdoor", added_by="agent",
+            approval_request_id="APPR-does-not-exist",
+        )
+        assert result["status"] == "error"
+        assert "approval_not_found" in result["qms"]
+
+    def test_register_upload_no_approval_blocked_in_strict(self, foreman, monkeypatch, tmp_path):
+        """Upload registration must fail closed with no approval in production."""
+        monkeypatch.setenv("TELSONBASE_ENV", "production")
+        f = tmp_path / "tool.sh"; f.write_text("#!/bin/sh\n")
+        result = foreman.register_uploaded_tool("t", "d", "c", str(f))
+        assert result["status"] == "error"
+        assert "no_approval_id" in result["qms"]
+
+    def test_register_upload_unconfined_path_rejected(self, foreman, tmp_path):
+        """Upload path outside TOOLROOM_UPLOADS_PATH is refused (propose stage)."""
+        f = tmp_path / "tool.sh"; f.write_text("#!/bin/sh\n")
+        result = foreman.propose_register_uploaded_tool("t", "d", "c", str(f))
+        assert result["status"] == "error"
+        assert "path_not_confined" in result["qms"]
+
+    def test_safe_tool_id_blocks_path_traversal(self):
+        """VULN-FOREMAN-03: tool_name cannot escape the toolroom via path chars."""
+        from toolroom.foreman import _safe_tool_id
+        assert _safe_tool_id("jq") == "tool_jq"
+        assert _safe_tool_id("my-tool") == "tool_my_tool"
+        for evil in ["../../../tmp/evil", "foo/../../bar", "a/b/c", ".."]:
+            tid = _safe_tool_id(evil)
+            assert "/" not in tid and ".." not in tid
 
 
 # REM: =======================================================================================

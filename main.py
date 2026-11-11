@@ -61,7 +61,7 @@ import redis
 from starlette.requests import Request
 from starlette.responses import JSONResponse
 
-from core.config import get_settings, validate_production_secrets
+from core.config import get_settings, validate_production_secrets, is_strict_env
 from core.auth import authenticate_request, create_access_token, AuthResult, require_permission
 from core.audit import audit, AuditEventType
 from core.persistence import (
@@ -191,7 +191,7 @@ async def lifespan(app: FastAPI):
     # REM: SECRETS VALIDATION — Must happen FIRST, before any other init
     # REM: =====================================================================
     secret_errors = validate_production_secrets(settings)
-    if settings.telsonbase_env == "production" and secret_errors:
+    if is_strict_env() and secret_errors:  # REM: fail-closed
         for err in secret_errors:
             logger.error(f"REM: FATAL Secret Error — {err}_Thank_You_But_No")
         raise RuntimeError(
@@ -461,6 +461,9 @@ app.include_router(openclaw_router)
 
 from api.telegram_routes import router as telegram_router
 app.include_router(telegram_router)
+
+from api.hermes_routes import router as hermes_router
+app.include_router(hermes_router)
 
 # REM: =======================================================================================
 # REM: DASHBOARD - SERVED FROM /dashboard
@@ -1970,7 +1973,9 @@ class ToolInstallExecution(BaseModel):
     tool_name: str = Field(..., min_length=1, max_length=100)
     description: str
     category: str
-    approval_request_id: str
+    # REM: SECURITY (2026-07-09, VULN-FOREMAN-01): must be non-empty. An empty string
+    # REM: previously slipped past validation and triggered the no-approval install path.
+    approval_request_id: str = Field(..., min_length=8)
     version: str = "latest"
     requires_api: bool = False
     allow_no_manifest: bool = False
@@ -1978,6 +1983,12 @@ class ToolInstallExecution(BaseModel):
 class ApprovedSourceRequest(BaseModel):
     """REM: v6.0.0CC — Add/remove an approved GitHub source."""
     repo: str = Field(..., min_length=3, max_length=200)
+
+
+class ApprovedSourceExecute(BaseModel):
+    """REM: VULN-FOREMAN-02 — execute-add requires a verified HITL approval id."""
+    repo: str = Field(..., min_length=3, max_length=200)
+    approval_request_id: str = Field(..., min_length=8)
 
 class ToolRollbackRequest(BaseModel):
     """REM: v6.0.0CC — Roll back a tool to a previous version."""
@@ -2260,16 +2271,19 @@ async def add_approved_source(
 
 @app.post("/v1/toolroom/sources/execute-add", tags=["Toolroom"])
 async def execute_add_approved_source(
-    request: ApprovedSourceRequest,
+    request: ApprovedSourceExecute,
     auth: AuthResult = Depends(require_permission("manage:agents")),
 ):
     """
     REM: v6.0.0CC — Actually add a source after HITL approval.
-    REM: Called by operator or approval callback.
+    REM: VULN-FOREMAN-02: approval_request_id is now required and verified.
     """
     from toolroom.foreman import ForemanAgent
     foreman = ForemanAgent()
-    result = foreman.execute_add_approved_source(repo=request.repo, added_by=auth.actor)
+    result = foreman.execute_add_approved_source(
+        repo=request.repo, added_by=auth.actor,
+        approval_request_id=request.approval_request_id,
+    )
     if result["status"] == "error":
         raise HTTPException(status_code=400, detail=result["message"])
     return result

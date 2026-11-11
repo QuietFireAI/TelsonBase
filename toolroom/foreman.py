@@ -35,6 +35,7 @@
 # REM: =======================================================================================
 
 import os
+import re
 import hashlib
 import shutil
 import subprocess
@@ -157,6 +158,33 @@ def _save_approved_sources(sources: List[str]) -> bool:
 # REM: Path where tools are stored on disk — defaults to /app/toolroom/tools in Docker,
 # REM: falls back to env var for local dev and CI (same pattern as CAGE_PATH in cage.py)
 TOOLROOM_PATH = Path(os.environ.get("TOOLROOM_PATH", "/app/toolroom/tools"))
+# REM: SECURITY (2026-07-10): confined base directory for operator uploads. A tool may
+# REM: only be registered from within this directory; arbitrary filesystem paths are refused.
+TOOLROOM_UPLOADS_PATH = Path(os.environ.get("TOOLROOM_UPLOADS_PATH", "/app/toolroom/uploads"))
+
+
+def _is_within(child: Path, parent: Path) -> bool:
+    """REM: True iff resolved `child` is inside resolved `parent`."""
+    try:
+        child_r = child.resolve()
+        parent_r = parent.resolve()
+        return child_r == parent_r or str(child_r).startswith(str(parent_r) + os.sep)
+    except Exception:
+        return False
+
+
+def _safe_tool_id(tool_name: str) -> str:
+    """
+    REM: SECURITY (2026-07-09, VULN-FOREMAN-03): derive a filesystem-safe tool_id.
+    REM: tool_name previously flowed into install/registry paths with only space/hyphen
+    REM: substitution, allowing '../' traversal OUT of the toolroom
+    REM: (e.g. tool_name='../../../tmp/evil'). Strip anything that is not [a-z0-9_]
+    REM: after the legacy space/hyphen -> underscore mapping. Preserves normal names
+    REM: ('jq' -> 'tool_jq', 'my-tool' -> 'tool_my_tool').
+    """
+    base = tool_name.strip().lower().replace(" ", "_").replace("-", "_")
+    safe = re.sub(r"[^a-z0-9_]", "", base)
+    return f"tool_{safe}" if safe else "tool_unnamed"
 
 # REM: Toolroom-specific approval rule
 # REM: All foreman actions in REQUIRES_APPROVAL_FOR trigger this rule.
@@ -462,11 +490,51 @@ class ForemanAgent:
             "message": f"Source '{repo}' addition requires approval. Request: {approval_request.request_id}",
         }
 
-    def execute_add_approved_source(self, repo: str, added_by: str = "operator") -> Dict[str, Any]:
+    def execute_add_approved_source(self, repo: str, added_by: str = "operator",
+                                     approval_request_id: str = "") -> Dict[str, Any]:
         """
         REM: v5.4.0CC — Actually add the source after HITL approval.
-        REM: Called by the approval callback or direct operator action.
+        REM: SECURITY (2026-07-09, VULN-FOREMAN-02): this previously performed NO approval
+        REM: verification, so /v1/toolroom/sources/execute-add let any manage:agents caller
+        REM: inject an arbitrary repo into the allowlist with no HITL, then install from it.
+        REM: Now requires a verified, APPROVED approval_request_id; fails closed in strict env.
         """
+        if approval_request_id:
+            info = approval_gate.get_approval_status(approval_request_id)
+            if not info:
+                return {
+                    "status": "error",
+                    "qms": "Foreman_Add_Source_Thank_You_But_No ::approval_not_found::",
+                    "message": f"Approval request '{approval_request_id}' not found",
+                }
+            if info["status"] != ApprovalStatus.APPROVED.value:
+                audit.log(
+                    AuditEventType.SECURITY_ALERT,
+                    f"Blocked allowlist add without approval: ::{repo}:: status={info['status']}",
+                    actor=self.agent_id,
+                    details={"repo": repo, "approval_id": approval_request_id},
+                )
+                return {
+                    "status": "error",
+                    "qms": "Foreman_Add_Source_Thank_You_But_No ::not_approved::",
+                    "message": f"Approval '{approval_request_id}' is not approved (status: {info['status']})",
+                }
+            added_by = info.get("decided_by") or added_by
+        else:
+            from core.config import is_strict_env
+            if is_strict_env():
+                audit.log(
+                    AuditEventType.SECURITY_ALERT,
+                    f"Blocked allowlist add with no approval_request_id (strict env): ::{repo}::",
+                    actor=self.agent_id,
+                    details={"repo": repo},
+                )
+                return {
+                    "status": "error",
+                    "qms": "Foreman_Add_Source_Thank_You_But_No ::no_approval_id::",
+                    "message": "Adding an approved source requires a valid, approved approval_request_id.",
+                }
+
         current_sources = list(APPROVED_GITHUB_SOURCES)
         if repo in current_sources:
             return {"status": "error", "message": f"'{repo}' already approved"}
@@ -689,8 +757,32 @@ class ForemanAgent:
                 }
             human_approver = approval_info.get("decided_by") or human_approver
         else:
-            # REM: No approval_request_id provided — log warning but allow
-            # REM: for backward compat (direct human CLI invocation).
+            # REM: SECURITY (2026-07-09, VULN-FOREMAN-01): an empty approval_request_id
+            # REM: previously proceeded on a warning ("direct CLI"). That let any caller
+            # REM: holding manage:agents install a tool with NO human approval. Fail closed
+            # REM: in any strict/production environment; the CLI path must create+approve
+            # REM: a real request. Permissive only in explicit dev/test.
+            from core.config import is_strict_env
+            if is_strict_env():
+                audit.log(
+                    AuditEventType.SECURITY_ALERT,
+                    f"Blocked install with no approval_request_id (strict env): ::{tool_name}::",
+                    actor=self.agent_id,
+                    details={"tool_name": tool_name, "github_repo": github_repo},
+                )
+                logger.error(
+                    "REM: Foreman_Install_Thank_You_But_No ::no_approval_id:: "
+                    "(HITL approval required in production)"
+                )
+                return {
+                    "status": "error",
+                    "qms": "Foreman_Install_Thank_You_But_No ::no_approval_id::",
+                    "message": (
+                        "Tool install requires a valid, approved approval_request_id. "
+                        "No approval id was supplied."
+                    ),
+                }
+            # REM: dev/test only — backward compat for direct human CLI invocation.
             logger.warning(
                 "REM: execute_tool_install called without approval_request_id. "
                 "Proceeding on assumption of direct human invocation."
@@ -705,8 +797,45 @@ class ForemanAgent:
         
         # REM: v5.5.0CC — Normalize repo for consistent comparison
         github_repo = github_repo.strip().lower()
-        tool_id = f"tool_{tool_name.lower().replace(' ', '_').replace('-', '_')}"
+
+        # REM: SECURITY (2026-07-09, VULN-FOREMAN-01): re-validate the source against the
+        # REM: approved allowlist HERE too, not only in propose_tool_install(). Previously
+        # REM: execute_tool_install() trusted its github_repo arg and would clone ANY repo
+        # REM: (host hardcoded to github.com) if the approval check was bypassed. Fail closed.
+        if github_repo not in APPROVED_GITHUB_SOURCES:
+            audit.log(
+                AuditEventType.SECURITY_ALERT,
+                f"Blocked install from unapproved source at execute: ::{github_repo}::",
+                actor=self.agent_id,
+                details={"github_repo": github_repo, "tool_name": tool_name},
+            )
+            logger.error(
+                f"REM: Foreman_Install_Thank_You_But_No ::unapproved_source:: ::{github_repo}::"
+            )
+            return {
+                "status": "error",
+                "qms": f"Foreman_Install_Thank_You_But_No ::unapproved_source:: ::{github_repo}::",
+                "message": (
+                    f"Repository '{github_repo}' is not on the approved sources list. "
+                    f"Installation refused."
+                ),
+            }
+
+        tool_id = _safe_tool_id(tool_name)
         install_path = TOOLROOM_PATH / tool_id
+        # REM: SECURITY (VULN-FOREMAN-03): defense-in-depth containment assertion.
+        if not str(install_path.resolve()).startswith(str(TOOLROOM_PATH.resolve()) + os.sep):
+            audit.log(
+                AuditEventType.SECURITY_ALERT,
+                f"Blocked tool install path escaping toolroom: ::{tool_name}::",
+                actor=self.agent_id,
+                details={"tool_name": tool_name, "resolved": str(install_path)},
+            )
+            return {
+                "status": "error",
+                "qms": "Foreman_Install_Thank_You_But_No ::path_escape::",
+                "message": "Resolved install path escapes the toolroom directory.",
+            }
         
         logger.info(
             f"REM: Foreman executing approved install: ::{tool_name}:: "
@@ -860,7 +989,7 @@ class ForemanAgent:
     # REM: TOOL UPLOAD — HUMAN-PROVIDED TOOLS
     # REM: -----------------------------------------------------------------------------------
     
-    def register_uploaded_tool(
+    def propose_register_uploaded_tool(
         self,
         tool_name: str,
         description: str,
@@ -870,22 +999,141 @@ class ForemanAgent:
         requires_api: bool = False,
     ) -> Dict[str, Any]:
         """
-        REM: Register a tool that was manually uploaded by the human operator.
-        REM: This is for tools like open-source SQL clients, parsers, etc.
-        REM: that Jeff uploads directly to the toolroom.
-        REM:
-        REM: QMS: Foreman_Register_Upload_Please ::tool_name::
+        REM: SECURITY (2026-07-10): PROPOSE registration of an operator-uploaded tool.
+        REM: This is the HITL "pause" - it validates the upload path is confined and
+        REM: creates an approval request. The tool is NOT registered or activated until
+        REM: a human approves and execute (register_uploaded_tool) runs with that id.
+        REM: QMS: Foreman_Register_Upload_Please ::tool_name:: -> (HITL pause)
         """
-        from toolroom.registry import ToolMetadata
-        
-        tool_id = f"tool_{tool_name.lower().replace(' ', '_').replace('-', '_')}"
-        
-        # REM: Verify upload path exists
-        if not Path(upload_path).exists():
+        upload = Path(upload_path)
+        if not upload.exists():
             return {
                 "status": "error",
                 "qms": f"Foreman_Register_Thank_You_But_No ::file_not_found:: ::{upload_path}::",
                 "message": f"Upload path not found: {upload_path}",
+            }
+        if not _is_within(upload, TOOLROOM_UPLOADS_PATH):
+            audit.log(
+                AuditEventType.SECURITY_ALERT,
+                f"Blocked upload registration from unconfined path: ::{upload_path}::",
+                actor=self.agent_id,
+                details={"upload_path": upload_path, "allowed_base": str(TOOLROOM_UPLOADS_PATH)},
+            )
+            return {
+                "status": "error",
+                "qms": "Foreman_Register_Thank_You_But_No ::path_not_confined::",
+                "message": (
+                    f"Upload path must be inside {TOOLROOM_UPLOADS_PATH}. "
+                    f"Refused '{upload_path}'."
+                ),
+            }
+        approval_request = approval_gate.create_request(
+            agent_id=self.agent_id,
+            action="toolroom.register_uploaded_tool",
+            description=(
+                f"Register operator-uploaded tool '{tool_name}' v{version} "
+                f"from {upload_path}. Category: {category}. Requires API: {requires_api}."
+            ),
+            payload={
+                "tool_name": tool_name, "description": description, "category": category,
+                "upload_path": str(upload.resolve()), "version": version,
+                "requires_api": requires_api,
+            },
+            rule=TOOLROOM_APPROVAL_RULE,
+            risk_factors=["operator_upload", "tool_registration", f"path:{upload_path}"],
+        )
+        logger.info(
+            f"REM: Foreman_Register_Upload_Please ::{tool_name}:: "
+            f"- HITL approval ::{approval_request.request_id}:: created (paused)"
+        )
+        return {
+            "status": "pending_approval",
+            "qms": f"Foreman_API_Access_Required_Pretty_Please ::register:: ::{tool_name}::",
+            "approval_request_id": approval_request.request_id,
+            "message": (
+                f"Upload registration for '{tool_name}' requires approval. "
+                f"Request {approval_request.request_id} created. Awaiting human authorization."
+            ),
+        }
+
+    def register_uploaded_tool(
+        self,
+        tool_name: str,
+        description: str,
+        category: str,
+        upload_path: str,
+        version: str = "1.0.0",
+        requires_api: bool = False,
+        approval_request_id: str = "",
+    ) -> Dict[str, Any]:
+        """
+        REM: Register a tool that was manually uploaded by the human operator.
+        REM: SECURITY (2026-07-10): now HITL-gated and path-confined. Requires an APPROVED
+        REM: approval_request_id (from propose_register_uploaded_tool); fails closed in a
+        REM: strict/production env if none is supplied. Upload path must be confined to
+        REM: TOOLROOM_UPLOADS_PATH.
+        REM:
+        REM: QMS: Foreman_Register_Upload_Please ::tool_name:: (post-approval)
+        """
+        from toolroom.registry import ToolMetadata
+
+        # REM: HITL verification (the "pause" is enforced here).
+        if approval_request_id:
+            info = approval_gate.get_approval_status(approval_request_id)
+            if not info:
+                return {
+                    "status": "error",
+                    "qms": "Foreman_Register_Thank_You_But_No ::approval_not_found::",
+                    "message": f"Approval request '{approval_request_id}' not found",
+                }
+            if info["status"] != ApprovalStatus.APPROVED.value:
+                audit.log(
+                    AuditEventType.SECURITY_ALERT,
+                    f"Attempted upload registration without approval: ::{tool_name}:: status={info['status']}",
+                    actor=self.agent_id,
+                    details={"approval_id": approval_request_id},
+                )
+                return {
+                    "status": "error",
+                    "qms": "Foreman_Register_Thank_You_But_No ::not_approved::",
+                    "message": f"Approval '{approval_request_id}' is not approved (status: {info['status']})",
+                }
+        else:
+            from core.config import is_strict_env
+            if is_strict_env():
+                audit.log(
+                    AuditEventType.SECURITY_ALERT,
+                    f"Blocked upload registration with no approval_request_id (strict env): ::{tool_name}::",
+                    actor=self.agent_id,
+                    details={"tool_name": tool_name},
+                )
+                return {
+                    "status": "error",
+                    "qms": "Foreman_Register_Thank_You_But_No ::no_approval_id::",
+                    "message": "Upload registration requires a valid, approved approval_request_id.",
+                }
+
+        tool_id = _safe_tool_id(tool_name)  # REM: VULN-FOREMAN-03 hardening
+
+        # REM: Verify upload path exists AND is confined to the uploads directory.
+        upload = Path(upload_path)
+        if not upload.exists():
+            return {
+                "status": "error",
+                "qms": f"Foreman_Register_Thank_You_But_No ::file_not_found:: ::{upload_path}::",
+                "message": f"Upload path not found: {upload_path}",
+            }
+        if not _is_within(upload, TOOLROOM_UPLOADS_PATH):
+            audit.log(
+                AuditEventType.SECURITY_ALERT,
+                f"Blocked upload registration from unconfined path: ::{upload_path}::",
+                actor=self.agent_id,
+                details={"upload_path": upload_path, "allowed_base": str(TOOLROOM_UPLOADS_PATH)},
+            )
+            return {
+                "status": "error",
+                "qms": "Foreman_Register_Thank_You_But_No ::path_not_confined::",
+                "message": f"Upload path must be inside {TOOLROOM_UPLOADS_PATH}. Refused '{upload_path}'.",
             }
         
         # REM: Calculate integrity hash
@@ -1410,8 +1658,8 @@ def return_tool(checkout_id: str) -> Dict[str, Any]:
     return foreman.handle_return(checkout_id)
 
 
-@shared_task(name="foreman_agent.register_uploaded_tool")
-def register_uploaded_tool(
+@shared_task(name="foreman_agent.propose_register_uploaded_tool")
+def propose_register_uploaded_tool(
     tool_name: str,
     description: str,
     category: str,
@@ -1420,8 +1668,29 @@ def register_uploaded_tool(
     requires_api: bool = False,
 ) -> Dict[str, Any]:
     """
-    REM: Register a tool uploaded by the human operator.
-    REM: QMS: Foreman_Register_Upload_Please ::tool_name::
+    REM: PROPOSE registration of an operator-uploaded tool (HITL pause).
+    REM: QMS: Foreman_Register_Upload_Please ::tool_name:: -> (HITL pause)
+    """
+    logger.info(f"REM: {FOREMAN_AGENT_ID} received: 'Register_Upload_Propose_Please' ::{tool_name}::")
+    foreman = ForemanAgent()
+    return foreman.propose_register_uploaded_tool(
+        tool_name, description, category, upload_path, version, requires_api,
+    )
+
+
+@shared_task(name="foreman_agent.register_uploaded_tool")
+def register_uploaded_tool(
+    tool_name: str,
+    description: str,
+    category: str,
+    upload_path: str,
+    version: str = "1.0.0",
+    requires_api: bool = False,
+    approval_request_id: str = "",
+) -> Dict[str, Any]:
+    """
+    REM: Register a tool uploaded by the human operator AFTER HITL approval.
+    REM: QMS: Foreman_Register_Upload_Please ::tool_name:: (post-approval)
     """
     logger.info(f"REM: {FOREMAN_AGENT_ID} received: 'Register_Upload_Please' ::{tool_name}::")
     foreman = ForemanAgent()

@@ -43,7 +43,7 @@ from typing import Any, Dict, List, Optional
 from pydantic import BaseModel, Field
 
 from core.anomaly import behavior_monitor
-from core.approval import ApprovalStatus, approval_gate
+from core.approval import ApprovalStatus, ApprovalRule, ApprovalPriority, approval_gate
 from core.audit import AuditEventType, audit
 from core.capabilities import (CAPABILITY_PROFILES, ActionType,
                                EnforcedExternal, EnforcedFilesystem,
@@ -242,42 +242,66 @@ class SecureBaseAgent(ABC):
         # REM: (Resource-level capability checks happen in the enforced accessors)
         
         # REM: Step 3: Check for approval requirement
-        if request.action in self.REQUIRES_APPROVAL_FOR:
+        # REM: SECURITY (2026-07-10, VULN-BASE-01): REQUIRES_APPROVAL_FOR is AUTHORITATIVE.
+        # REM: Previously an action listed here only paused if a SEPARATELY-registered rule
+        # REM: also matched; at steady state none did, so gated actions (Hermes 'dispatch',
+        # REM: Backup 'delete_backup', etc.) executed with NO human pause. Also the membership
+        # REM: test was case-sensitive while execute() lowercases, letting 'Dispatch' skip the
+        # REM: gate. Fix: normalize case, and ALWAYS create the approval (synthesize a fail-
+        # REM: closed rule if none is registered).
+        _norm_action = (request.action or "").strip().lower()
+        if _norm_action in {a.strip().lower() for a in self.REQUIRES_APPROVAL_FOR}:
             rule = approval_gate.check_requires_approval(
                 agent_id=self.agent_name,
-                action=request.action,
+                action=_norm_action,
                 payload=request.payload
             )
-            
-            if rule:
-                approval_request = approval_gate.create_request(
-                    agent_id=self.agent_name,
-                    action=request.action,
-                    description=f"Agent {self.agent_name} wants to execute {request.action}",
-                    payload=request.payload,
-                    rule=rule
+
+            if rule is None:
+                # REM: Fail closed — no specific rule registered, but the action is declared
+                # REM: as approval-required. Synthesize a HIGH-priority default so the contract
+                # REM: always holds.
+                rule = ApprovalRule(
+                    rule_id=f"rule-requires-approval-{self.agent_name}-{_norm_action}",
+                    name=f"Required approval: {self.agent_name}.{_norm_action}",
+                    description=(
+                        f"Action '{_norm_action}' is listed in "
+                        f"{self.agent_name}.REQUIRES_APPROVAL_FOR and always requires approval"
+                    ),
+                    agent_pattern=self.agent_name,
+                    action_pattern=_norm_action,
+                    priority=ApprovalPriority.HIGH,
+                    timeout_seconds=3600,
                 )
-                
-                self.logger.info(
-                    f"REM: Action ::{request.action}:: requires approval - "
-                    f"Request ::{approval_request.request_id}::_Please"
+
+            approval_request = approval_gate.create_request(
+                agent_id=self.agent_name,
+                action=_norm_action,
+                description=f"Agent {self.agent_name} wants to execute {_norm_action}",
+                payload=request.payload,
+                rule=rule
+            )
+
+            self.logger.info(
+                f"REM: Action ::{_norm_action}:: requires approval - "
+                f"Request ::{approval_request.request_id}::_Please"
+            )
+
+            # REM: Wait for approval
+            approval_request = approval_gate.wait_for_decision(
+                approval_request.request_id
+            )
+
+            if approval_request.status != ApprovalStatus.APPROVED:
+                return AgentResponse(
+                    request_id=request.request_id,
+                    agent_name=self.agent_name,
+                    success=False,
+                    qms_status="Thank_You_But_No",
+                    error=f"Action not approved: {approval_request.status.value}",
+                    approval_required=True,
+                    approval_id=approval_request.request_id
                 )
-                
-                # REM: Wait for approval
-                approval_request = approval_gate.wait_for_decision(
-                    approval_request.request_id
-                )
-                
-                if approval_request.status != ApprovalStatus.APPROVED:
-                    return AgentResponse(
-                        request_id=request.request_id,
-                        agent_name=self.agent_name,
-                        success=False,
-                        qms_status="Thank_You_But_No",
-                        error=f"Action not approved: {approval_request.status.value}",
-                        approval_required=True,
-                        approval_id=approval_request.request_id
-                    )
         
         # REM: Step 4: Execute with behavior monitoring
         self.logger.info(

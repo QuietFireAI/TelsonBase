@@ -77,6 +77,17 @@ def _resolve_secret(docker_name: str, env_name: str, default: Optional[str] = No
     return default
 
 
+def is_strict_env() -> bool:
+    """
+    REM: Fail-closed environment detection. Anything not explicitly a known
+    REM: non-production environment (development/dev/test/testing/local) is treated
+    REM: as production-strict. Closes the prior fail-OPEN gap where an unset/typo'd
+    REM: TELSONBASE_ENV (the default) silently disabled JWT/MCP/webhook enforcement.
+    """
+    env = os.environ.get("TELSONBASE_ENV", "").strip().lower()
+    return env not in ("development", "dev", "test", "testing", "local")
+
+
 def _require_mcp_api_key() -> str:
     """
     REM: H13 fix: resolve MCP API key; refuse to start in production if not set.
@@ -89,7 +100,7 @@ def _require_mcp_api_key() -> str:
     import warnings as _warnings
     val = _resolve_secret("telsonbase_mcp_api_key", "MCP_API_KEY", default=None)
     if not val:
-        is_production = os.environ.get("TELSONBASE_ENV", "").lower() == "production"
+        is_production = is_strict_env()  # REM: fail-closed
         if is_production:
             raise ValueError(
                 "MCP_API_KEY is required in production but not set. "
@@ -144,7 +155,7 @@ class Settings(BaseSettings):
             "changeme",
         ]
         if v in insecure_defaults or len(v) < 32:
-            is_production = os.environ.get("TELSONBASE_ENV", "").lower() == "production"
+            is_production = is_strict_env()  # REM: fail-closed
             if is_production:
                 raise ValueError(
                     "FATAL: JWT secret is insecure in PRODUCTION mode! "
