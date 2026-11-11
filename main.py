@@ -712,7 +712,8 @@ async def get_token(request: TokenRequest):
     """
     REM: Exchange API key for a JWT token.
     """
-    if request.api_key != settings.mcp_api_key:
+    from core.auth import constant_time_equal
+    if not constant_time_equal(request.api_key, settings.mcp_api_key):
         audit.auth_failure(actor="token_request", reason="Invalid API key")
         raise HTTPException(status_code=401, detail="Invalid API key")
     

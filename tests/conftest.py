@@ -105,6 +105,13 @@ def client() -> Generator:
         # that send verification emails don't see stale resend counts across fixtures.
         for k in r.keys("email_resend:*"):
             r.delete(k)
+        # REM: Flush shared sign-in state so one test's failures or logouts do not carry
+        # into the next: failed-login and failed-code counters, the first-user lock, and
+        # per-account token cutoffs.
+        for pattern in ("security:login_failures:*", "security:mfa_failures:*",
+                        "security:first_user_claim", "jwt:valid_after:*"):
+            for k in r.keys(pattern):
+                r.delete(k)
         # REM: Flush security hashes that bleed between tests:
         #   - security:signing:revoked_agents  — revoked set persists to Redis (H2 fix)
         #   - security:recent_denials          — denial timestamps (anomaly probe detection)
@@ -150,8 +157,19 @@ def _flush_per_test_redis_state():
         import redis as redis_lib
         r = redis_lib.from_url(os.environ["REDIS_URL"], decode_responses=True)
         r.delete("security:trust", "security:capabilities")
+        # REM: Second-factor enrolments. An enrolment is no longer silently replaced, so a
+        # REM: record left by an earlier test (or an earlier run against the same Redis)
+        # REM: would make a test that enrols a fixed user id fail with "already enrolled".
+        r.delete("security:mfa")
+        for k in r.keys("security:mfa_failures:*"):
+            r.delete(k)
     except Exception:
         pass
+    import sys
+    mfa_module = sys.modules.get("core.mfa")
+    if mfa_module is not None:
+        mfa_module.mfa_manager._records.clear()
+        mfa_module.mfa_manager._local_failures.clear()
     yield
 
 
@@ -231,3 +249,25 @@ def sample_approval_request() -> dict:
         "status": "pending",
         "created_at": datetime.now(timezone.utc).isoformat()
     }
+
+
+@pytest.fixture
+def no_security_store(monkeypatch):
+    """
+    REM: For unit tests that build a manager by hand with fixed ids ("user-1", "alice").
+    REM: Managers now read Redis first (cross-worker consistency), so without this a record
+    REM: left in Redis by one test would be seen by the next. Makes the shared security
+    REM: store behave as unreachable; managers then use only their in-memory state.
+    """
+    import redis as redis_lib
+
+    from core.persistence import security_store
+
+    class _Unreachable:
+        def __getattr__(self, name):
+            def _fail(*args, **kwargs):
+                raise redis_lib.ConnectionError("security store disabled for this unit test")
+            return _fail
+
+    monkeypatch.setattr(security_store, "_client", _Unreachable())
+    yield

@@ -156,12 +156,100 @@ def is_token_revoked(jti: str) -> bool:
         return True
 
 
+# REM: =======================================================================================
+# REM: PER-SUBJECT TOKEN CUTOFF (2026-11-11)
+# REM: =======================================================================================
+# REM: Revoking by jti only ends the one token that was presented. Logout, password change,
+# REM: role removal and deactivation must end every token the account holds. A per-subject
+# REM: "valid after" timestamp is stored in Redis; tokens issued before it are rejected.
+# REM: Same fail-closed rule as the revocation list: if Redis cannot be read, reject.
+# REM: =======================================================================================
+
+_VALID_AFTER_PREFIX = "jwt:valid_after:"
+
+# REM: Tokens whose subject starts with one of these prefixes are single-purpose step tokens
+# REM: (second-factor step, second-factor enrolment). They are never a general credential.
+STEP_TOKEN_PREFIXES = ("pre_mfa:", "mfa_enroll:")
+
+
+def is_step_token_subject(subject: str) -> bool:
+    """REM: True if the subject belongs to a single-purpose step token."""
+    return isinstance(subject, str) and subject.startswith(STEP_TOKEN_PREFIXES)
+
+
+def subject_account(subject: str) -> str:
+    """REM: The account a subject belongs to (step-token prefix removed)."""
+    for prefix in STEP_TOKEN_PREFIXES:
+        if subject.startswith(prefix):
+            return subject[len(prefix):]
+    return subject
+
+
+def invalidate_user_tokens(user_id: str, invalidated_by: str = "system", reason: str = "") -> bool:
+    """
+    REM: Reject every token issued to this account before now.
+    REM: Returns False if Redis is unavailable — caller must handle failure.
+    """
+    client = _get_redis_client()
+    if not client:
+        logger.critical(
+            f"REM: CRITICAL — Redis unavailable, token invalidation FAILED for ::{user_id}::"
+            f"_Thank_You_But_No"
+        )
+        return False
+    try:
+        ttl_seconds = int(settings.jwt_expiration_hours * 3600) + 300
+        client.setex(
+            f"{_VALID_AFTER_PREFIX}{user_id}",
+            ttl_seconds,
+            repr(datetime.now(timezone.utc).timestamp()),
+        )
+    except Exception as e:
+        logger.critical(
+            f"REM: CRITICAL — token invalidation write failed for ::{user_id}::: {e}_Thank_You_But_No"
+        )
+        return False
+    audit.log(
+        AuditEventType.SECURITY_ALERT,
+        f"All tokens invalidated for: {user_id}",
+        actor=invalidated_by,
+        resource=user_id,
+        details={"reason": reason},
+        qms_status="Thank_You"
+    )
+    return True
+
+
+def is_issued_before_cutoff(subject: str, issued_at: Optional[float]) -> bool:
+    """
+    REM: True if this subject has a cutoff and the token was issued before it (or carries
+    REM: no issue time). Fail-closed: True when Redis is unavailable.
+    """
+    client = _get_redis_client()
+    if not client:
+        return True
+    try:
+        cutoff = client.get(f"{_VALID_AFTER_PREFIX}{subject_account(subject)}")
+    except Exception as e:
+        logger.warning(
+            f"REM: Token cutoff check failed for ::{subject}::, rejecting (fail-closed): {e}_Thank_You_But_No"
+        )
+        return True
+    if not cutoff:
+        return False
+    try:
+        return issued_at is None or float(issued_at) < float(cutoff)
+    except (TypeError, ValueError):
+        return True
+
+
 class TokenData(BaseModel):
     """REM: Data extracted from a validated JWT token."""
     sub: str  # Subject (API key identifier or user ID)
     exp: datetime
     jti: str = ""  # Unique token ID for revocation (v5.3.0CC)
     permissions: list[str] = []
+    iat: Optional[float] = None  # Issue time (epoch seconds) for the per-subject cutoff
 
 
 class AuthResult(BaseModel):
@@ -188,6 +276,16 @@ class AuthResult(BaseModel):
 import hashlib
 
 _APIKEY_PREFIX = "apikeys:"
+
+
+def constant_time_equal(a: str, b: str) -> bool:
+    """
+    REM: Constant-time string comparison. Compares UTF-8 bytes, because
+    REM: hmac.compare_digest raises TypeError on non-ASCII str input.
+    """
+    if not isinstance(a, str) or not isinstance(b, str):
+        return False
+    return hmac.compare_digest(a.encode("utf-8"), b.encode("utf-8"))
 
 
 def _hash_key(api_key: str) -> str:
@@ -225,7 +323,8 @@ class APIKeyRegistry:
             return record
 
         # REM: Fallback: master key from config (backward compatible)
-        if hmac.compare_digest(api_key, settings.mcp_api_key):
+        # REM: Compared as UTF-8 bytes — hmac.compare_digest raises on non-ASCII str input
+        if hmac.compare_digest(api_key.encode("utf-8"), settings.mcp_api_key.encode("utf-8")):
             return APIKeyRecord(
                 label="master",
                 owner="system",
@@ -350,7 +449,9 @@ def create_access_token(subject: str, permissions: list[str] = None, expires_del
         "exp": expire,
         "jti": token_id,
         "permissions": permissions or [],
-        "iat": datetime.now(timezone.utc),
+        # REM: Fractional epoch seconds, so the per-subject cutoff can tell apart a token
+        # REM: issued just before a logout from one issued just after it.
+        "iat": datetime.now(timezone.utc).timestamp(),
     }
     
     encoded_jwt = jwt.encode(to_encode, settings.jwt_secret_key, algorithm=settings.jwt_algorithm)
@@ -380,19 +481,42 @@ def decode_token(token: str) -> Optional[TokenData]:
             algorithms=[settings.jwt_algorithm],
             options={"require": ["exp"]},
         )
-        jti = payload.get("jti", "")
+        sub = payload.get("sub")
+        jti = payload.get("jti")
+        # REM: A token must name its subject and carry an id, otherwise it can be neither
+        # REM: attributed nor revoked. Every token this module issues has both.
+        if not isinstance(sub, str) or not sub or not isinstance(jti, str) or not jti:
+            return None
         # REM: v5.3.0CC — Check revocation list before accepting token
-        if jti and is_token_revoked(jti):
+        if is_token_revoked(jti):
             logger.warning(f"REM: Revoked JWT presented ::{jti}::_Thank_You_But_No")
             return None
+        issued_at = payload.get("iat")
+        if is_issued_before_cutoff(sub, issued_at):
+            logger.warning(f"REM: JWT issued before account cutoff ::{jti}::_Thank_You_But_No")
+            return None
+        permissions = payload.get("permissions", [])
+        if not isinstance(permissions, list):
+            return None
         return TokenData(
-            sub=payload.get("sub"),
+            sub=sub,
             exp=datetime.fromtimestamp(payload.get("exp"), tz=timezone.utc),
             jti=jti,
-            permissions=payload.get("permissions", [])
+            permissions=[str(p) for p in permissions],
+            iat=float(issued_at) if isinstance(issued_at, (int, float)) else None,
         )
-    except JWTError:
+    except (JWTError, TypeError, ValueError, OverflowError, OSError):
         return None
+
+
+def _account_is_deactivated(user_id: str) -> bool:
+    """REM: True only if this subject is a known user account that has been deactivated."""
+    try:
+        from core.rbac import rbac_manager
+        user = rbac_manager.get_user(user_id)
+        return user is not None and not user.is_active
+    except Exception:
+        return False
 
 
 async def authenticate_request(
@@ -437,6 +561,13 @@ async def authenticate_request(
     # REM: Try Bearer token
     if bearer:
         token_data = decode_token(bearer.credentials)
+        if token_data and is_step_token_subject(token_data.sub):
+            # REM: A second-factor step token is only valid at its own endpoint
+            audit.auth_failure(actor=subject_account(token_data.sub), reason="Step token used as access token")
+            token_data = None
+        elif token_data and _account_is_deactivated(token_data.sub):
+            audit.auth_failure(actor=token_data.sub, reason="Account deactivated")
+            token_data = None
         if token_data:
             audit.auth_success(actor=token_data.sub, details={"method": "jwt"})
             return AuthResult(

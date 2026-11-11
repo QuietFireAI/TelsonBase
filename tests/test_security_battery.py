@@ -68,6 +68,8 @@ class TestAuthSecurity:
             def set(self, key, val, ex=None):
                 revoked_keys.add(key)
                 return True
+            def get(self, key):
+                return None  # no per-account token cutoff set
 
         monkeypatch.setattr("core.auth._get_redis_client", lambda: _MockRedis())
 

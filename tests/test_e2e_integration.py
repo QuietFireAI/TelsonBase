@@ -112,6 +112,15 @@ class TestUserLifecycle:
         saved_count = user_manager._user_count
         rbac_manager._users.clear()
         user_manager._user_count = 0
+        # REM: First-user detection now counts users across all workers (Redis), not just
+        # REM: this process, so the shared record is cleared as well.
+        try:
+            from core.persistence import security_store
+            security_store.client.delete(
+                security_store._key("rbac_users"), security_store._key("rbac_username_idx"),
+                security_store._key("first_user_claim"))
+        except Exception:
+            pass
         yield
         rbac_manager._users.update(saved_users)
         user_manager._user_count = saved_count

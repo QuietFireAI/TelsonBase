@@ -10,6 +10,10 @@ from datetime import datetime, timezone
 from core.mfa import MFAManager, MFARecord
 from core.rbac import Role, User
 
+# REM: Hand-built managers with fixed ids — keep them off the shared Redis store
+pytestmark = pytest.mark.usefixtures("no_security_store")
+
+
 BACKUP_CODE_COUNT = MFAManager.BACKUP_CODE_COUNT
 BACKUP_CODE_LENGTH = MFAManager.BACKUP_CODE_LENGTH
 
@@ -27,6 +31,7 @@ def _no_redis(monkeypatch):
 def mgr():
     m = object.__new__(MFAManager)
     m._records = {}
+    m._local_failures = {}
     return m
 
 
@@ -105,11 +110,16 @@ class TestEnrollMfa:
         mgr.enroll_mfa("user-1", "Alice")
         assert mgr._records["user-1"].is_active is True
 
-    def test_re_enrollment_overwrites(self, mgr):
+    def test_re_enrollment_requires_explicit_replace(self, mgr):
         r1 = mgr.enroll_mfa("user-1", "Alice")
-        r2 = mgr.enroll_mfa("user-1", "Alice")
-        # Re-enrollment generates a new secret
+        # An active enrolment is not silently replaced
+        with pytest.raises(ValueError):
+            mgr.enroll_mfa("user-1", "Alice")
+        assert mgr._records["user-1"].secret == r1["secret"]
+        # Explicit replace generates a new secret
+        r2 = mgr.enroll_mfa("user-1", "Alice", replace=True)
         assert mgr._records["user-1"].secret == r2["secret"]
+        assert r2["secret"] != r1["secret"]
 
     def test_provisioning_uri_has_issuer(self, mgr):
         result = mgr.enroll_mfa("user-1", "Alice")

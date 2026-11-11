@@ -14,7 +14,7 @@ Self-hosted. Open source. MIT licensed. [TelsonBase.com](https://TelsonBase.com)
 
 <p align="center">
   <strong>v12.0.0</strong> &nbsp;|&nbsp;
-  <strong>6,454 tests passing</strong> &nbsp;|&nbsp;
+  <strong>6,479 tests passing</strong> &nbsp;|&nbsp;
   <strong>64 SOC 2 controls</strong> &nbsp;|&nbsp;
   <strong>162 API endpoints</strong> &nbsp;|&nbsp;
   <strong>0 data shared</strong>
@@ -46,7 +46,7 @@ Self-hosted. Open source. MIT licensed. [TelsonBase.com](https://TelsonBase.com)
 
 ## Status: Live
 
-**6,454 tests passing. 79% coverage (measured). 0 high/medium findings on bandit (full scan). CodeQL surfaced 647 alerts, triaged June 2026: 2 were real (an SSRF internal-range gap and a tool-name path-traversal gap), now fixed and regression-tested; the rest are false-positive, test-only, or lint — see [`CODEQL_TRIAGE_2026-06-12.md`](CODEQL_TRIAGE_2026-06-12.md). A separate code-level audit found and fixed one HIGH (Telegram HITL bypass). Everything described here is built and running.**
+**6,479 tests passing. 79% coverage (measured). 0 high/medium findings on bandit (full scan). CodeQL surfaced 647 alerts, triaged June 2026: 2 were real (an SSRF internal-range gap and a tool-name path-traversal gap), now fixed and regression-tested; the rest are false-positive, test-only, or lint — see [`CODEQL_TRIAGE_2026-06-12.md`](CODEQL_TRIAGE_2026-06-12.md). A separate code-level audit found and fixed one HIGH (Telegram HITL bypass). Everything described here is built and running.**
 
 **Try the live demo:** [huggingface.co/spaces/QuietFireAI/TelsonBase](https://huggingface.co/spaces/QuietFireAI/TelsonBase)
 
@@ -250,7 +250,7 @@ This isn't a roadmap. This is shipped code with tests.
 | **MCP Gateway (Goose)** | 13 tools exposed via MCP, trust-gated sessions, native Goose / Claude Desktop integration | live |
 | **Adversarial Security Suite** | Signature forgery, payload tampering, replay/expired-replay, agent-identity boundary, forged-HITL-approval regression | 11 |
 
-**Total: 6,454 tests passing. 0 high/medium findings on bandit across the codebase. CodeQL alerts triaged (2 real, fixed) — see CODEQL_TRIAGE_2026-06-12.md.**
+**Total: 6,479 tests passing. 0 high/medium findings on bandit across the codebase. CodeQL alerts triaged (2 real, fixed) — see CODEQL_TRIAGE_2026-06-12.md.**
 
 ---
 

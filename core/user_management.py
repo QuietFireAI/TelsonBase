@@ -118,6 +118,100 @@ class UserManager:
                 f"REM: Failed to delete password hash from Redis for ::{user_id}::: {e}_Thank_You_But_No"
             )
 
+    # REM: ---------------------------------------------------------------------------------
+    # REM: 2026-11-11 — Cross-worker consistency.
+    # REM: With more than one Gunicorn worker (the image default is two; docker-compose.yml
+    # REM: pins one because of this class of problem) each worker loaded password
+    # REM: hashes and the user count once at start-up and then trusted its own copy, so an
+    # REM: account registered (or a password changed) on one worker was unknown (or stale)
+    # REM: on the other. Redis is now read first on every lookup; the in-memory dict is a
+    # REM: fallback for when Redis is unreachable.
+    # REM: ---------------------------------------------------------------------------------
+    def _get_password_hash(self, user_id: str) -> Optional[str]:
+        """REM: Current password hash for a user. Redis first, in-memory copy as fallback."""
+        try:
+            from core.persistence import security_store
+            from core.secure_storage import secure_storage
+            hash_data = security_store.get_record("password_hashes", user_id)
+            if hash_data:
+                stored_hash = hash_data.get("hash", "")
+                if hash_data.get("_encrypted"):
+                    stored_hash = secure_storage.decrypt_string(stored_hash)
+                if stored_hash:
+                    self._password_hashes[user_id] = stored_hash
+                    return stored_hash
+        except Exception as e:
+            logger.warning(
+                f"REM: Password hash refresh from Redis failed for ::{user_id}::: {e}_Thank_You_But_No"
+            )
+        return self._password_hashes.get(user_id)
+
+    def _registered_user_count(self) -> int:
+        """REM: Number of registered users across all workers (largest of the known counts)."""
+        from core.rbac import rbac_manager
+        count = max(self._user_count, len(rbac_manager._users))
+        try:
+            from core.persistence import security_store
+            count = max(count, len(security_store.list_records("rbac_users")))
+        except Exception:
+            pass
+        return count
+
+    def _claim_first_user(self) -> bool:
+        """
+        REM: Short lock around a first-user registration so two simultaneous first
+        REM: registrations cannot both be granted super_admin. Returns True if this caller
+        REM: holds it. If Redis is unreachable the single-worker check already made by the
+        REM: caller stands.
+        """
+        try:
+            from core.persistence import security_store
+            return bool(security_store.client.set(
+                security_store._key("first_user_claim"), "claimed", nx=True, ex=30
+            ))
+        except Exception:
+            return True
+
+    def _release_first_user_claim(self) -> None:
+        """REM: Release the first-user lock once that registration has finished."""
+        try:
+            from core.persistence import security_store
+            security_store.client.delete(security_store._key("first_user_claim"))
+        except Exception:
+            pass
+
+    # REM: Shared lockout counters. The in-memory counters below remain the per-worker
+    # REM: record; these Redis counters make the limit hold across workers and restarts.
+    def _shared_attempt_key(self, username: str) -> str:
+        from core.persistence import security_store
+        return security_store._key("login_failures", username)
+
+    def _shared_failure_count(self, username: str) -> int:
+        try:
+            from core.persistence import security_store
+            value = security_store.client.get(self._shared_attempt_key(username))
+            return int(value) if value else 0
+        except Exception:
+            return 0
+
+    def _shared_record_failure(self, username: str) -> int:
+        try:
+            from core.persistence import security_store
+            key = self._shared_attempt_key(username)
+            count = security_store.client.incr(key)
+            if count == 1 or security_store.client.ttl(key) < 0:
+                security_store.client.expire(key, LOCKOUT_DURATION_MINUTES * 60)
+            return int(count)
+        except Exception:
+            return 0
+
+    def _shared_clear_failures(self, username: str) -> None:
+        try:
+            from core.persistence import security_store
+            security_store.client.delete(self._shared_attempt_key(username))
+        except Exception:
+            pass
+
     def _validate_password_strength(self, password: str) -> Tuple[bool, str]:
         """
         REM: Validate password meets security requirements.
@@ -148,6 +242,9 @@ class UserManager:
         lockout_time = self._lockout_until.get(username)
         if lockout_time and datetime.now(timezone.utc) < lockout_time:
             return True
+        # REM: Another worker may have recorded the failures
+        if self._shared_failure_count(username) >= MAX_FAILED_ATTEMPTS:
+            return True
         # REM: Lockout expired — clear it
         if lockout_time:
             del self._lockout_until[username]
@@ -158,6 +255,7 @@ class UserManager:
         """REM: Record a failed login attempt and lock if threshold reached."""
         count = self._failed_attempts.get(username, 0) + 1
         self._failed_attempts[username] = count
+        count = max(count, self._shared_record_failure(username))
 
         if count >= MAX_FAILED_ATTEMPTS:
             lockout_time = datetime.now(timezone.utc) + timedelta(minutes=LOCKOUT_DURATION_MINUTES)
@@ -182,6 +280,7 @@ class UserManager:
         """REM: Clear failed attempt counter on successful login."""
         self._failed_attempts.pop(username, None)
         self._lockout_until.pop(username, None)
+        self._shared_clear_failures(username)
 
     def register_user(
         self,
@@ -211,10 +310,37 @@ class UserManager:
         if roles is None:
             roles = ["viewer"]
 
-        # REM: First user gets super_admin automatically
-        if self._user_count == 0:
-            roles = ["super_admin"]
-            logger.info("REM: First user registration — assigning super_admin role_Thank_You")
+        # REM: Reject role names that do not exist instead of silently falling back to viewer
+        from core.rbac import Role
+        valid_roles = {r.value for r in Role}
+        unknown = [r for r in roles if r not in valid_roles]
+        if unknown:
+            raise ValueError(f"Unknown role: '{unknown[0]}'")
+
+        # REM: First user gets super_admin automatically. The count is taken across all
+        # REM: workers and the slot is claimed atomically (see _claim_first_user).
+        claimed = self._registered_user_count() == 0 and self._claim_first_user()
+        try:
+            # REM: Counted again while holding the claim — another worker may have just finished
+            is_first = claimed and self._registered_user_count() == 0
+            if is_first:
+                roles = ["super_admin"]
+                logger.info("REM: First user registration — assigning super_admin role_Thank_You")
+            return self._register_validated(username, email, password, roles, is_first)
+        finally:
+            if claimed:
+                self._release_first_user_claim()
+
+    def _register_validated(
+        self,
+        username: str,
+        email: str,
+        password: str,
+        roles: List[str],
+        is_first: bool,
+    ) -> Dict:
+        """REM: Validation and storage half of register_user."""
+        from core.rbac import rbac_manager
 
         # REM: Validate username uniqueness
         existing = rbac_manager.get_user_by_username(username)
@@ -261,7 +387,7 @@ class UserManager:
                 "username": username,
                 "email": email,
                 "roles": roles,
-                "is_first_user": self._user_count == 1,
+                "is_first_user": is_first,
             },
             qms_status="Thank_You"
         )
@@ -312,6 +438,9 @@ class UserManager:
             )
             return None
 
+        # REM: Another worker may have changed or deactivated this account since it was cached
+        user = rbac_manager.refresh_user(user.user_id) or user
+
         # REM: Check if user is active
         if not user.is_active:
             audit.log(
@@ -324,7 +453,7 @@ class UserManager:
             return None
 
         # REM: Verify password hash
-        stored_hash = self._password_hashes.get(user.user_id)
+        stored_hash = self._get_password_hash(user.user_id)
         if not stored_hash:
             logger.error(
                 f"REM: No password hash found for user ::{user.user_id}::_Thank_You_But_No"
@@ -348,8 +477,9 @@ class UserManager:
         # REM: Successful authentication — clear failed attempts
         self._clear_failed_attempts(username)
 
-        # REM: Update last_login timestamp
+        # REM: Update last_login timestamp (and persist it — it was previously memory-only)
         user.last_login = datetime.now(timezone.utc)
+        rbac_manager._save_user(user)
 
         logger.info(f"REM: User ::{username}:: authenticated successfully_Thank_You")
 
@@ -382,9 +512,14 @@ class UserManager:
         if not user:
             return False
 
+        # REM: The same lockout that protects login protects this check
+        if self._is_account_locked(user.username):
+            return False
+
         # REM: Verify old password
-        stored_hash = self._password_hashes.get(user_id)
+        stored_hash = self._get_password_hash(user_id)
         if not stored_hash or not _bcrypt_lib.checkpw(old_password.encode("utf-8"), stored_hash.encode("utf-8")):
+            self._record_failed_attempt(user.username)
             audit.log(
                 AuditEventType.AUTH_FAILURE,
                 f"Password change failed: invalid old password for {user.username}",
@@ -405,6 +540,9 @@ class UserManager:
         self._password_hashes[user_id] = new_hash
         self._save_password_hash(user_id)
 
+        self._clear_failed_attempts(user.username)
+        self._end_existing_logins(user_id, reason="password_change", by=user.username)
+
         logger.info(f"REM: Password changed for user ::{user.username}::_Thank_You")
 
         audit.log(
@@ -417,6 +555,22 @@ class UserManager:
         )
 
         return True
+
+    def _end_existing_logins(self, user_id: str, reason: str, by: str) -> None:
+        """
+        REM: A password change ends every login that was made with the old password:
+        REM: tokens issued before now stop being accepted and open sessions are closed.
+        """
+        try:
+            from core.auth import invalidate_user_tokens
+            invalidate_user_tokens(user_id, invalidated_by=by, reason=reason)
+        except Exception as e:
+            logger.warning(f"REM: Token invalidation failed for ::{user_id}::: {e}_Thank_You_But_No")
+        try:
+            from core.session_management import session_manager
+            session_manager.terminate_all_user_sessions(user_id, reason=reason)
+        except Exception as e:
+            logger.warning(f"REM: Session termination failed for ::{user_id}::: {e}_Thank_You_But_No")
 
     def reset_password_admin(self, user_id: str, new_password: str, reset_by: str) -> bool:
         """
@@ -448,6 +602,7 @@ class UserManager:
 
         # REM: Clear any lockouts
         self._clear_failed_attempts(user.username)
+        self._end_existing_logins(user_id, reason="admin_password_reset", by=reset_by)
 
         logger.warning(
             f"REM: Admin password reset for user ::{user.username}:: "
@@ -496,14 +651,18 @@ class UserManager:
         # REM: Add permission details
         profile["permissions"] = [p.value for p in user.get_all_permissions()]
 
-        # REM: Add email verification status placeholder
-        profile["email_verified"] = False  # REM: Will integrate with email_verification module
+        # REM: Email verification status
+        try:
+            from core.email_verification import email_verification
+            profile["email_verified"] = bool(email_verification.is_verified(user_id))
+        except Exception:
+            profile["email_verified"] = False
 
         return profile
 
     def is_first_user(self) -> bool:
         """REM: Check if no users have been registered yet (for first-user super_admin logic)."""
-        return self._user_count == 0
+        return self._registered_user_count() == 0
 
 
 # REM: Global singleton instance
